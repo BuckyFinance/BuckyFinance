@@ -20,7 +20,7 @@ contract MainRouter is CCIPBase {
     error AmountHasToBeGreaterThanZero();
     error TokenNotAllowed(uint64 chainSelector, address token);
     error TokenAlreadyAllowed(uint64 _chainSelector, address _token);
-
+    error ExceedsMaxLTV();
     enum TransactionReceive {
         DEPOSIT,
         BURN
@@ -80,7 +80,6 @@ contract MainRouter is CCIPBase {
         address _token, 
         uint256 _amount
     )   external payable 
-        onlyOwner 
         onlyAllowedToken(_destinationChainSelector, _token) 
     {
         if (_amount == 0){
@@ -102,7 +101,6 @@ contract MainRouter is CCIPBase {
         address _receiver, 
         uint256 _amount
     )   external payable 
-        onlyOwner 
     {
         if (_amount == 0){
             revert AmountHasToBeGreaterThanZero();
@@ -111,8 +109,8 @@ contract MainRouter is CCIPBase {
         feePay[msg.sender] += msg.value;
         minted[msg.sender][_destinationChainSelector] += _amount;
 
-        if (!_checkHealthFactor(msg.sender)){
-            revert HealthFactorTooLow();
+        if (_exceedsMaxLTV(msg.sender)){
+            revert ExceedsMaxLTV();
         }
 
         bytes memory _data = abi.encode(TransactionSend.MINT, abi.encode(msg.sender, _amount));
@@ -183,6 +181,10 @@ contract MainRouter is CCIPBase {
             (address _burner, uint256 _amount) = abi.decode(_data, (address, uint256));
             minted[_burner][sourceChainSelector] -= _amount;
         }
+    }
+
+    function updateUserActivityCredit() public {
+        
     }
 
     function _getUserHealthFactor(address _user) private view returns (uint256 healthFactor) {
@@ -311,7 +313,15 @@ contract MainRouter is CCIPBase {
         return (uint256(_price) * FEED_PRECISION) * _amount / PRECISION;
     }
     
-    function _checkHealthFactor(address _user) public pure returns(bool) {
-        return true;
+    function _checkHealthFactor(address _user) public view returns(bool) {
+        return _getUserHealthFactor(_user) > MIN_HEALTH_FACTOR;
+    }
+
+    function _exceedsMaxLTV(address _user) public view returns(bool) {
+        uint256 _userLTV = _calculateLTV(_user);
+    }
+
+    function _calculateLTV(address _user) public view returns(uint256){
+        return BASE_LTV + userActivityCredit[_user] - userProtocolCredit[_user];
     }
 }
