@@ -15,6 +15,7 @@ abstract contract CCIPBase is CCIPReceiver, Ownable {
     error SenderNotAllowlisted(address sender);
     error InvalidReceiverAddress();
 
+
     constructor(address _router) CCIPReceiver(_router) Ownable(msg.sender) {}
 
     mapping (uint64 => bool) allowListedDestinationChains;
@@ -49,6 +50,7 @@ abstract contract CCIPBase is CCIPReceiver, Ownable {
         uint64 _sourceChainSelector,
         bool allowed
     ) external onlyOwner {
+
         allowListedSourceChains[_sourceChainSelector] = allowed;
     }
 

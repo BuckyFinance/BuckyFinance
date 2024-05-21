@@ -6,11 +6,19 @@ import { CCIPReceiver } from "@chainlink/contracts-ccip/src/v0.8/ccip/applicatio
 import { Client } from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { CCIPBase } from "./library/CCIPBase.sol";
+import { AggregatorV3Interface } from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import { OracleLib } from "./library/OracleLib.sol";
+import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 contract MainRouter is CCIPBase {
+    using OracleLib for AggregatorV3Interface;
+    using EnumerableSet for EnumerableSet.AddressSet;
+    
     error NotEnoughFeePay(uint256 userFeePay, uint256 fees);
     error HealthFactorTooLow();
     error AmountHasToBeGreaterThanZero();
+    error TokenNotAllowed(uint64 chainSelector, address token);
+    error TokenAlreadyAllowed(uint64 _chainSelector, address _token);
 
     enum TransactionReceive {
         DEPOSIT,
@@ -21,17 +29,53 @@ contract MainRouter is CCIPBase {
         REDEEM,
         MINT
     }
+
+    EnumerableSet.UintSet private _allowedChains;
+
     // User => Chain Selector => Token => Amount
     mapping (address => mapping(uint64 => mapping(address => uint256))) public deposited;
+
+    // Chain Selector => Token => isAllowed
+    mapping (uint64 => mapping(address => bool)) isAllowedTokens;
+    mapping (uint64 => EnumerableSet.AddressSet) allowedTokens;
+
+    // Chain Selector => Token => priceFeed
+    mapping (uint64 => mapping(address => address)) priceFeeds;
     
     // User => Chain selector => Amount minted
     mapping (address => mapping(uint64 => uint256)) public minted;
 
     mapping (address => uint256) public feePay;
 
-    constructor (address _router) CCIPBase(_router) {}
+    uint256 private constant FEED_PRECISION = 1e10;
+    uint256 private constant LIQUIDATION_THRESHOLD = 50;
+    uint256 private constant LIQUIDATION_PRECISION = 100;
+    uint256 private constant LIQUIDATION_BONUS = 10;
+    uint256 private constant MIN_HEALTH_FACTOR = 1e18;
+    uint256 private constant PRECISION = 1e18;
 
-    function redeem(uint64 _destinationChainSelector, address _receiver, address _token, uint256 _amount) external payable onlyOwner {
+    constructor (address _router) CCIPBase(_router) {}
+    
+    receive() external payable {
+        feePay[msg.sender] += msg.value;
+    }
+
+    modifier onlyAllowedToken(uint64 _chainSelector, address _token) {
+        if (!isAllowedTokens[_chainSelector][_token]){
+            revert TokenNotAllowed(_chainSelector, _token);
+        }
+        _;
+    }
+
+    function redeem(
+        uint64 _destinationChainSelector, 
+        address _receiver, 
+        address _token, 
+        uint256 _amount
+    )   external payable 
+        onlyOwner 
+        onlyAllowedToken(_destinationChainSelector, _token) 
+    {
         if (_amount == 0){
             revert AmountHasToBeGreaterThanZero();
         }
@@ -46,7 +90,13 @@ contract MainRouter is CCIPBase {
         _ccipSend(_destinationChainSelector, _receiver, _data);
     }
 
-    function mint(uint64 _destinationChainSelector, address _receiver, uint256 _amount) external payable onlyOwner {
+    function mint(
+        uint64 _destinationChainSelector,
+        address _receiver, 
+        uint256 _amount
+    )   external payable 
+        onlyOwner 
+    {
         if (_amount == 0){
             revert AmountHasToBeGreaterThanZero();
         }
@@ -61,6 +111,28 @@ contract MainRouter is CCIPBase {
         bytes memory _data = abi.encode(TransactionSend.MINT, abi.encode(msg.sender, _amount));
         _ccipSend(_destinationChainSelector, _receiver, _data);
     }
+
+    function addAllowedToken(uint64 _chainSelector, address _token, address _priceFeed) external onlyOwner{
+        if (isAllowedTokens[_chainSelector][_token]){
+            revert TokenAlreadyAllowed(_chainSelector, _token);
+        }
+        isAllowedTokens[_chainSelector][_token] = true;
+        allowedTokens[_chainSelector].add(_token);
+        priceFeeds[_chainSelector][_token] = _priceFeed;
+    }
+
+    function removeAllowedToken(
+        uint64 _chainSelector,
+        address _token
+    )    external 
+        onlyOwner 
+        onlyAllowedToken(_chainSelector, _token) 
+    {
+        isAllowedTokens[_chainSelector][_token] = false;
+        allowedTokens[_chainSelector].remove(_token);
+        priceFeeds[_chainSelector][_token] = address(0);
+    }
+
 
     function _ccipSend(
         uint64 _destinationChainSelector,
@@ -85,10 +157,6 @@ contract MainRouter is CCIPBase {
         }
 
         _messageId = _router.ccipSend{value: _fees}(_destinationChainSelector, _message);
-    }
-
-    receive() external payable {
-        feePay[msg.sender] += msg.value;
     }
 
     function _ccipReceive(Client.Any2EVMMessage memory message) 
@@ -116,6 +184,60 @@ contract MainRouter is CCIPBase {
 
     function getUserInformation(address _user, uint64 _chainSelector, address _token) external view returns (uint256) {
         return deposited[_user][_chainSelector][_token];
+    }
+
+
+
+    function getUserCollateralOnChainValue(
+        address _user,
+        uint64 _chainSelector
+    )   public
+        view
+        returns (uint256 totalAmount)
+    {
+        EnumerableSet.AddressSet storage _chainAllowedTokens = allowedTokens[_chainSelector];
+        uint16 _tokenLength = uint16(_chainAllowedTokens.length());
+
+        for (uint i = 0; i < _tokenLength; i++) {
+            address _token = _chainAllowedTokens.at(i);
+            totalAmount += getUserCollateralValue(_user, _chainSelector, _token);
+        }
+    }
+
+    function getUserCollateralValue(
+        address _user,
+        uint64 _chainSelector,
+        address _token
+    )   public 
+        view
+        returns (uint256) 
+    {
+        return _getCollateralValue(_chainSelector, _token, _getUserDepositedAmount(_user, _chainSelector, _token));
+    }
+
+    function _getUserDepositedAmount(
+        address _user,
+        uint64 _chainSelector,
+        address _token
+    )   public
+        view
+        returns (uint256)
+    {
+        return deposited[_user][_chainSelector][_token];
+    }
+
+    function _getCollateralValue(
+        uint64 _chainSelector, 
+        address _token,
+        uint256 _amount
+    )   public 
+        view 
+        onlyAllowedToken(_chainSelector, _token)
+        returns (uint256) 
+    {
+        AggregatorV3Interface _priceFeed = AggregatorV3Interface(priceFeeds[_chainSelector][_token]);
+        (, int256 _price, , , ) = _priceFeed.staleCheckLatestRoundData();
+        return (uint256(_price) * FEED_PRECISION) * _amount / PRECISION;
     }
     
 }
