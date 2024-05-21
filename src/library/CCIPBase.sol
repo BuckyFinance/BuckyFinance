@@ -6,17 +6,21 @@ import { IRouterClient } from "@chainlink/contracts-ccip/src/v0.8/ccip/interface
 import { CCIPReceiver } from "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
 import { Client } from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 
 /// @author Duc Anh Le
 
 abstract contract CCIPBase is CCIPReceiver, Ownable {
+    using EnumerableSet for EnumerableSet.UintSet;
+
     error DestinationChainNotAllowlisted(uint64 destinationChainSelector);
     error SourceChainNotAllowlisted(uint64 sourceChainSelector);
     error SenderNotAllowlisted(address sender);
     error InvalidReceiverAddress();
 
-
     constructor(address _router) CCIPReceiver(_router) Ownable(msg.sender) {}
+
+    EnumerableSet.UintSet internal allowedChains;
 
     mapping (uint64 => bool) allowListedDestinationChains;
     mapping (uint64 => bool) public allowListedSourceChains;
@@ -44,6 +48,11 @@ abstract contract CCIPBase is CCIPReceiver, Ownable {
         bool _allowed
     ) external onlyOwner {
         allowListedDestinationChains[_destinationChainSelector] = _allowed;
+        if (_allowed){
+            allowedChains.add(_destinationChainSelector);
+        } else {
+            allowedChains.remove(_destinationChainSelector);
+        }
     }
 
     function setAllowedSourceChain(

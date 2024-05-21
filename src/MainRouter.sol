@@ -13,6 +13,7 @@ import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableS
 contract MainRouter is CCIPBase {
     using OracleLib for AggregatorV3Interface;
     using EnumerableSet for EnumerableSet.AddressSet;
+    using EnumerableSet for EnumerableSet.UintSet;
     
     error NotEnoughFeePay(uint256 userFeePay, uint256 fees);
     error HealthFactorTooLow();
@@ -30,28 +31,34 @@ contract MainRouter is CCIPBase {
         MINT
     }
 
-    EnumerableSet.UintSet private _allowedChains;
+    mapping (address => uint256) private userActivityCredit;
+    mapping (address => uint256) private userProtocolCredit;
 
     // User => Chain Selector => Token => Amount
-    mapping (address => mapping(uint64 => mapping(address => uint256))) public deposited;
+    mapping (address => mapping(uint64 => mapping(address => uint256))) private deposited;
 
     // Chain Selector => Token => isAllowed
-    mapping (uint64 => mapping(address => bool)) isAllowedTokens;
-    mapping (uint64 => EnumerableSet.AddressSet) allowedTokens;
+    mapping (uint64 => mapping(address => bool)) private isAllowedTokens;
+    mapping (uint64 => EnumerableSet.AddressSet) private allowedTokens;
 
     // Chain Selector => Token => priceFeed
-    mapping (uint64 => mapping(address => address)) priceFeeds;
+    mapping (uint64 => mapping(address => address)) private priceFeeds;
     
     // User => Chain selector => Amount minted
-    mapping (address => mapping(uint64 => uint256)) public minted;
+    mapping (address => mapping(uint64 => uint256)) private minted;
 
-    mapping (address => uint256) public feePay;
+    mapping (address => uint256) private feePay;
 
-    uint256 private constant FEED_PRECISION = 1e10;
-    uint256 private constant LIQUIDATION_THRESHOLD = 50;
-    uint256 private constant LIQUIDATION_PRECISION = 100;
-    uint256 private constant LIQUIDATION_BONUS = 10;
+
+    uint256 private constant BASE_LTV = 65e18;
+    uint256 private constant MAX_LTV = 75e18;
+    uint256 private constant LIQUIDATION_THRESHOLD = 80e18;
+    uint256 private constant LIQUIDATION_PENALTY = 6e18;
+
+
     uint256 private constant MIN_HEALTH_FACTOR = 1e18;
+    uint256 private constant FEED_PRECISION = 1e10;
+    uint256 private constant LIQUIDATION_PRECISION = 1e20;
     uint256 private constant PRECISION = 1e18;
 
     constructor (address _router) CCIPBase(_router) {}
@@ -178,14 +185,78 @@ contract MainRouter is CCIPBase {
         }
     }
 
-    function _checkHealthFactor(address _user) public view returns(bool) {
-        return true;
+    function _getUserHealthFactor(address _user) private view returns (uint256 healthFactor) {
+        (uint256 _totalCollateral, uint256 _totalMinted) = getUserOverallInformation(_user);
+        healthFactor = _calculateHealthFactor(_totalCollateral, _totalMinted);
     }
 
-    function getUserInformation(address _user, uint64 _chainSelector, address _token) external view returns (uint256) {
-        return deposited[_user][_chainSelector][_token];
+    function _calculateHealthFactor(uint256 _totalCollateral, uint256 _totalMinted) private pure returns (uint256 healthFactor) {
+        if (_totalMinted == 0){
+            return type(uint256).max;
+        }
+
+        healthFactor = (_totalCollateral * LIQUIDATION_THRESHOLD) / LIQUIDATION_PRECISION;
+        healthFactor = (healthFactor * PRECISION) / _totalMinted;
     }
 
+    function getUserOverallInformation(
+        address user
+    )   public
+        view
+        returns (uint256 totalCollateral, uint256 totalMinted)
+    {
+        totalCollateral = getUserOverallCollateralValue(user);
+        totalMinted = getUserMintedOverall(user);
+    }
+
+    function getUserOnChainInformation(
+        address _user,
+        uint64 _chainSelector
+    )   public
+        view
+        returns (uint256 totalCollateral, uint256 totalMinted)
+    {
+        totalCollateral = getUserCollateralOnChainValue(_user, _chainSelector);
+        totalMinted = getUserMintedOnChain(_user, _chainSelector);
+    }
+
+    function getUserMintedOverall(
+        address _user
+    )   public
+        view
+        returns (uint256 totalAmount)
+    {
+        EnumerableSet.UintSet storage _allowedChains = allowedChains;
+        uint16 _chainLength = uint16(_allowedChains.length());
+        for (uint i = 0; i < _chainLength; i++) {
+            uint64 _chainSelector = uint64(_allowedChains.at(i));
+            totalAmount += getUserMintedOnChain(_user, _chainSelector);
+        }
+    }
+
+    function getUserMintedOnChain(
+        address _user,
+        uint64 _chainSelector
+    )   public
+        view
+        returns (uint256 amount)
+    {
+        return minted[_user][_chainSelector];
+    }
+
+    function getUserOverallCollateralValue(
+        address _user
+    )   public
+        view
+        returns (uint256 totalAmount)
+    {
+        EnumerableSet.UintSet storage _allowedChains = allowedChains;
+        uint16 _chainLength = uint16(_allowedChains.length());
+        for (uint i = 0; i < _chainLength; i++) {
+            uint64 _chainSelector = uint64(_allowedChains.at(i));
+            totalAmount += getUserCollateralOnChainValue(_user, _chainSelector);
+        }
+    }
 
 
     function getUserCollateralOnChainValue(
@@ -240,4 +311,7 @@ contract MainRouter is CCIPBase {
         return (uint256(_price) * FEED_PRECISION) * _amount / PRECISION;
     }
     
+    function _checkHealthFactor(address _user) public pure returns(bool) {
+        return true;
+    }
 }
