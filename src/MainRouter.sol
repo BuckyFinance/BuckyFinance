@@ -4,8 +4,10 @@ pragma solidity ^0.8.0;
 import { IRouterClient } from "@chainlink/contracts-ccip/src/v0.8/ccip/interfaces/IRouterClient.sol";
 import { CCIPReceiver } from "@chainlink/contracts-ccip/src/v0.8/ccip/applications/CCIPReceiver.sol";
 import { Client } from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
+import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
+import { CCIPBase } from "./library/CCIPBase.sol";
 
-contract MainRouter is CCIPReceiver {
+contract MainRouter is CCIPBase {
     error NotEnoughFeePay(uint256 userFeePay, uint256 fees);
     error HealthFactorTooLow();
     error AmountHasToBeGreaterThanZero();
@@ -27,9 +29,9 @@ contract MainRouter is CCIPReceiver {
 
     mapping (address => uint256) public feePay;
 
-    constructor (address _router) CCIPReceiver(_router) {}
+    constructor (address _router) CCIPBase(_router) {}
 
-    function redeem(uint64 _destinationChainSelector, address _receiver, address _token, uint256 _amount) external payable {
+    function redeem(uint64 _destinationChainSelector, address _receiver, address _token, uint256 _amount) external payable onlyOwner {
         if (_amount == 0){
             revert AmountHasToBeGreaterThanZero();
         }
@@ -44,7 +46,7 @@ contract MainRouter is CCIPReceiver {
         _ccipSend(_destinationChainSelector, _receiver, _data);
     }
 
-    function mint(uint64 _destinationChainSelector, address _receiver, uint256 _amount) external payable {
+    function mint(uint64 _destinationChainSelector, address _receiver, uint256 _amount) external payable onlyOwner {
         if (_amount == 0){
             revert AmountHasToBeGreaterThanZero();
         }
@@ -64,7 +66,11 @@ contract MainRouter is CCIPReceiver {
         uint64 _destinationChainSelector,
         address _receiver,
         bytes memory _data
-    ) internal returns (bytes32 _messageId) {
+    )   internal 
+        onlyAllowListedDestinationChain(_destinationChainSelector)
+        validateReceiver(_receiver)
+        returns (bytes32 _messageId) 
+    {
         Client.EVM2AnyMessage memory _message = _buildCCIPMessage(
             _receiver,
             _data,
@@ -85,7 +91,14 @@ contract MainRouter is CCIPReceiver {
         feePay[msg.sender] += msg.value;
     }
 
-    function _ccipReceive(Client.Any2EVMMessage memory message) internal override {
+    function _ccipReceive(Client.Any2EVMMessage memory message) 
+        internal 
+        onlyAllowListed(
+            message.sourceChainSelector, 
+            abi.decode(message.sender, (address))
+        )
+        override 
+    {
         (TransactionReceive _transactionType, bytes memory _data) = abi.decode(message.data, (TransactionReceive, bytes));
         uint64 sourceChainSelector = message.sourceChainSelector;
         if (_transactionType == TransactionReceive.DEPOSIT) {
@@ -95,32 +108,6 @@ contract MainRouter is CCIPReceiver {
             (address _burner, uint256 _amount) = abi.decode(_data, (address, uint256));
             minted[_burner][sourceChainSelector] -= _amount;
         }
-    }
-
-
-    /// @notice Construct a CCIP message.
-    /// @dev This function will create an EVM2AnyMessage struct with all the necessary information for sending a text.
-    /// @param _receiver The address of the receiver.
-    /// @param _data Data to be sent
-    /// @param _feeTokenAddress The address of the token used for fees. Set address(0) for native gas.
-    /// @return Client.EVM2AnyMessage Returns an EVM2AnyMessage struct which contains information for sending a CCIP message.
-    function _buildCCIPMessage(
-        address _receiver,
-        bytes memory _data,
-        address _feeTokenAddress
-    ) private pure returns (Client.EVM2AnyMessage memory) {
-        return
-            Client.EVM2AnyMessage({
-                receiver: abi.encode(_receiver), // ABI-encoded receiver address
-                data: _data, // ABI-encoded string
-                tokenAmounts: new Client.EVMTokenAmount[](0), // Empty array aas no tokens are transferred
-                extraArgs: Client._argsToBytes(
-                    // Additional arguments, setting gas limit
-                    Client.EVMExtraArgsV1({gasLimit: 200_000})
-                ),
-                // Set the feeToken to a feeTokenAddress, indicating specific asset will be used for fees
-                feeToken: _feeTokenAddress
-            });
     }
 
     function _checkHealthFactor(address _user) public view returns(bool) {
