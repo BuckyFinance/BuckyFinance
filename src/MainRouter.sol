@@ -119,9 +119,9 @@ contract MainRouter is CCIPBase, FunctionsBase {
         feePay[msg.sender] += msg.value;
         minted[msg.sender][_destinationChainSelector] += _amount;
 
-        // if (_exceedsMaxLTV(msg.sender)){
-        //     revert ExceedsMaxLTV();
-        // }
+        if (_checkExceedMaxLTV(msg.sender)){
+            revert ExceedsMaxLTV();
+        }
 
         bytes memory _data = abi.encode(TransactionSend.MINT, abi.encode(msg.sender, _amount));
         _ccipSend(_destinationChainSelector, _receiver, _data);
