@@ -6,14 +6,17 @@ import { CCIPReceiver } from "@chainlink/contracts-ccip/src/v0.8/ccip/applicatio
 import { Client } from "@chainlink/contracts-ccip/src/v0.8/ccip/libraries/Client.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { CCIPBase } from "./library/CCIPBase.sol";
+import { FunctionsBase } from "./library/FunctionsBase.sol";
 import { AggregatorV3Interface } from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import { OracleLib } from "./library/OracleLib.sol";
 import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+import { FunctionsRequest } from "@chainlink/contracts/src/v0.8/functions/v1_0_0/libraries/FunctionsRequest.sol";
 
-contract MainRouter is CCIPBase {
+contract MainRouter is CCIPBase, FunctionsBase {
     using OracleLib for AggregatorV3Interface;
     using EnumerableSet for EnumerableSet.AddressSet;
     using EnumerableSet for EnumerableSet.UintSet;
+    using FunctionsRequest for FunctionsRequest.Request;
     
     error NotEnoughFeePay(uint256 userFeePay, uint256 fees);
     error HealthFactorTooLow();
@@ -21,6 +24,7 @@ contract MainRouter is CCIPBase {
     error TokenNotAllowed(uint64 chainSelector, address token);
     error TokenAlreadyAllowed(uint64 _chainSelector, address _token);
     error ExceedsMaxLTV();
+
     enum TransactionReceive {
         DEPOSIT,
         BURN
@@ -31,7 +35,7 @@ contract MainRouter is CCIPBase {
         MINT
     }
 
-    mapping (address => uint256) private userActivityCredit;
+    mapping (address => uint16) private userActivityCredit;
     mapping (address => uint256) private userProtocolCredit;
 
     // User => Chain Selector => Token => Amount
@@ -60,8 +64,14 @@ contract MainRouter is CCIPBase {
     uint256 private constant FEED_PRECISION = 1e10;
     uint256 private constant LIQUIDATION_PRECISION = 1e20;
     uint256 private constant PRECISION = 1e18;
+    uint256 private constant CREDIT_PRECISION = 1e3;
 
-    constructor (address _router) CCIPBase(_router) {}
+    constructor (
+        address _router, 
+        address _functionsRouter, 
+        bytes32 _donId
+    )   CCIPBase(_router) 
+        FunctionsBase(_functionsRouter, _donId) {}
     
     receive() external payable {
         feePay[msg.sender] += msg.value;
@@ -109,9 +119,9 @@ contract MainRouter is CCIPBase {
         feePay[msg.sender] += msg.value;
         minted[msg.sender][_destinationChainSelector] += _amount;
 
-        if (_exceedsMaxLTV(msg.sender)){
-            revert ExceedsMaxLTV();
-        }
+        // if (_exceedsMaxLTV(msg.sender)){
+        //     revert ExceedsMaxLTV();
+        // }
 
         bytes memory _data = abi.encode(TransactionSend.MINT, abi.encode(msg.sender, _amount));
         _ccipSend(_destinationChainSelector, _receiver, _data);
@@ -183,8 +193,10 @@ contract MainRouter is CCIPBase {
         }
     }
 
-    function updateUserActivityCredit() public {
-        
+    function _getUserFractionToLTV(address _user) private view returns (uint256 fraction) {
+        uint256 _userLTV = _calculateLTV(_user);
+        (uint256 _totalCollateral, uint256 _totalMinted) = getUserOverallInformation(_user);
+        fraction = _calculateUserFractionToLTV(_totalCollateral, _totalMinted, _userLTV);
     }
 
     function _getUserHealthFactor(address _user) private view returns (uint256 healthFactor) {
@@ -192,13 +204,23 @@ contract MainRouter is CCIPBase {
         healthFactor = _calculateHealthFactor(_totalCollateral, _totalMinted);
     }
 
+    function _calculateUserFractionToLTV(uint256 _totalCollateral, uint256 _totalMinted, uint256 _ratio) private pure returns (uint256 fraction) {
+        if (_totalMinted == 0){
+            return type(uint256).max;
+        }
+        return _calculateFraction(_totalCollateral, _totalMinted, _ratio);
+    }
+
     function _calculateHealthFactor(uint256 _totalCollateral, uint256 _totalMinted) private pure returns (uint256 healthFactor) {
         if (_totalMinted == 0){
             return type(uint256).max;
         }
+        return _calculateFraction(_totalCollateral, _totalMinted, LIQUIDATION_PRECISION);
+    }
 
-        healthFactor = (_totalCollateral * LIQUIDATION_THRESHOLD) / LIQUIDATION_PRECISION;
-        healthFactor = (healthFactor * PRECISION) / _totalMinted;
+    function _calculateFraction(uint256 _totalCollateral, uint256 _totalMinted, uint256 _ratio) private pure returns (uint256 answer) {
+        answer = (_totalCollateral * _ratio) / LIQUIDATION_PRECISION;
+        answer = (answer * PRECISION) / _totalMinted;
     }
 
     function getUserOverallInformation(
@@ -317,11 +339,49 @@ contract MainRouter is CCIPBase {
         return _getUserHealthFactor(_user) > MIN_HEALTH_FACTOR;
     }
 
-    function _exceedsMaxLTV(address _user) public view returns(bool) {
-        uint256 _userLTV = _calculateLTV(_user);
+    function _checkExceedMaxLTV(address _user) public view returns (bool) {
+        return _getUserFractionToLTV(_user) > MIN_HEALTH_FACTOR;
     }
 
     function _calculateLTV(address _user) public view returns(uint256){
-        return BASE_LTV + userActivityCredit[_user] - userProtocolCredit[_user];
+        return BASE_LTV + _convertCreditToLTV(userActivityCredit[_user] - userProtocolCredit[_user]);
+    }
+
+    function _convertCreditToLTV(uint256 _activityCredit) public pure returns (uint256){
+        return (MAX_LTV - BASE_LTV) * _activityCredit / CREDIT_PRECISION;                          
+    }
+
+    /// -----------CHAINLINK FUNCTIONS----------- ///
+
+    function sendRequestToCalculateActivityCredit(address _user, string[] calldata _args) public returns (bytes32 _requestId) {
+        FunctionsRequest.Request memory req;
+        req.initializeRequestForInlineJavaScript(source);
+
+        if (_args.length > 0){
+            req.setArgs(_args);
+        }
+
+        _requestId = _sendRequest(
+            req.encodeCBOR(),
+            subscriptionId,
+            gasLimit,
+            donId
+        );
+
+        requestIdToUser[_requestId] = _user;
+    }
+
+    function fulfillRequest(bytes32 _requestId, bytes memory _response, bytes memory _err) internal override {
+        address _user = requestIdToUser[_requestId];
+        uint16 _returnedCredit = 0;
+        if (_response.length > 0){
+            _returnedCredit = uint16(uint256(bytes32(_response)));
+        }
+        
+        if (_returnedCredit > 0) {
+            userActivityCredit[_user] = _returnedCredit;
+        }
+
+        emit Response(_user, _requestId, _returnedCredit, _response, _err);
     }
 }
