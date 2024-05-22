@@ -45,6 +45,8 @@ contract MainRouter is CCIPBase, FunctionsBase {
     mapping (uint64 => mapping(address => bool)) private isAllowedTokens;
     mapping (uint64 => EnumerableSet.AddressSet) private allowedTokens;
 
+
+
     // Chain Selector => Token => priceFeed
     mapping (uint64 => mapping(address => address)) private priceFeeds;
     
@@ -52,7 +54,6 @@ contract MainRouter is CCIPBase, FunctionsBase {
     mapping (address => mapping(uint64 => uint256)) private minted;
 
     mapping (address => uint256) private feePay;
-
 
     uint256 private constant BASE_LTV = 65e18;
     uint256 private constant MAX_LTV = 75e18;
@@ -139,58 +140,13 @@ contract MainRouter is CCIPBase, FunctionsBase {
     function removeAllowedToken(
         uint64 _chainSelector,
         address _token
-    )    external 
+    )   external 
         onlyOwner 
         onlyAllowedToken(_chainSelector, _token) 
     {
         isAllowedTokens[_chainSelector][_token] = false;
         allowedTokens[_chainSelector].remove(_token);
         priceFeeds[_chainSelector][_token] = address(0);
-    }
-
-
-    function _ccipSend(
-        uint64 _destinationChainSelector,
-        address _receiver,
-        bytes memory _data
-    )   internal 
-        onlyAllowListedDestinationChain(_destinationChainSelector)
-        validateReceiver(_receiver)
-        returns (bytes32 _messageId) 
-    {
-        Client.EVM2AnyMessage memory _message = _buildCCIPMessage(
-            _receiver,
-            _data,
-            address(0)
-        );
-
-        IRouterClient _router = IRouterClient(getRouter());
-        uint256 _fees = _router.getFee(_destinationChainSelector, _message);
-
-        if (feePay[msg.sender] < _fees){
-            revert NotEnoughFeePay(feePay[msg.sender], _fees);
-        }
-
-        _messageId = _router.ccipSend{value: _fees}(_destinationChainSelector, _message);
-    }
-
-    function _ccipReceive(Client.Any2EVMMessage memory message) 
-        internal 
-        onlyAllowListed(
-            message.sourceChainSelector, 
-            abi.decode(message.sender, (address))
-        )
-        override 
-    {
-        (TransactionReceive _transactionType, bytes memory _data) = abi.decode(message.data, (TransactionReceive, bytes));
-        uint64 sourceChainSelector = message.sourceChainSelector;
-        if (_transactionType == TransactionReceive.DEPOSIT) {
-            (address _depositor, address _token, uint256 _amount) = abi.decode(_data, (address, address, uint256));
-            deposited[_depositor][sourceChainSelector][_token] += _amount;
-        } else if (_transactionType == TransactionReceive.BURN) {
-            (address _burner, uint256 _amount) = abi.decode(_data, (address, uint256));
-            minted[_burner][sourceChainSelector] -= _amount;
-        }
     }
 
     function _getUserFractionToLTV(address _user) private view returns (uint256 fraction) {
@@ -350,8 +306,88 @@ contract MainRouter is CCIPBase, FunctionsBase {
         (, int256 _price, , , ) = _priceFeed.staleCheckLatestRoundData();
         return (uint256(_price) * FEED_PRECISION) * _amount / PRECISION;
     }
-    
 
+    function getDeposited(
+        address _user,
+        uint64 _chainSelector,
+        address _token
+    )   public
+        view
+        returns (uint256)
+    {
+        return deposited[_user][_chainSelector][_token];
+    }
+
+    function getUserActivityCredit(address _user) public view returns (uint16){
+        return userActivityCredit[_user];
+    }
+
+    function getUserProtocolCredit(address _user) public view returns (uint256){
+        return userProtocolCredit[_user];
+    }
+    
+    function getIsAllowedTokens(uint64 _chainSelector, address _token) public view returns (bool){
+        return isAllowedTokens[_chainSelector][_token];
+    }
+
+    function getPriceFeeds(uint64 _chainSelector, address _token) public view returns (address){
+        return priceFeeds[_chainSelector][_token];
+    }
+    
+    function getMinted(address _user, uint64 _chainSelector) public view returns (uint256){
+        return minted[_user][_chainSelector];
+    }
+
+    function getFeePay(address _user) public view returns (uint256){
+        return feePay[_user];
+    }
+
+    // -----------CHAINLINK CCIP ----------- //
+
+    function _ccipSend(
+        uint64 _destinationChainSelector,
+        address _receiver,
+        bytes memory _data
+    )   internal 
+        onlyAllowListedDestinationChain(_destinationChainSelector)
+        validateReceiver(_receiver)
+        returns (bytes32 _messageId) 
+    {
+        Client.EVM2AnyMessage memory _message = _buildCCIPMessage(
+            _receiver,
+            _data,
+            address(0)
+        );
+
+        IRouterClient _router = IRouterClient(getRouter());
+        uint256 _fees = _router.getFee(_destinationChainSelector, _message);
+
+        if (feePay[msg.sender] < _fees){
+            revert NotEnoughFeePay(feePay[msg.sender], _fees);
+        }
+
+        _messageId = _router.ccipSend{value: _fees}(_destinationChainSelector, _message);
+    }
+
+    function _ccipReceive(Client.Any2EVMMessage memory message) 
+        internal 
+        onlyAllowListed(
+            message.sourceChainSelector, 
+            abi.decode(message.sender, (address))
+        )
+        override 
+    {
+        (TransactionReceive _transactionType, bytes memory _data) = abi.decode(message.data, (TransactionReceive, bytes));
+        uint64 sourceChainSelector = message.sourceChainSelector;
+        if (_transactionType == TransactionReceive.DEPOSIT) {
+            (address _depositor, address _token, uint256 _amount) = abi.decode(_data, (address, address, uint256));
+            deposited[_depositor][sourceChainSelector][_token] += _amount;
+        } else if (_transactionType == TransactionReceive.BURN) {
+            (address _burner, uint256 _amount) = abi.decode(_data, (address, uint256));
+            minted[_burner][sourceChainSelector] -= _amount;
+        }
+    }
+    
     /// -----------CHAINLINK FUNCTIONS----------- ///
 
     function sendRequestToCalculateActivityCredit(address _user, string[] calldata _args) public returns (bytes32 _requestId) {

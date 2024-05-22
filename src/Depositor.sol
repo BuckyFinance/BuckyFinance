@@ -23,13 +23,13 @@ contract Depositor is CCIPBase {
         MINT
     }
     
-    mapping (address => mapping(address => uint256)) public deposited;
-    mapping (address => uint256) public feePay;
-    mapping (address => bool) public isAllowedToken;
+    mapping (address => mapping(address => uint256)) private deposited;
+    mapping (address => uint256) private feePay;
+    mapping (address => bool) private isAllowedToken;
 
 
-    address public immutable mainRouter;
-    uint64 public immutable mainRouterChainSelector;
+    address private immutable mainRouter;
+    uint64 private immutable mainRouterChainSelector;
 
     constructor(address _router, uint64 _mainRouterChainSelector, address _mainRouter) CCIPBase(_router) {
         mainRouter = _mainRouter;
@@ -112,5 +112,25 @@ contract Depositor is CCIPBase {
             (address _user, address _token, uint256 _amount) = abi.decode(_data, (address, address, uint256));
             _redeem(_user, _token, _amount);
         }
+    }
+
+    function getDeposited(address _user, address _token) public view returns (uint256) {
+        return deposited[_user][_token];
+    }
+
+    function getFeePay(address _user) public view returns (uint256) {
+        return feePay[_user];
+    }
+
+    function getIsAllowedToken(address _token) public view returns (bool) {
+        return isAllowedToken[_token];
+    }
+
+    function getMainRouter() public view returns (address) {
+        return mainRouter;
+    }
+
+    function getMainRouterChainSelector() public view returns (uint64) {
+        return mainRouterChainSelector;
     }
 }

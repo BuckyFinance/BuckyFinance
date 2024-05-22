@@ -25,13 +25,14 @@ contract Minter is CCIPBase {
         MINT
     }
 
-    mapping (address => uint256) public minted;
-    mapping (address => uint256) public feePay;
+    mapping (address => uint256) private minted;
+    mapping (address => uint256) private feePay;
 
-    DSC public immutable dsc;
 
-    address public immutable mainRouter;
-    uint64 public immutable mainRouterChainSelector;
+    DSC private immutable dsc;
+
+    address private immutable mainRouter;
+    uint64 private immutable mainRouterChainSelector;
 
     constructor(address _router, uint64 _mainRouterChainSelector, address _mainRouter) CCIPBase(_router) {
         mainRouter = _mainRouter;
@@ -99,5 +100,25 @@ contract Minter is CCIPBase {
             (address _user, uint256 _amount) = abi.decode(_data, (address, uint256));
             _mint(_user, _amount);
         }
+    }
+
+    function getMinted(address _user) public view returns (uint256) {
+        return minted[_user];
+    }
+
+    function getFeePay(address _user) public view returns (uint256) {
+        return feePay[_user];
+    }
+
+    function getDsc() public view returns (DSC) {
+        return dsc;
+    }
+
+    function getMainRouter() public view returns (address) {
+        return mainRouter;
+    }
+
+    function getMainRouterChainSelector() public view returns (uint64) {
+        return mainRouterChainSelector;
     }
 }
