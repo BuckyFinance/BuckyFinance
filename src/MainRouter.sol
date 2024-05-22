@@ -85,7 +85,7 @@ contract MainRouter is CCIPBase, FunctionsBase {
     }
 
     function redeem(
-        uint64 _destinationChainSelector, 
+        uint64  _destinationChainSelector, 
         address _receiver, 
         address _token, 
         uint256 _amount
@@ -223,6 +223,22 @@ contract MainRouter is CCIPBase, FunctionsBase {
         answer = (answer * PRECISION) / _totalMinted;
     }
 
+    function _checkHealthFactor(address _user) public view returns(bool) {
+        return _getUserHealthFactor(_user) > MIN_HEALTH_FACTOR;
+    }
+
+    function _checkExceedMaxLTV(address _user) public view returns (bool) {
+        return _getUserFractionToLTV(_user) > MIN_HEALTH_FACTOR;
+    }
+
+    function _calculateLTV(address _user) public view returns(uint256){
+        return BASE_LTV + _convertCreditToLTV(userActivityCredit[_user] - userProtocolCredit[_user]);
+    }
+
+    function _convertCreditToLTV(uint256 _activityCredit) public pure returns (uint256){
+        return (MAX_LTV - BASE_LTV) * _activityCredit / CREDIT_PRECISION;                          
+    }
+
     function getUserOverallInformation(
         address user
     )   public
@@ -335,21 +351,6 @@ contract MainRouter is CCIPBase, FunctionsBase {
         return (uint256(_price) * FEED_PRECISION) * _amount / PRECISION;
     }
     
-    function _checkHealthFactor(address _user) public view returns(bool) {
-        return _getUserHealthFactor(_user) > MIN_HEALTH_FACTOR;
-    }
-
-    function _checkExceedMaxLTV(address _user) public view returns (bool) {
-        return _getUserFractionToLTV(_user) > MIN_HEALTH_FACTOR;
-    }
-
-    function _calculateLTV(address _user) public view returns(uint256){
-        return BASE_LTV + _convertCreditToLTV(userActivityCredit[_user] - userProtocolCredit[_user]);
-    }
-
-    function _convertCreditToLTV(uint256 _activityCredit) public pure returns (uint256){
-        return (MAX_LTV - BASE_LTV) * _activityCredit / CREDIT_PRECISION;                          
-    }
 
     /// -----------CHAINLINK FUNCTIONS----------- ///
 
