@@ -8,7 +8,7 @@ import { MainRouter } from "../src/MainRouter.sol";
 import { Minter } from "../src/Minter.sol";
 import { RouterConfig } from "./RouterConfig.s.sol";
 
-contract Deployer is Script, Parameters {
+contract DeployMinter is Script, Parameters {
     function run() external returns (Minter minter) {
         RouterConfig config = new RouterConfig();
         address router = config.run();

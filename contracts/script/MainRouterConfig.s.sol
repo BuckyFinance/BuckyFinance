@@ -8,6 +8,7 @@ import { TokenConfig } from "./TokenConfig.s.sol";
 
 contract MainRouterConfig is Script, Parameters {
     function run() external {
+        vm.startBroadcast();
         MainRouter mainRouter = MainRouter(payable(AVALANCHE_FUJI_MAIN_ROUTER));
 
         mainRouter.setAllowedSender(AVALANCHE_FUJI_DEPOSITOR, true);
@@ -23,5 +24,8 @@ contract MainRouterConfig is Script, Parameters {
         mainRouter.setAllowedSender(BASE_SEPOLIA_MINTER, true);
         mainRouter.setAllowedSender(OPTIMISM_SEPOLIA_MINTER, true);
         mainRouter.setAllowedSender(ARBITRUM_SEPOLIA_MINTER, true);
+        
+        vm.stopBroadcast();
+        
     }
 }

@@ -9,7 +9,7 @@ import { Depositor } from "../src/Depositor.sol";
 import { RouterConfig } from "./RouterConfig.s.sol";
 import { TokenConfig } from "./TokenConfig.s.sol";
 
-contract Deployer is Script, Parameters {
+contract DeployDeposit is Script, Parameters {
     
     function run() external returns (Depositor depositor) {
         RouterConfig config = new RouterConfig();

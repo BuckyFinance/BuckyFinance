@@ -391,6 +391,12 @@ contract MainRouter is CCIPBase, FunctionsBase {
             minted[_burner][sourceChainSelector] -= _amount;
         }
     }
+
+    function getTokenPrice(address _token) public view returns (uint256){
+        AggregatorV3Interface _priceFeed = AggregatorV3Interface(priceFeeds[uint64(allowedChains.at(0))][_token]);
+        (, int256 _price, , , ) = _priceFeed.staleCheckLatestRoundData();
+        return uint256(_price);
+    }
     
     /// -----------CHAINLINK FUNCTIONS----------- ///
 
