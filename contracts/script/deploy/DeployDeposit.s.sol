@@ -3,11 +3,11 @@
 pragma solidity ^0.8.0;
 
 import { Script } from "forge-std/Script.sol";
-import { Parameters } from "./Parameters.sol";
-import { MainRouter } from "../src/MainRouter.sol";
-import { Depositor } from "../src/Depositor.sol";
-import { RouterConfig } from "./RouterConfig.s.sol";
-import { TokenConfig } from "./TokenConfig.s.sol";
+import { Parameters } from "../Parameters.sol";
+import { MainRouter } from "../../src/MainRouter.sol";
+import { Depositor } from "../../src/Depositor.sol";
+import { RouterConfig } from "../config/RouterConfig.s.sol";
+import { TokenConfig } from "../config/TokenConfig.s.sol";
 
 contract DeployDeposit is Script, Parameters {
     

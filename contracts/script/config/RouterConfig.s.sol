@@ -3,7 +3,7 @@
 pragma solidity ^0.8.0;
 
 import { Script } from "forge-std/Script.sol";
-import { Parameters } from "./Parameters.sol";
+import { Parameters } from "../Parameters.sol";
 
 contract RouterConfig is Script, Parameters {
     function run() external view returns (address router){

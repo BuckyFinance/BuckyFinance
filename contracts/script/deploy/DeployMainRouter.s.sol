@@ -3,9 +3,9 @@
 pragma solidity ^0.8.0;
 
 import { Script } from "forge-std/Script.sol";
-import { Parameters } from "./Parameters.sol";
-import { MainRouter } from "../src/MainRouter.sol";
-import { TokenConfig } from "./TokenConfig.s.sol";
+import { Parameters } from "../Parameters.sol";
+import { MainRouter } from "../../src/MainRouter.sol";
+import { TokenConfig } from "../config/TokenConfig.s.sol";
 
 
 contract DeployMainRouter is Script, Parameters {

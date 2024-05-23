@@ -3,8 +3,8 @@ pragma solidity ^0.8.0;
 
 
 import { Script } from "forge-std/Script.sol";
-import { Parameters } from "./Parameters.sol";
-import { ERC20Mock } from "./Mocks/ERC20Mock.sol";
+import { Parameters } from "../Parameters.sol";
+import { ERC20Mock } from "../Mocks/ERC20Mock.sol";
 
 contract DeployTokens is Script {
     struct Token {
