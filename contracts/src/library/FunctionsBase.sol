@@ -29,13 +29,14 @@ abstract contract FunctionsBase is FunctionsClient, Ownable {
     string source = 
         "const user = args[0];"
         "const apiResponse = await Functions.makeHttpRequest({"
-        "url: `http://localhost:3000/api/credit/${user}`"
+        "url: `https://beta.credprotocol.com/api/score/address/${user}/`,"
+        "headers: {'Authorization': `Token 373540836d1296f8c4f792eade78ddd89ab13d20`},"
         "});"
         "if (apiResponse.error) {"
         "throw Error('Request failed');"
         "}"
         "const { data } = apiResponse;"
-        "return Functions.encodeUint256(data.creditPoint);";
+        "return Functions.encodeUint256(data.value);";
 
     constructor(address _functionRouter, bytes32 _donId) FunctionsClient(_functionRouter) {
         functionsRouter = _functionRouter;
