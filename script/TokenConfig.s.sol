@@ -6,16 +6,23 @@ import { Script } from "forge-std/Script.sol";
 import { Parameters } from "./Parameters.sol";
 import { ERC20Mock } from "./Mocks/ERC20Mock.sol";
 
-contract RouterConfig is Script, Parameters {
-    struct Token {
-        address wbtc;
-        address weth;
-        address link;
-        address avax;
-        address uni;
-        address usdc;
-        address usdt;
+contract TokenConfig is Script, Parameters {
+    struct BaseToken {
+        uint64 chainSelector;
+        address token;
+        address priceFeed;
     }
+
+    struct Token {
+        BaseToken wbtc;
+        BaseToken weth;
+        BaseToken link;
+        BaseToken avax;
+        BaseToken uni;
+        BaseToken usdc;
+        BaseToken usdt;
+    }
+
 
     function run() external view returns (Token memory token){
         if (block.chainid == AVALANCHE_FUJI_CHAIN_ID) {
@@ -38,63 +45,63 @@ contract RouterConfig is Script, Parameters {
         }
     }
 
-    function getAvalancheFujiToken() internal pure returns (Token memory token){
-        token.wbtc = AVALANCHE_FUJI_WBTC;
-        token.weth = AVALANCHE_FUJI_WETH;
-        token.link = AVALANCHE_FUJI_LINK;
-        token.avax = AVALANCHE_FUJI_AVAX;
-        token.uni = AVALANCHE_FUJI_UNI;
-        token.usdc = AVALANCHE_FUJI_USDC;
-        token.usdt = AVALANCHE_FUJI_USDT;
+    function getAvalancheFujiToken() public pure returns (Token memory token){
+        token.wbtc = BaseToken(AVALANCHE_FUJI_CHAIN_SELECTOR, AVALANCHE_FUJI_WBTC, BTC_PRICE_FEED);
+        token.weth = BaseToken(AVALANCHE_FUJI_CHAIN_SELECTOR, AVALANCHE_FUJI_WETH, ETH_PRICE_FEED);
+        token.link = BaseToken(AVALANCHE_FUJI_CHAIN_SELECTOR, AVALANCHE_FUJI_LINK, LINK_PRICE_FEED);
+        token.avax = BaseToken(AVALANCHE_FUJI_CHAIN_SELECTOR, AVALANCHE_FUJI_AVAX, AVAX_PRICE_FEED);
+        token.uni = BaseToken(AVALANCHE_FUJI_CHAIN_SELECTOR, AVALANCHE_FUJI_UNI, UNI_PRICE_FEED);
+        token.usdc = BaseToken(AVALANCHE_FUJI_CHAIN_SELECTOR, AVALANCHE_FUJI_USDC, USDC_PRICE_FEED);
+        token.usdt = BaseToken(AVALANCHE_FUJI_CHAIN_SELECTOR, AVALANCHE_FUJI_USDT, USDT_PRICE_FEED);
     }
 
-    function getEthereumSepoliaToken() internal pure returns (Token memory token){
-        token.wbtc = ETHEREUM_SEPOLIA_WBTC;
-        token.weth = ETHEREUM_SEPOLIA_WETH;
-        token.link = ETHEREUM_SEPOLIA_LINK;
-        token.avax = ETHEREUM_SEPOLIA_AVAX;
-        token.uni = ETHEREUM_SEPOLIA_UNI;
-        token.usdc = ETHEREUM_SEPOLIA_USDC;
-        token.usdt = ETHEREUM_SEPOLIA_USDT;
+    function getEthereumSepoliaToken() public pure returns (Token memory token){
+        token.wbtc = BaseToken(ETHEREUM_SEPOLIA_CHAIN_SELECTOR, ETHEREUM_SEPOLIA_WBTC, BTC_PRICE_FEED);
+        token.weth = BaseToken(ETHEREUM_SEPOLIA_CHAIN_SELECTOR, ETHEREUM_SEPOLIA_WETH, ETH_PRICE_FEED);
+        token.link = BaseToken(ETHEREUM_SEPOLIA_CHAIN_SELECTOR, ETHEREUM_SEPOLIA_LINK, LINK_PRICE_FEED);
+        token.avax = BaseToken(ETHEREUM_SEPOLIA_CHAIN_SELECTOR, ETHEREUM_SEPOLIA_AVAX, AVAX_PRICE_FEED);
+        token.uni = BaseToken(ETHEREUM_SEPOLIA_CHAIN_SELECTOR, ETHEREUM_SEPOLIA_UNI, UNI_PRICE_FEED);
+        token.usdc = BaseToken(ETHEREUM_SEPOLIA_CHAIN_SELECTOR, ETHEREUM_SEPOLIA_USDC, USDC_PRICE_FEED);
+        token.usdt = BaseToken(ETHEREUM_SEPOLIA_CHAIN_SELECTOR, ETHEREUM_SEPOLIA_USDT, USDT_PRICE_FEED);
     }
 
-    function getArbitrumSepoliaToken() internal pure returns (Token memory token){
-        token.wbtc = ARBITRUM_SEPOLIA_WBTC;
-        token.weth = ARBITRUM_SEPOLIA_WETH;
-        token.link = ARBITRUM_SEPOLIA_LINK;
-        token.avax = ARBITRUM_SEPOLIA_AVAX;
-        token.uni = ARBITRUM_SEPOLIA_UNI;
-        token.usdc = ARBITRUM_SEPOLIA_USDC;
-        token.usdt = ARBITRUM_SEPOLIA_USDT;
+    function getArbitrumSepoliaToken() public pure returns (Token memory token){
+        token.wbtc = BaseToken(ARBITRUM_SEPOLIA_CHAIN_SELECTOR, ARBITRUM_SEPOLIA_WBTC, BTC_PRICE_FEED);
+        token.weth = BaseToken(ARBITRUM_SEPOLIA_CHAIN_SELECTOR, ARBITRUM_SEPOLIA_WETH, ETH_PRICE_FEED);
+        token.link = BaseToken(ARBITRUM_SEPOLIA_CHAIN_SELECTOR, ARBITRUM_SEPOLIA_LINK, LINK_PRICE_FEED);
+        token.avax = BaseToken(ARBITRUM_SEPOLIA_CHAIN_SELECTOR, ARBITRUM_SEPOLIA_AVAX, AVAX_PRICE_FEED);
+        token.uni = BaseToken(ARBITRUM_SEPOLIA_CHAIN_SELECTOR, ARBITRUM_SEPOLIA_UNI, UNI_PRICE_FEED);
+        token.usdc = BaseToken(ARBITRUM_SEPOLIA_CHAIN_SELECTOR, ARBITRUM_SEPOLIA_USDC, USDC_PRICE_FEED);
+        token.usdt = BaseToken(ARBITRUM_SEPOLIA_CHAIN_SELECTOR, ARBITRUM_SEPOLIA_USDT, USDT_PRICE_FEED);
     }
 
-    function getPolygonAmoyToken() internal pure returns (Token memory token){
-        token.wbtc = POLYGON_AMOY_WBTC;
-        token.weth = POLYGON_AMOY_WETH;
-        token.link = POLYGON_AMOY_LINK;
-        token.avax = POLYGON_AMOY_AVAX;
-        token.uni = POLYGON_AMOY_UNI;
-        token.usdc = POLYGON_AMOY_USDC;
-        token.usdt = POLYGON_AMOY_USDT;
+    function getPolygonAmoyToken() public pure returns (Token memory token){
+        token.wbtc = BaseToken(POLYGON_AMOY_CHAIN_SELECTOR, POLYGON_AMOY_WBTC, BTC_PRICE_FEED);
+        token.weth = BaseToken(POLYGON_AMOY_CHAIN_SELECTOR, POLYGON_AMOY_WETH, ETH_PRICE_FEED);
+        token.link = BaseToken(POLYGON_AMOY_CHAIN_SELECTOR, POLYGON_AMOY_LINK, LINK_PRICE_FEED);
+        token.avax = BaseToken(POLYGON_AMOY_CHAIN_SELECTOR, POLYGON_AMOY_AVAX, AVAX_PRICE_FEED);
+        token.uni = BaseToken(POLYGON_AMOY_CHAIN_SELECTOR, POLYGON_AMOY_UNI, UNI_PRICE_FEED);
+        token.usdc = BaseToken(POLYGON_AMOY_CHAIN_SELECTOR, POLYGON_AMOY_USDC, USDC_PRICE_FEED);
+        token.usdt = BaseToken(POLYGON_AMOY_CHAIN_SELECTOR, POLYGON_AMOY_USDT, USDT_PRICE_FEED);
     }
 
-    function getBaseSepoliaToken() internal pure returns (Token memory token){
-        token.wbtc = BASE_SEPOLIA_WBTC;
-        token.weth = BASE_SEPOLIA_WETH;
-        token.link = BASE_SEPOLIA_LINK;
-        token.avax = BASE_SEPOLIA_AVAX;
-        token.uni = BASE_SEPOLIA_UNI;
-        token.usdc = BASE_SEPOLIA_USDC;
-        token.usdt = BASE_SEPOLIA_USDT;
+    function getBaseSepoliaToken() public pure returns (Token memory token){
+        token.wbtc = BaseToken(BASE_SEPOLIA_CHAIN_SELECTOR, BASE_SEPOLIA_WBTC, BTC_PRICE_FEED);
+        token.weth = BaseToken(BASE_SEPOLIA_CHAIN_SELECTOR, BASE_SEPOLIA_WETH, ETH_PRICE_FEED);
+        token.link = BaseToken(BASE_SEPOLIA_CHAIN_SELECTOR, BASE_SEPOLIA_LINK, LINK_PRICE_FEED);
+        token.avax = BaseToken(BASE_SEPOLIA_CHAIN_SELECTOR, BASE_SEPOLIA_AVAX, AVAX_PRICE_FEED);
+        token.uni = BaseToken(BASE_SEPOLIA_CHAIN_SELECTOR, BASE_SEPOLIA_UNI, UNI_PRICE_FEED);
+        token.usdc = BaseToken(BASE_SEPOLIA_CHAIN_SELECTOR, BASE_SEPOLIA_USDC, USDC_PRICE_FEED);
+        token.usdt = BaseToken(BASE_SEPOLIA_CHAIN_SELECTOR, BASE_SEPOLIA_USDT, USDT_PRICE_FEED);
     }
 
-    function getOptimismSepoliaToken() internal pure returns (Token memory token){
-        token.wbtc = OPTIMISM_SEPOLIA_WBTC;
-        token.weth = OPTIMISM_SEPOLIA_WETH;
-        token.link = OPTIMISM_SEPOLIA_LINK;
-        token.avax = OPTIMISM_SEPOLIA_AVAX;
-        token.uni = OPTIMISM_SEPOLIA_UNI;
-        token.usdc = OPTIMISM_SEPOLIA_USDC;
-        token.usdt = OPTIMISM_SEPOLIA_USDT;
+    function getOptimismSepoliaToken() public pure returns (Token memory token){
+        token.wbtc = BaseToken(OPTIMISM_SEPOLIA_CHAIN_SELECTOR, OPTIMISM_SEPOLIA_WBTC, BTC_PRICE_FEED);
+        token.weth = BaseToken(OPTIMISM_SEPOLIA_CHAIN_SELECTOR, OPTIMISM_SEPOLIA_WETH, ETH_PRICE_FEED);
+        token.link = BaseToken(OPTIMISM_SEPOLIA_CHAIN_SELECTOR, OPTIMISM_SEPOLIA_LINK, LINK_PRICE_FEED);
+        token.avax = BaseToken(OPTIMISM_SEPOLIA_CHAIN_SELECTOR, OPTIMISM_SEPOLIA_AVAX, AVAX_PRICE_FEED);
+        token.uni = BaseToken(OPTIMISM_SEPOLIA_CHAIN_SELECTOR, OPTIMISM_SEPOLIA_UNI, UNI_PRICE_FEED);
+        token.usdc = BaseToken(OPTIMISM_SEPOLIA_CHAIN_SELECTOR, OPTIMISM_SEPOLIA_USDC, USDC_PRICE_FEED);
+        token.usdt = BaseToken(OPTIMISM_SEPOLIA_CHAIN_SELECTOR, OPTIMISM_SEPOLIA_USDT, USDT_PRICE_FEED);
     }
 }

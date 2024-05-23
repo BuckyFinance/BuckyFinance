@@ -14,6 +14,11 @@ contract Deployer is Script, Parameters {
         address router = config.run();
         vm.startBroadcast();
         minter = new Minter(router, AVALANCHE_FUJI_CHAIN_SELECTOR, AVALANCHE_FUJI_MAIN_ROUTER);
+        
+        minter.setAllowedDestinationChain(AVALANCHE_FUJI_CHAIN_SELECTOR, true);
+        minter.setAllowedSourceChain(AVALANCHE_FUJI_CHAIN_SELECTOR, true);
+        minter.setAllowedSender(AVALANCHE_FUJI_MAIN_ROUTER, true);
+
         vm.stopBroadcast();
     }
 }

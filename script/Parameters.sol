@@ -49,6 +49,8 @@ contract Parameters {
     // Need to fix this after deploying the MainRouter contract
     address public constant AVALANCHE_FUJI_MAIN_ROUTER = address(0);
 
+    //---------AGGREGATOR PRICE_FEED_ON_AVALANCHE_FUJI------------
+
 
     //---------TOKEN_ON_ETHEREUM_SEPOLIA------------
     address public constant ETHEREUM_SEPOLIA_WBTC = 0x4aa3B1639d45Cb98a67790b8509E47bD7aa16D2A;
@@ -104,4 +106,20 @@ contract Parameters {
     address public constant OPTIMISM_SEPOLIA_UNI = 0x32B8F75d2AC926a0a906F24df3e8Fe2bA17Bd80a;
     address public constant OPTIMISM_SEPOLIA_USDC = 0xDFf5Ba9FCff83cE455e45De7572B6259b0E7D7dE;
     address public constant OPTIMISM_SEPOLIA_USDT = 0x75b86D7B224Fd88f785BB5FaC5e261D9EFde3047;
+
+    // ---------DEPOSITOR DEPLOYED CONTRACTS---------//
+    address public constant AVALANCHE_FUJI_DEPOSITOR = address(0);
+    address public constant ETHEREUM_SEPOLIA_DEPOSITOR = address(0);
+    address public constant ARBITRUM_SEPOLIA_DEPOSITOR = address(0);
+    address public constant POLYGON_AMOY_DEPOSITOR = address(0);
+    address public constant BASE_SEPOLIA_DEPOSITOR = address(0);
+    address public constant OPTIMISM_SEPOLIA_DEPOSITOR = address(0);
+
+    // ---------MINTER DEPLOYED CONTRACTS---------//
+    address public constant AVALANCHE_FUJI_MINTER = address(0);
+    address public constant ETHEREUM_SEPOLIA_MINTER = address(0);
+    address public constant ARBITRUM_SEPOLIA_MINTER = address(0);
+    address public constant POLYGON_AMOY_MINTER = address(0);
+    address public constant BASE_SEPOLIA_MINTER = address(0);
+    address public constant OPTIMISM_SEPOLIA_MINTER = address(0);
 }
