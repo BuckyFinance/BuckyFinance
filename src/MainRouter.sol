@@ -120,7 +120,7 @@ contract MainRouter is CCIPBase, FunctionsBase {
         feePay[msg.sender] += msg.value;
         minted[msg.sender][_destinationChainSelector] += _amount;
 
-        if (_checkExceedMaxLTV(msg.sender)){
+        if (!_checkExceedMaxLTV(msg.sender)){
             revert ExceedsMaxLTV();
         }
 
@@ -149,13 +149,13 @@ contract MainRouter is CCIPBase, FunctionsBase {
         priceFeeds[_chainSelector][_token] = address(0);
     }
 
-    function _getUserFractionToLTV(address _user) private view returns (uint256 fraction) {
+    function _getUserFractionToLTV(address _user) public view returns (uint256 fraction) {
         uint256 _userLTV = _calculateLTV(_user);
         (uint256 _totalCollateral, uint256 _totalMinted) = getUserOverallInformation(_user);
         fraction = _calculateUserFractionToLTV(_totalCollateral, _totalMinted, _userLTV);
     }
 
-    function _getUserHealthFactor(address _user) private view returns (uint256 healthFactor) {
+    function _getUserHealthFactor(address _user) public view returns (uint256 healthFactor) {
         (uint256 _totalCollateral, uint256 _totalMinted) = getUserOverallInformation(_user);
         healthFactor = _calculateHealthFactor(_totalCollateral, _totalMinted);
     }
@@ -171,12 +171,16 @@ contract MainRouter is CCIPBase, FunctionsBase {
         if (_totalMinted == 0){
             return type(uint256).max;
         }
-        return _calculateFraction(_totalCollateral, _totalMinted, LIQUIDATION_PRECISION);
+        return _calculateFraction(_totalCollateral, _totalMinted, LIQUIDATION_THRESHOLD);
     }
 
     function _calculateFraction(uint256 _totalCollateral, uint256 _totalMinted, uint256 _ratio) private pure returns (uint256 answer) {
         answer = (_totalCollateral * _ratio) / LIQUIDATION_PRECISION;
         answer = (answer * PRECISION) / _totalMinted;
+    }
+    
+    function calculateHealthFactor(uint256 _totalCollateral, uint256 _totalMinted) public pure returns (uint256){
+        return _calculateHealthFactor(_totalCollateral, _totalMinted);
     }
 
     function _checkHealthFactor(address _user) public view returns(bool) {
