@@ -19,7 +19,7 @@ async function approveToken(wallet, tokenAddress, amountIn) {
 }
 
 async function deposit(tokenSymbol, amountIn) {
-    const wallet = getWallet();
+    const wallet = getWallet(currentChainID);
 
     const DEPOSITOR_ADDRESS = NetworkInfomation[currentChainID].DEPOSITOR_ADDRESS;
     const depositorContract = new Contract(DEPOSITOR_ADDRESS, DepositorABI, wallet);
@@ -36,7 +36,7 @@ async function deposit(tokenSymbol, amountIn) {
         gasLimit: gasLimit,
         value: value,
     });
-    tx.wait(1);
+    await tx.wait(1);
     console.log(tx.hash);
 }
 

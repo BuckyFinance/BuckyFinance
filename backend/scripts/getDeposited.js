@@ -10,7 +10,7 @@ const {
 } = require("./helper")
 
 async function getDepositedEachChainEachToken(chainId, tokenSymbol) {
-    const wallet = getWallet();
+    const wallet = getWallet(chainId);
 
     const DEPOSITOR_ADDRESS = NetworkInfomation[chainId].DEPOSITOR_ADDRESS;
     const depositorContract = new Contract(DEPOSITOR_ADDRESS, DepositorABI, wallet);
@@ -24,15 +24,17 @@ async function getDepositedEachChainEachToken(chainId, tokenSymbol) {
 }
 
 async function getTotalDepositedEachChainValue(chainId) {
-    const wallet = getWallet();
+    const avalancheFujiChainId = 43113;
+    const wallet = getWallet(avalancheFujiChainId);
 
     const MAIN_ROUTER_ADDRESS = NetworkInfomation[chainId].MAIN_ROUTER_ADDRESS;
     const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, wallet);
     const CHAIN_SELECTOR = NetworkInfomation[chainId].CHAIN_SELECTOR;
     const walletAddress = "0xB1A296a720D9AAF5c5e9F805d8095e6d94882eE1";
-    console.log(MAIN_ROUTER_ADDRESS);
-    const { totalCollateral, totalMinted } = await mainRouterContract.getUserOnChainInformation(walletAddress, CHAIN_SELECTOR);
-    return totalCollateral;
+
+    const tx = await mainRouterContract.getUserOnChainInformation(walletAddress, CHAIN_SELECTOR);
+    await tx.wait();
+    console.log(tx.hash)
 }
 
 module.exports = {

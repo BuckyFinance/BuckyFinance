@@ -9,35 +9,38 @@ const FUJI_RPC_URL = process.env.FUJI_RPC_URL;
 const BASE_RPC_URL = process.env.BASE_RPC_URL;
 
 let currentChainID = 84532;
-let currentRpcURl = BASE_RPC_URL
+let currentRpcURl = BASE_RPC_URL;
 
-function getProvider() {
-    return new ethers.providers.JsonRpcProvider(currentRpcURl);
+function getProvider(rpcUrl) {
+    return new ethers.providers.JsonRpcProvider(rpcUrl);
 }
 
-function getWallet() {
-    const provider = getProvider();
+function getWallet(chainId) {
+    const rpcUrl = getRpcUrl(chainId);
+    const provider = getProvider(rpcUrl);
     const privateKey = process.env.PRIVATE_KEY;
     const wallet = new ethers.Wallet(privateKey, provider);
     return wallet;
 }
 
-async function switchChain(newChainId) {
-    currentChainID = newChainId;
-    if (currentChainID === 11155111) {
-        currentRpcURl = SEPOLIA_RPC_URL;
-    } else if (currentChainID === 421614) {
-        currentRpcURl = ARBITRUM_RPC_URL;
-    } else if (currentChainID === 80002) {
-        currentRpcURl = AMOY_RPC_URL;
-    } else if (currentChainID === 11155420) {
-        currentRpcURl = OPTIMISM_RPC_URL;
-    } else if (currentChainID === 43113) {
-        currentRpcURl = FUJI_RPC_URL;
-    } else if (currentChainID == 84532) {
-        currentRpcURl = BASE_RPC_URL;
+function getRpcUrl(chainId) {
+    let rpcUrl;
+    if (chainId === 11155111) {
+        rpcUrl = SEPOLIA_RPC_URL;
+    } else if (chainId === 421614) {
+        rpcUrl = ARBITRUM_RPC_URL;
+    } else if (chainId === 80002) {
+        rpcUrl = AMOY_RPC_URL;
+    } else if (chainId === 11155420) {
+        rpcUrl = OPTIMISM_RPC_URL;
+    } else if (chainId === 43113) {
+        rpcUrl = FUJI_RPC_URL;
+    } else if (chainId == 84532) {
+        rpcUrl = BASE_RPC_URL;
     }
+    return rpcUrl;
 }
+
 
 async function getCurrentChainId() {
     const provider = getProvider();
@@ -54,5 +57,4 @@ module.exports = {
     getProvider,
     getWallet,
     getCurrentChainId,
-    switchChain,
 }
