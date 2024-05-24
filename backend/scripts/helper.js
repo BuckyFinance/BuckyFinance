@@ -15,6 +15,13 @@ function getProvider() {
     return new ethers.providers.JsonRpcProvider(currentRpcURl);
 }
 
+function getWallet() {
+    const provider = getProvider();
+    const privateKey = process.env.PRIVATE_KEY;
+    const wallet = new ethers.Wallet(privateKey, provider);
+    return wallet;
+}
+
 async function switchChain(newChainId) {
     currentChainID = newChainId;
     if (currentChainID === 11155111) {
@@ -45,6 +52,7 @@ async function getCurrentChainId() {
 module.exports = {
     currentChainID,
     getProvider,
+    getWallet,
     getCurrentChainId,
     switchChain,
 }
