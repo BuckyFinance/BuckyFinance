@@ -25,6 +25,9 @@ contract MainRouterConfig is Script, Parameters {
         mainRouter.setAllowedSender(OPTIMISM_SEPOLIA_MINTER, true);
         mainRouter.setAllowedSender(ARBITRUM_SEPOLIA_MINTER, true);
         
+        mainRouter.setAvalancheDepositor(AVALANCHE_FUJI_DEPOSITOR);
+        mainRouter.setAvalancheMinter(AVALANCHE_FUJI_MINTER);
+        
         vm.stopBroadcast();
         
     }
