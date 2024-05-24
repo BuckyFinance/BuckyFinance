@@ -9,11 +9,11 @@ import { ChainConfig } from "../config/ChainConfig.s.sol";
 import { Parameters } from "../Parameters.sol";
 
 contract Mint is Script, Parameters {
-    function mint(uint64 _destinationChainSelector, address _receiver, uint256 _amount) external {
+    function mint(uint64 _destinationChainSelector, address _receiver, uint256 _amount, uint256 _amountEther) external {
         MainRouter mainRouter = MainRouter(payable(AVALANCHE_FUJI_MAIN_ROUTER));
 
         vm.startBroadcast();
-        mainRouter.mint(_destinationChainSelector, _receiver, _amount);
+        mainRouter.mint{value: _amountEther}(_destinationChainSelector, _receiver, _amount);
         vm.stopBroadcast();
     }
 }

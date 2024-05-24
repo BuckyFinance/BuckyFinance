@@ -76,6 +76,8 @@ contract Demo is Test {
         mainRouter.setAllowedDestinationChain(chainSelector, true);
         mainRouter.setAllowedSender(address(depositor), true);
         mainRouter.setAllowedSender(address(minter), true);
+        mainRouter.setAvalancheDepositor(address(depositor));
+        mainRouter.setAvalancheMinter(address(minter));
 
         wethMockAggregator = new MockV3Aggregator(8, 3000e8);
         wbtcMockAggregator = new MockV3Aggregator(8, 70000e8);

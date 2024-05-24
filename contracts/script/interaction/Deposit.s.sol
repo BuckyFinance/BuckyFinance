@@ -8,16 +8,13 @@ import { Depositor } from "../../src/Depositor.sol";
 import { ChainConfig } from "../config/ChainConfig.s.sol";
 
 contract Deposit is Script {
-    function deposit() external {
+    function deposit(address _token, uint256 _amount, uint256 _amountEther) external {
         ChainConfig config = new ChainConfig();
         ChainConfig.ChainComponent memory chain = config.run();
 
-        TokenConfig tokenConfig = new TokenConfig();
-        TokenConfig.Token memory token = tokenConfig.run();
-
         vm.startBroadcast();
-        ERC20Mock(token.wbtc.token).approve(address(chain.depositor), 0.01 ether);
-        Depositor(payable(chain.depositor)).deposit{value: 0.003 ether}(token.wbtc.token, 0.01 ether);
+        ERC20Mock(_token).approve(address(chain.depositor), _amount);
+        Depositor(payable(chain.depositor)).deposit{value: _amountEther}(_token, _amount);
         vm.stopBroadcast();
     }
 }
