@@ -31,8 +31,8 @@ contract Minter is CCIPBase {
 
     DSC private immutable dsc;
 
-    address private immutable mainRouter;
-    uint64 private immutable mainRouterChainSelector;
+    address private mainRouter;
+    uint64 private mainRouterChainSelector;
 
     constructor(address _router, uint64 _mainRouterChainSelector, address _mainRouter) CCIPBase(_router) {
         mainRouter = _mainRouter;
@@ -42,6 +42,14 @@ contract Minter is CCIPBase {
 
     receive() external payable {
         feePay[msg.sender] += msg.value;
+    }
+
+    function setMainRouter(address _newMainRouter) external onlyOwner {
+        mainRouter = _newMainRouter;
+    }
+
+    function setMainRouterChainSelector(uint64 _newMainRouterChainSelector) external onlyOwner {
+        mainRouterChainSelector = _newMainRouterChainSelector;
     }
 
     function burn(uint256 _amount) external {

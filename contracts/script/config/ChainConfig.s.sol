@@ -34,42 +34,42 @@ contract ChainConfig is Script, Parameters {
         }
     }
 
-    function getAvalancheFujiChain() public view returns (ChainComponent memory chain) {
+    function getAvalancheFujiChain() public pure returns (ChainComponent memory chain) {
         chain.depositor = AVALANCHE_FUJI_DEPOSITOR;
         chain.minter = AVALANCHE_FUJI_MINTER;
         chain.chainSelector = AVALANCHE_FUJI_CHAIN_SELECTOR;
         chain.router = AVALANCHE_FUJI_CCIP_ROUTER;
     }
 
-    function getEthereumSepoliaChain() public view returns (ChainComponent memory chain) {
+    function getEthereumSepoliaChain() public pure returns (ChainComponent memory chain) {
         chain.depositor = ETHEREUM_SEPOLIA_DEPOSITOR;
         chain.minter = ETHEREUM_SEPOLIA_MINTER;
         chain.chainSelector = ETHEREUM_SEPOLIA_CHAIN_SELECTOR;
         chain.router = ETHEREUM_SEPOLIA_CCIP_ROUTER;
     }
 
-    function getArbitrumSepoliaChain() public view returns (ChainComponent memory chain) {
+    function getArbitrumSepoliaChain() public pure returns (ChainComponent memory chain) {
         chain.depositor = ARBITRUM_SEPOLIA_DEPOSITOR;
         chain.minter = ARBITRUM_SEPOLIA_MINTER;
         chain.chainSelector = ARBITRUM_SEPOLIA_CHAIN_SELECTOR;
         chain.router = ARBITRUM_SEPOLIA_CCIP_ROUTER;
     }
 
-    function getPolygonAmoyChain() public view returns (ChainComponent memory chain) {
+    function getPolygonAmoyChain() public pure returns (ChainComponent memory chain) {
         chain.depositor = POLYGON_AMOY_DEPOSITOR;
         chain.minter = POLYGON_AMOY_MINTER;
         chain.chainSelector = POLYGON_AMOY_CHAIN_SELECTOR;
         chain.router = POLYGON_AMOY_CCIP_ROUTER;
     }
 
-    function getBaseSepoliaChain() public view returns (ChainComponent memory chain) {
+    function getBaseSepoliaChain() public pure returns (ChainComponent memory chain) {
         chain.depositor = BASE_SEPOLIA_DEPOSITOR;
         chain.minter = BASE_SEPOLIA_MINTER;
         chain.chainSelector = BASE_SEPOLIA_CHAIN_SELECTOR;
         chain.router = BASE_SEPOLIA_CCIP_ROUTER;
     }
 
-    function getOptimismSepoliaChain() public view returns (ChainComponent memory chain) {
+    function getOptimismSepoliaChain() public pure returns (ChainComponent memory chain) {
         chain.depositor = OPTIMISM_SEPOLIA_DEPOSITOR;
         chain.minter = OPTIMISM_SEPOLIA_MINTER;
         chain.chainSelector = OPTIMISM_SEPOLIA_CHAIN_SELECTOR;

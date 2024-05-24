@@ -28,8 +28,8 @@ contract Depositor is CCIPBase {
     mapping (address => bool) private isAllowedToken;
 
 
-    address private immutable mainRouter;
-    uint64 private immutable mainRouterChainSelector;
+    address private mainRouter;
+    uint64 private mainRouterChainSelector;
 
     constructor(address _router, uint64 _mainRouterChainSelector, address _mainRouter) CCIPBase(_router) {
         mainRouter = _mainRouter;
@@ -45,6 +45,14 @@ contract Depositor is CCIPBase {
             revert NotAllowedToken(_token);
         }
         _;
+    }
+
+    function setMainRouter(address _newMainRouter) external onlyOwner {
+        mainRouter = _newMainRouter;
+    }
+
+    function setMainRouterChainSelector(uint64 _newMainRouterChainSelector) external onlyOwner {
+        mainRouterChainSelector = _newMainRouterChainSelector;
     }
 
     function setAllowedToken(address _token, bool _isAllowed) external onlyOwner {
