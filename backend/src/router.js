@@ -30,6 +30,16 @@ router.get('/getTotalDeposited', async (req, res) => {
     res.status(200).json(deposited);
 })
 
+router.get('/getMaxOutput', async (req, res) => {
+    const { getMaxOutput } = require("../scripts/getMaxOutput");
+    const maxOutput = await getMaxOutput();
+    res.status(200).json(maxOutput);
+})
 
+router.get('/getMinted', async (req, res) => {
+    const { getMinted } = require("../scripts/getMinted");
+    const minted = await getMinted();
+    res.status(200).json(minted);
+})
 
 module.exports = router
