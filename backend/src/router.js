@@ -47,9 +47,16 @@ router.get('/getMaxOutput', async (req, res) => {
     res.status(200).json(maxOutput);
 })
 
-router.get('/getMinted', async (req, res) => {
-    const { getMinted } = require("../scripts/getMinted");
-    const minted = await getMinted();
+router.get('/getTotalMintedOnChain', async (req, res) => {
+    const { chainId } = req.query;
+    const { getTotalMintedValueOnChain } = require("../scripts/getMinted");
+    const minted = await getTotalMintedValueOnChain(chainId);
+    res.status(200).json(minted);
+})
+
+router.get('/getTotalMintedValueOverallChain', async (req, res) => {
+    const { getTotalMintedValueOverallChain } = require("../scripts/getMinted");
+    const minted = await getTotalMintedValueOverallChain();
     res.status(200).json(minted);
 })
 
@@ -65,5 +72,7 @@ router.get('/getTokenPrice', async (req, res) => {
     const priceFeeds = getPriceFeeds(tokenSymbol);
     res.status(200).json(priceFeeds);
 })
+
+
 
 module.exports = router

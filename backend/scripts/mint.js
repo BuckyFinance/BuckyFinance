@@ -24,14 +24,17 @@ async function mint(chainId, amountOut) {
     const mainRouterAddress = NetworkInfomation[chainId].MAIN_ROUTER_ADDRESS;
 
     const mainRouterContract = new Contract(mainRouterAddress, MainRouterABI, wallet);
-
+    const amountOutInWei = ethers.utils.formatUnits(amountOut, 18);
     const gasLimit = ethers.utils.hexlify(1000000);
     const value = ethers.utils.parseEther("0.02");
 
     const maxOutput = await getMaxOutput();
     console.log(`Max Output can be minted: ${maxOutput}`);
+    if (maxOutput < amountOut) {
+        return null; // forgot subtract minted
+    }
 
-    const tx = await mainRouterContract.mint(CHAIN_SELECTOR, receiverAddress, amountOut, {
+    const tx = await mainRouterContract.mint(CHAIN_SELECTOR, receiverAddress, amountOutInWei, {
         gasLimit: gasLimit,
         value: value,
     });
