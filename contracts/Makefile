@@ -36,6 +36,18 @@ setAvalanche:
 	@forge script script/interaction/MainRouterSetAvalanche.s.sol:SetAvalanche --rpc-url $(AVALANCHE_FUJI_RPC_URL) --account $(ACCOUNT) --sender $(OWNER_ADDRESS) --broadcast
 
 setAllowedSender:
-	@forge script script/interaction/MainRouterSetAllowedSender.s.sol:SetAllowedSender --sig "setAllowedSender(address)" $(DEPOSITOR) --rpc-url $(AVALANCHE_FUJI_RPC_URL) --account $(ACCOUNT) --sender $(OWNER_ADDRESS) --broadcast
+	@forge script script/interaction/SetAllowedSender.s.sol:SetAllowedSender --sig "setAllowedSender(address,address)" $(CONTRACT) $(SENDER) --rpc-url $(RPC_URL) --account $(ACCOUNT) --sender $(OWNER_ADDRESS) --broadcast
+
+getTotalCollateral:
+	cast call $(MAIN_ROUTER) "getUserOverallCollateralValue(address)" $(USER) --rpc-url $(AVALANCHE_FUJI_RPC_URL)
+
+getUSDDepositedTokenOnChain:
+	cast call $(MAIN_ROUTER) "getUserCollateralValue(address,uint64,address)" $(USER) $(CHAIN_SELECTOR) $(TOKEN) --rpc-url $(AVALANCHE_FUJI_RPC_URL)
+
+getDepositedTokenOnChain:
+	cast call $(MAIN_ROUTER) "_getUserDepositedAmount(address,uint64,address)" $(USER) $(CHAIN_SELECTOR) $(TOKEN) --rpc-url $(AVALANCHE_FUJI_RPC_URL)
+
+getUSDDepositedOnChain:
+	cast call $(MAIN_ROUTER) "getUserCollateralOnChainValue(address,uint64)" $(USER) $(CHAIN_SELECTOR) --rpc-url $(AVALANCHE_FUJI_RPC_URL)
 
 .PHONY: deploy_avalanche_fuji deploy_ethereum_sepolia deploy_arbitrum_sepolia deploy_polygon_amoy deploy_optimism_sepolia deploy_base_sepolia deploy_all
