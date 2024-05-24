@@ -1,0 +1,260 @@
+{
+    "11155111": {
+        "CHAIN_SELECTOR": "16015286601757825753",
+        "DEPOSITOR_ADDRESS": "0x597fA805bfc550d1d5BBA46425FC92555352aA51",
+        "MAIN_ROUTER_ADDRESS": "0x1658727bd2E390837D39c2fffE41e16Dc1D6c27b",
+        "MINTER_ADDRESS": "0x170dd06d42000D32f325A102214b1304DAA757EB",
+        "TOKEN": {
+            "WBTC": {
+                "name": "Wrapped Bitcoin",
+                "decimals": 18,
+                "address": "0x4aa3B1639d45Cb98a67790b8509E47bD7aa16D2A"
+            },
+            "WETH": {
+                "name": "Wrapped Ether",
+                "decimals": 18,
+                "address": "0x9124d3b5DfD072bB2d6cf3e3A59430d2a5D8A55D"
+            },
+            "LINK": {
+                "name": "Chainlink",
+                "decimals": 18,
+                "address": "0x31A4Ae750C0e8d477Dd39AF3662F93e69021AA50"
+            },
+            "AVAX": {
+                "name": "Avalanche",
+                "decimals": 18,
+                "address": "0xdd36FB413B4470ab5CE67F975c6A2B192e6F84ba"
+            },
+            "UNI": {
+                "name": "Uniswap",
+                "decimals": 18,
+                "address": "0x492E85cD024A271C4F19d8B7E9050Ef2bbFeDcCA"
+            },
+            "USDC": {
+                "name": "USD Coin",
+                "decimals": 6,
+                "address": "0x65Ae0010421814B1303778Bc82a599f63028d899"
+            },
+            "USDT": {
+                "name": "Tether USD",
+                "decimals": 6,
+                "address": "0xB3718E52781F9Fc1C0b72A2966C2616E6d962a1C"
+            }
+        }
+    },
+    "11155420": {
+        "CHAIN_SELECTOR": "5224473277236331295",
+        "DEPOSITOR_ADDRESS": "0x2165936Af562a3901e6d60C18B2e4a2B09898be6",
+        "MAIN_ROUTER_ADDRESS": "0x1658727bd2E390837D39c2fffE41e16Dc1D6c27b",
+        "MINTER_ADDRESS": "0x09484F76B7376D53FC5e4F52FaBEe3Fe3aac525c",
+        "TOKEN": {
+            "WBTC": {
+                "name": "Wrapped Bitcoin",
+                "decimals": 18,
+                "address": "0xF6905F1E4ad86f8C3a1Ebfca3E04a9e4d2adDD0D"
+            },
+            "WETH": {
+                "name": "Wrapped Ether",
+                "decimals": 18,
+                "address": "0x9a24BD7833859d2364EaD5A4aF4b16799693DF12"
+            },
+            "LINK": {
+                "name": "Chainlink",
+                "decimals": 18,
+                "address": "0x244ec7F5753b2Fc10d0C2bAaB1AB55850E73a3AB"
+            },
+            "AVAX": {
+                "name": "Avalanche",
+                "decimals": 18,
+                "address": "0xe257e2a67407144C918acaD5e11c2582F77c0B1a"
+            },
+            "UNI": {
+                "name": "Uniswap",
+                "decimals": 18,
+                "address": "0x32B8F75d2AC926a0a906F24df3e8Fe2bA17Bd80a"
+            },
+            "USDC": {
+                "name": "USD Coin",
+                "decimals": 6,
+                "address": "0xDFf5Ba9FCff83cE455e45De7572B6259b0E7D7dE"
+            },
+            "USDT": {
+                "name": "Tether USD",
+                "decimals": 6,
+                "address": "0x75b86D7B224Fd88f785BB5FaC5e261D9EFde3047"
+            }
+        }
+    },
+    "421614": {
+        "CHAIN_SELECTOR": "3478487238524512106",
+        "DEPOSITOR_ADDRESS": "0x09484F76B7376D53FC5e4F52FaBEe3Fe3aac525c",
+        "MAIN_ROUTER_ADDRESS": "0x1658727bd2E390837D39c2fffE41e16Dc1D6c27b",
+        "MINTER_ADDRESS": "",
+        "TOKEN": {
+            "WBTC": {
+                "name": "Wrapped Bitcoin",
+                "decimals": 18,
+                "address": "0xF6905F1E4ad86f8C3a1Ebfca3E04a9e4d2adDD0D"
+            },
+            "WETH": {
+                "name": "Wrapped Ether",
+                "decimals": 18,
+                "address": "0x9a24BD7833859d2364EaD5A4aF4b16799693DF12"
+            },
+            "LINK": {
+                "name": "Chainlink",
+                "decimals": 18,
+                "address": "0x244ec7F5753b2Fc10d0C2bAaB1AB55850E73a3AB"
+            },
+            "AVAX": {
+                "name": "Avalanche",
+                "decimals": 18,
+                "address": "0xe257e2a67407144C918acaD5e11c2582F77c0B1a"
+            },
+            "UNI": {
+                "name": "Uniswap",
+                "decimals": 18,
+                "address": "0x32B8F75d2AC926a0a906F24df3e8Fe2bA17Bd80a"
+            },
+            "USDC": {
+                "name": "USD Coin",
+                "decimals": 6,
+                "address": "0xDFf5Ba9FCff83cE455e45De7572B6259b0E7D7dE"
+            },
+            "USDT": {
+                "name": "Tether USD",
+                "decimals": 6,
+                "address": "0x75b86D7B224Fd88f785BB5FaC5e261D9EFde3047"
+            }
+        }
+    },
+    "43113": {
+        "CHAIN_SELECTOR": "14767482510784806043",
+        "DEPOSITOR_ADDRESS": "",
+        "MAIN_ROUTER_ADDRESS": "0x1658727bd2E390837D39c2fffE41e16Dc1D6c27b",
+        "MINTER_ADDRESS": "",
+        "TOKEN": {
+            "WBTC": {
+                "name": "Wrapped Bitcoin",
+                "decimals": 18,
+                "address": "0x0804BfEC3ef24bc6CA0eb399D108CC0313d86d9c"
+            },
+            "WETH": {
+                "name": "Wrapped Ether",
+                "decimals": 18,
+                "address": "0x51353BFb9fB8baE6d70b896401937C64E96BAcB9"
+            },
+            "LINK": {
+                "name": "Chainlink",
+                "decimals": 18,
+                "address": "0x3001d62eBc86ab3A4eF91aFed766BB70182e251c"
+            },
+            "AVAX": {
+                "name": "Avalanche",
+                "decimals": 18,
+                "address": "0xD28f8454873CEb4de41d537257044510c3A1d616"
+            },
+            "UNI": {
+                "name": "Uniswap",
+                "decimals": 18,
+                "address": "0x6cC55345982d82e3E6dC704a64cdbD58a6421b7A"
+            },
+            "USDC": {
+                "name": "USD Coin",
+                "decimals": 6,
+                "address": "0x620476fe1Bc36a37530b416B7d658024D5966b08"
+            },
+            "USDT": {
+                "name": "Tether USD",
+                "decimals": 6,
+                "address": "0xAcA1eA8547E247a3125Da273b16C17Badc4f0812"
+            }
+        }
+    },
+    "80002": {
+        "CHAIN_SELECTOR": "16281711391670634445",
+        "DEPOSITOR_ADDRESS": "",
+        "MAIN_ROUTER_ADDRESS": "0x1658727bd2E390837D39c2fffE41e16Dc1D6c27b",
+        "MINTER_ADDRESS": "",
+        "TOKEN": {
+            "WBTC": {
+                "name": "Wrapped Bitcoin",
+                "decimals": 18,
+                "address": "0x0804BfEC3ef24bc6CA0eb399D108CC0313d86d9c"
+            },
+            "WETH": {
+                "name": "Wrapped Ether",
+                "decimals": 18,
+                "address": "0x51353BFb9fB8baE6d70b896401937C64E96BAcB9"
+            },
+            "LINK": {
+                "name": "Chainlink",
+                "decimals": 18,
+                "address": "0x3001d62eBc86ab3A4eF91aFed766BB70182e251c"
+            },
+            "AVAX": {
+                "name": "Avalanche",
+                "decimals": 18,
+                "address": "0xD28f8454873CEb4de41d537257044510c3A1d616"
+            },
+            "UNI": {
+                "name": "Uniswap",
+                "decimals": 18,
+                "address": "0x6cC55345982d82e3E6dC704a64cdbD58a6421b7A"
+            },
+            "USDC": {
+                "name": "USD Coin",
+                "decimals": 6,
+                "address": "0x620476fe1Bc36a37530b416B7d658024D5966b08"
+            },
+            "USDT": {
+                "name": "Tether USD",
+                "decimals": 6,
+                "address": "0xAcA1eA8547E247a3125Da273b16C17Badc4f0812"
+            }
+        }
+    },
+    "84532": {
+        "CHAIN_SELECTOR": "10344971235874465080",
+        "DEPOSITOR_ADDRESS": "0x2165936Af562a3901e6d60C18B2e4a2B09898be6",
+        "MAIN_ROUTER_ADDRESS": "0x1658727bd2E390837D39c2fffE41e16Dc1D6c27b",
+        "MINTER_ADDRESS": "0x09484F76B7376D53FC5e4F52FaBEe3Fe3aac525c",
+        "TOKEN": {
+            "WBTC": {
+                "name": "Wrapped Bitcoin",
+                "decimals": 18,
+                "address": "0xF6905F1E4ad86f8C3a1Ebfca3E04a9e4d2adDD0D"
+            },
+            "WETH": {
+                "name": "Wrapped Ether",
+                "decimals": 18,
+                "address": "0x9a24BD7833859d2364EaD5A4aF4b16799693DF12"
+            },
+            "LINK": {
+                "name": "Chainlink",
+                "decimals": 18,
+                "address": "0x244ec7F5753b2Fc10d0C2bAaB1AB55850E73a3AB"
+            },
+            "AVAX": {
+                "name": "Avalanche",
+                "decimals": 18,
+                "address": "0xe257e2a67407144C918acaD5e11c2582F77c0B1a"
+            },
+            "UNI": {
+                "name": "Uniswap",
+                "decimals": 18,
+                "address": "0x32B8F75d2AC926a0a906F24df3e8Fe2bA17Bd80a"
+            },
+            "USDC": {
+                "name": "USD Coin",
+                "decimals": 6,
+                "address": "0xDFf5Ba9FCff83cE455e45De7572B6259b0E7D7dE"
+            },
+            "USDT": {
+                "name": "Tether USD",
+                "decimals": 6,
+                "address": "0x75b86D7B224Fd88f785BB5FaC5e261D9EFde3047"
+            }
+        }
+    }
+}
