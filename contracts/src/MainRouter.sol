@@ -25,6 +25,12 @@ contract MainRouter is CCIPBase, FunctionsBase {
     error TokenAlreadyAllowed(uint64 _chainSelector, address _token);
     error ExceedsMaxLTV();
 
+    event Deposit(address indexed user, uint64 indexed chainSelector, address indexed token, uint256 amount);
+    event Redeem(address indexed user, uint64 indexed chainSelector, address indexed token, uint256 amount);
+    event Mint(address indexed user, uint64 indexed chainSelector, uint256 amount);
+    event Burn(address indexed user, uint64 indexed chainSelector, uint256 amount);
+
+
     enum TransactionReceive {
         DEPOSIT,
         BURN
@@ -68,10 +74,11 @@ contract MainRouter is CCIPBase, FunctionsBase {
     uint256 private constant CREDIT_PRECISION = 1e3;
 
     constructor (
+        uint64 _chainSelector,
         address _router, 
         address _functionsRouter, 
         bytes32 _donId
-    )   CCIPBase(_router) 
+    )   CCIPBase(_chainSelector, _router) 
         FunctionsBase(_functionsRouter, _donId) {}
     
     receive() external payable {
@@ -104,7 +111,7 @@ contract MainRouter is CCIPBase, FunctionsBase {
         }
 
         bytes memory _data = abi.encode(TransactionSend.REDEEM, abi.encode(msg.sender, _token, _amount));
-        _ccipSend(_destinationChainSelector, _receiver, _data);
+        _ccipSend(_destinationChainSelector, _receiver, TransactionSend.REDEEM, _token, _amount, _data);
     }
 
     function mint(
@@ -125,7 +132,7 @@ contract MainRouter is CCIPBase, FunctionsBase {
         }
 
         bytes memory _data = abi.encode(TransactionSend.MINT, abi.encode(msg.sender, _amount));
-        _ccipSend(_destinationChainSelector, _receiver, _data);
+        _ccipSend(_destinationChainSelector, _receiver, TransactionSend.MINT, address(0), _amount, _data);
     }
 
     function addAllowedToken(uint64 _chainSelector, address _token, address _priceFeed) external onlyOwner{
@@ -351,6 +358,9 @@ contract MainRouter is CCIPBase, FunctionsBase {
     function _ccipSend(
         uint64 _destinationChainSelector,
         address _receiver,
+        TransactionSend _transactionType,
+        address _token,
+        uint256 _amount,
         bytes memory _data
     )   internal 
         onlyAllowListedDestinationChain(_destinationChainSelector)
@@ -371,6 +381,12 @@ contract MainRouter is CCIPBase, FunctionsBase {
         }
 
         _messageId = _router.ccipSend{value: _fees}(_destinationChainSelector, _message);
+
+        if (_transactionType == TransactionSend.REDEEM) {
+            emit Redeem(msg.sender, _destinationChainSelector, _token, _amount);
+        } else if (_transactionType == TransactionSend.MINT) {
+            emit Mint(msg.sender, _destinationChainSelector, _amount);
+        }
     }
 
     function _ccipReceive(Client.Any2EVMMessage memory message) 
@@ -386,9 +402,11 @@ contract MainRouter is CCIPBase, FunctionsBase {
         if (_transactionType == TransactionReceive.DEPOSIT) {
             (address _depositor, address _token, uint256 _amount) = abi.decode(_data, (address, address, uint256));
             deposited[_depositor][sourceChainSelector][_token] += _amount;
+            emit Deposit(_depositor, sourceChainSelector, _token, _amount);
         } else if (_transactionType == TransactionReceive.BURN) {
             (address _burner, uint256 _amount) = abi.decode(_data, (address, uint256));
             minted[_burner][sourceChainSelector] -= _amount;
+            emit Burn(_burner, sourceChainSelector, _amount);
         }
     }
 
