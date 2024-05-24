@@ -5,7 +5,7 @@ const accessToken = process.env.CRED_API_TOKEN
 const accountAddressExample = '0xB1A296a720D9AAF5c5e9F805d8095e6d94882eE1'
 
 async function getCreditScore(accountAddress) {
-    const url = `https://beta.credprotocol.com/api/score/address/${accountAddress}/`;
+    const url = `https://beta.credprotocol.com/api/score/address/0xB1A296a720D9AAF5c5e9F805d8095e6d94882eE1/`;
     axios.get(url, {
         headers: {
             'Authorization': `Token ${accessToken}`
@@ -19,6 +19,8 @@ async function getCreditScore(accountAddress) {
         })
 }
 
-module.exports = getCreditScore
+getCreditScore();
+
+module.exports = { getCreditScore }
 
 

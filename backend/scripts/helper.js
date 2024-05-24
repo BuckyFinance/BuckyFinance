@@ -8,8 +8,7 @@ const OPTIMISM_RPC_URL = process.env.OPTIMISM_RPC_URL;
 const FUJI_RPC_URL = process.env.FUJI_RPC_URL;
 const BASE_RPC_URL = process.env.BASE_RPC_URL;
 
-let currentChainID = 84532;
-let currentRpcURl = BASE_RPC_URL;
+let currentChainID = 421614;
 
 function getProvider(rpcUrl) {
     return new ethers.providers.JsonRpcProvider(rpcUrl);
@@ -25,15 +24,15 @@ function getWallet(chainId) {
 
 function getRpcUrl(chainId) {
     let rpcUrl;
-    if (chainId === 11155111) {
+    if (chainId == 11155111) {
         rpcUrl = SEPOLIA_RPC_URL;
-    } else if (chainId === 421614) {
+    } else if (chainId == 421614) {
         rpcUrl = ARBITRUM_RPC_URL;
-    } else if (chainId === 80002) {
+    } else if (chainId == 80002) {
         rpcUrl = AMOY_RPC_URL;
-    } else if (chainId === 11155420) {
+    } else if (chainId == 11155420) {
         rpcUrl = OPTIMISM_RPC_URL;
-    } else if (chainId === 43113) {
+    } else if (chainId == 43113) {
         rpcUrl = FUJI_RPC_URL;
     } else if (chainId == 84532) {
         rpcUrl = BASE_RPC_URL;
@@ -41,6 +40,9 @@ function getRpcUrl(chainId) {
     return rpcUrl;
 }
 
+function switchCurrentChainId(chainId) {
+    currentChainID = chainId;
+}
 
 async function getCurrentChainId() {
     const provider = getProvider();
@@ -57,4 +59,5 @@ module.exports = {
     getProvider,
     getWallet,
     getCurrentChainId,
+    switchCurrentChainId,
 }

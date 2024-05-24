@@ -9,7 +9,7 @@ const {
     getCurrentChainId,
 } = require("./helper")
 
-async function getDepositedEachChainEachToken(chainId, tokenSymbol) {
+async function getDepositedAmount(chainId, tokenSymbol) {
     const wallet = getWallet(chainId);
 
     const DEPOSITOR_ADDRESS = NetworkInfomation[chainId].DEPOSITOR_ADDRESS;
@@ -19,11 +19,11 @@ async function getDepositedEachChainEachToken(chainId, tokenSymbol) {
     const walletAddress = "0xB1A296a720D9AAF5c5e9F805d8095e6d94882eE1";
     const deposited = await depositorContract.getDeposited(walletAddress, tokenAddress);
 
-    console.log(deposited.toString());
+    console.log(`Deposited in ${chainId} with ${tokenSymbol}: ${deposited.toString()}`);
     return deposited.toString();
 }
 
-async function getDepositedEachChainEachTokenValue(chainId, tokenSymbol) {
+async function getDepositedValue(chainId, tokenSymbol) {
     const avalancheFujiChainId = 43113;
     const wallet = getWallet(avalancheFujiChainId);
 
@@ -33,13 +33,15 @@ async function getDepositedEachChainEachTokenValue(chainId, tokenSymbol) {
     const walletAddress = "0xB1A296a720D9AAF5c5e9F805d8095e6d94882eE1";
     const tokenAddress = NetworkInfomation[chainId]["TOKEN"][tokenSymbol].address;
 
-    const deposited = await mainRouterContract.getDeposited(walletAddress, CHAIN_SELECTOR, tokenAddress);
-    console.log(deposited.toString());
-    return deposited.toString();
+    const depositedAmount = await mainRouterContract._getUserDepositedAmount(walletAddress, CHAIN_SELECTOR, tokenAddress);
+    const depositedValue = await mainRouterContract.getUserCollateralValue(walletAddress, CHAIN_SELECTOR, tokenAddress);
+    console.log(`Deposited in ${chainId} with ${tokenSymbol} Amount: ${depositedAmount.toString()}`);
+    console.log(`Deposited in ${chainId} with ${tokenSymbol} Value: ${depositedValue.toString()}`);
+    return depositedValue.toString();
 }
 
 
-async function getTotalDepositedEachChainValue(chainId) {
+async function getTotalDepositedValueOnChain(chainId) {
     const avalancheFujiChainId = 43113;
     const wallet = getWallet(avalancheFujiChainId);
 
@@ -49,12 +51,26 @@ async function getTotalDepositedEachChainValue(chainId) {
     const walletAddress = "0xB1A296a720D9AAF5c5e9F805d8095e6d94882eE1";
 
     const { totalCollateral, totalMinted } = await mainRouterContract.getUserOnChainInformation(walletAddress, CHAIN_SELECTOR);
-    console.log(totalCollateral.toString());
+    console.log(`Total Collateral in chain ${chainId}: ${totalCollateral}`);
+    return totalCollateral.toString();
+}
+
+async function getTotalDepositedValueOverallChain() {
+    const avalancheFujiChainId = 43113;
+    const wallet = getWallet(avalancheFujiChainId);
+
+    const MAIN_ROUTER_ADDRESS = NetworkInfomation[avalancheFujiChainId].MAIN_ROUTER_ADDRESS;
+    const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, wallet);
+    const walletAddress = "0xB1A296a720D9AAF5c5e9F805d8095e6d94882eE1";
+
+    const { totalCollateral, totalMinted } = await mainRouterContract.getUserOverallInformation(walletAddress);
+    console.log(`Total Collateral overall chain: ${totalCollateral.toString()}`);
     return totalCollateral.toString();
 }
 
 module.exports = {
-    getDepositedEachChainEachToken,
-    getDepositedEachChainEachTokenValue,
-    getTotalDepositedEachChainValue,
+    getDepositedAmount,
+    getDepositedValue,
+    getTotalDepositedValueOnChain,
+    getTotalDepositedValueOverallChain,
 }

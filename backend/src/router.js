@@ -18,20 +18,26 @@ router.get('/mint', async (req, res) => {
 
 router.get('/getDepositedEachToken', async (req, res) => {
     const { chainId, tokenSymbol, isValue } = req.query;
-    const { getDepositedEachChainEachToken, getDepositedEachChainEachTokenValue } = require("../scripts/getDeposited");
+    const { getDepositedAmount, getDepositedValue } = require("../scripts/getDeposited");
     let deposited;
     if (isValue == 'true') {
-        deposited = await getDepositedEachChainEachTokenValue(chainId, tokenSymbol);
+        deposited = await getDepositedValue(chainId, tokenSymbol);
     } else {
-        deposited = await getDepositedEachChainEachToken(chainId, tokenSymbol);
+        deposited = await getDepositedAmount(chainId, tokenSymbol);
     }
     res.status(200).json(deposited);
 })
 
-router.get('/getTotalDeposited', async (req, res) => {
+router.get('/getTotalDepositedOnChain', async (req, res) => {
     const { chainId } = req.query;
-    const { getTotalDepositedEachChainValue } = require("../scripts/getDeposited");
-    const deposited = await getTotalDepositedEachChainValue(chainId);
+    const { getTotalDepositedValueOnChain } = require("../scripts/getDeposited");
+    const deposited = await getTotalDepositedValueOnChain(chainId);
+    res.status(200).json(deposited);
+})
+
+router.get('/getTotalDepositedOverralChain', async (req, res) => {
+    const { getTotalDepositedValueOverallChain } = require("../scripts/getDeposited");
+    const deposited = await getTotalDepositedValueOverallChain();
     res.status(200).json(deposited);
 })
 
@@ -53,10 +59,10 @@ router.get('/getHealthFactor', async (req, res) => {
     res.status(200).json(healthFactor);
 })
 
-router.get('/getPriceFeeds', async (req, res) => {
-    const { chainId, tokenSymbol } = req.query;
-    const { getPriceFeeds } = require("../scripts/getPriceFeeds");
-    const priceFeeds = getPriceFeeds(chainId, tokenSymbol);
+router.get('/getTokenPrice', async (req, res) => {
+    const { tokenSymbol } = req.query;
+    const { getPriceFeeds } = require("../scripts/getTokenPrice");
+    const priceFeeds = getPriceFeeds(tokenSymbol);
     res.status(200).json(priceFeeds);
 })
 

@@ -23,6 +23,7 @@ async function deposit(tokenSymbol, amountIn) {
 
     const DEPOSITOR_ADDRESS = NetworkInfomation[currentChainID].DEPOSITOR_ADDRESS;
     const depositorContract = new Contract(DEPOSITOR_ADDRESS, DepositorABI, wallet);
+    console.log(depositorContract);
     const tokenInfo = NetworkInfomation[currentChainID]["TOKEN"][tokenSymbol];
     const tokenAddress = tokenInfo.address;
     const tokenDecimals = tokenInfo.decimals;

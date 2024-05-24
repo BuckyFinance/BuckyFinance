@@ -1,5 +1,6 @@
 {
     "11155111": {
+        "name": "Ethereum Sepolia",
         "CHAIN_SELECTOR": "16015286601757825753",
         "DEPOSITOR_ADDRESS": "0x597fA805bfc550d1d5BBA46425FC92555352aA51",
         "MAIN_ROUTER_ADDRESS": "0x40EC0dB2C2f63F76AeBEfe1a4D88c895A2b30719",
@@ -43,6 +44,7 @@
         }
     },
     "11155420": {
+        "name": "Optimism Sepolia",
         "CHAIN_SELECTOR": "5224473277236331295",
         "DEPOSITOR_ADDRESS": "0x2165936Af562a3901e6d60C18B2e4a2B09898be6",
         "MAIN_ROUTER_ADDRESS": "0x40EC0dB2C2f63F76AeBEfe1a4D88c895A2b30719",
@@ -86,10 +88,11 @@
         }
     },
     "421614": {
+        "name": "Arbitrum Sepolia",
         "CHAIN_SELECTOR": "3478487238524512106",
-        "DEPOSITOR_ADDRESS": "0x09484F76B7376D53FC5e4F52FaBEe3Fe3aac525c",
+        "DEPOSITOR_ADDRESS": "0xF543B7445B6f2699634e2863e98D65946Dd1D5c5",
         "MAIN_ROUTER_ADDRESS": "0x40EC0dB2C2f63F76AeBEfe1a4D88c895A2b30719",
-        "MINTER_ADDRESS": "",
+        "MINTER_ADDRESS": "0xA7809a6373EE66a99269933395a311C01eD6d023",
         "TOKEN": {
             "WBTC": {
                 "name": "Wrapped Bitcoin",
@@ -129,10 +132,11 @@
         }
     },
     "43113": {
+        "name": "Avalanche Fuji",
         "CHAIN_SELECTOR": "14767482510784806043",
         "DEPOSITOR_ADDRESS": "",
         "MAIN_ROUTER_ADDRESS": "0x40EC0dB2C2f63F76AeBEfe1a4D88c895A2b30719",
-        "MINTER_ADDRESS": "",
+        "MINTER_ADDRESS": "0xB093e4D95d5089F62E5C7A63387C62e1364De031",
         "TOKEN": {
             "WBTC": {
                 "name": "Wrapped Bitcoin",
@@ -172,6 +176,7 @@
         }
     },
     "80002": {
+        "name": "Polygon Amoy",
         "CHAIN_SELECTOR": "16281711391670634445",
         "DEPOSITOR_ADDRESS": "",
         "MAIN_ROUTER_ADDRESS": "0x40EC0dB2C2f63F76AeBEfe1a4D88c895A2b30719",
@@ -215,6 +220,7 @@
         }
     },
     "84532": {
+        "name": "Base Sepolia",
         "CHAIN_SELECTOR": "10344971235874465080",
         "DEPOSITOR_ADDRESS": "0x2165936Af562a3901e6d60C18B2e4a2B09898be6",
         "MAIN_ROUTER_ADDRESS": "0x40EC0dB2C2f63F76AeBEfe1a4D88c895A2b30719",
