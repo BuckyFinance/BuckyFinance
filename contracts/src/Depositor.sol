@@ -31,7 +31,7 @@ contract Depositor is CCIPBase {
     address private mainRouter;
     uint64 private mainRouterChainSelector;
 
-    constructor(address _router, uint64 _mainRouterChainSelector, address _mainRouter) CCIPBase(_router) {
+    constructor(uint64 _chainSelector, address _router, uint64 _mainRouterChainSelector, address _mainRouter) CCIPBase(_chainSelector, _router) {
         mainRouter = _mainRouter;
         mainRouterChainSelector = _mainRouterChainSelector;
     }
