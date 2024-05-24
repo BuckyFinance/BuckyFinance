@@ -4,6 +4,9 @@ ifneq (,$(wildcard .env))
     export
 endif
 
+update_abi:
+	@forge build --silent && jq '.abi' out/$(CONTRACT).sol/$(CONTRACT).json > abi/$(CONTRACT).json
+
 deploy_main_router:
 	@forge script script/deploy/DeployMainRouter.s.sol:DeployMainRouter --rpc-url $(AVALANCHE_FUJI_RPC_URL) --account $(ACCOUNT) --sender $(OWNER_ADDRESS) --broadcast
 
