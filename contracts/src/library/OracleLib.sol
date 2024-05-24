@@ -18,6 +18,12 @@ library OracleLib {
 
     uint256 public constant TIMEOUT = 24 hours;
 
+    function checkStaleTime(AggregatorV3Interface chainlinkFeed) public view returns (uint256) {
+        (, , , uint256 updatedAt, ) = chainlinkFeed.latestRoundData();
+        uint256 secondsSince = block.timestamp - updatedAt;
+        return secondsSince;
+    }
+
     function staleCheckLatestRoundData(AggregatorV3Interface chainlinkFeed)
         public
         view

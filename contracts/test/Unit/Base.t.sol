@@ -1,4 +1,4 @@
-pragma solidity ^0.8.19;
+pragma solidity ^0.8.0;
 
 import {Test, console} from "forge-std/Test.sol";
 import {IRouterClient, WETH9, LinkToken, BurnMintERC677Helper} from "@chainlink/local/src/ccip/CCIPLocalSimulator.sol";

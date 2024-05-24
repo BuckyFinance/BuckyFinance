@@ -7,12 +7,14 @@ import { IERC20 } from "@chainlink/contracts-ccip/src/v0.8/vendor/openzeppelin-s
 import { SafeERC20 } from "@chainlink/contracts-ccip/src/v0.8/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/utils/SafeERC20.sol";
 import { Ownable } from "@openzeppelin/contracts/access/Ownable.sol";
 import { CCIPBase } from "./library/CCIPBase.sol";
+import { IMainRouter } from "./interface/IMainRouter.sol";
 
 contract Depositor is CCIPBase {
     using SafeERC20 for IERC20;
 
     error NotEnoughFeePay(uint256 userFeePay, uint256 fees);
     error NotAllowedToken(address token);
+    error NotAllowed();
 
     event Deposit(address indexed user, address indexed token, uint256 indexed amount);
     event Redeem(address indexed user, address indexed token, uint256 indexed amount);
@@ -50,6 +52,13 @@ contract Depositor is CCIPBase {
         _;
     }
 
+    modifier onlyMainRouter(address caller){
+        if (caller != mainRouter){
+            revert NotAllowed();
+        }
+        _;
+    }
+
     function setMainRouter(address _newMainRouter) external onlyOwner {
         mainRouter = _newMainRouter;
     }
@@ -65,6 +74,13 @@ contract Depositor is CCIPBase {
     function deposit(address _token, uint256 _amount) external payable onlyAllowedToken(_token) {
         feePay[msg.sender] += msg.value;
         _deposit(msg.sender, _token, _amount);
+
+        if (chainSelector == mainRouterChainSelector) {
+            IMainRouter(mainRouter).deposit(msg.sender, chainSelector, _token, _amount);
+            emit Deposit(msg.sender, _token, _amount);
+            return;
+        }
+
         bytes memory _data = abi.encode(TransactionReceive.DEPOSIT, abi.encode(msg.sender, _token, _amount));
         _ccipSend(msg.sender, _token, _amount, _data);
     }
@@ -72,6 +88,10 @@ contract Depositor is CCIPBase {
     function _deposit(address _sender, address _token, uint256 _amount) internal {
         IERC20(_token).safeTransferFrom(_sender, address(this), _amount);
         deposited[_sender][_token] += _amount;
+    }
+
+    function redeem(address _receiver, address _token, uint256 _amount) external onlyMainRouter(msg.sender){
+        _redeem(_receiver, _token, _amount);
     }
 
     function _redeem(address _receiver, address _token, uint256 _amount) internal onlyAllowedToken(_token) {

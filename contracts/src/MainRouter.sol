@@ -11,6 +11,9 @@ import { AggregatorV3Interface } from "@chainlink/contracts/src/v0.8/interfaces/
 import { OracleLib } from "./library/OracleLib.sol";
 import { EnumerableSet } from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
 import { FunctionsRequest } from "@chainlink/contracts/src/v0.8/functions/v1_0_0/libraries/FunctionsRequest.sol";
+import { IDepositor } from "./interface/IDepositor.sol";
+import { IMinter } from "./interface/IMinter.sol";
+
 
 contract MainRouter is CCIPBase, FunctionsBase {
     using OracleLib for AggregatorV3Interface;
@@ -24,6 +27,7 @@ contract MainRouter is CCIPBase, FunctionsBase {
     error TokenNotAllowed(uint64 chainSelector, address token);
     error TokenAlreadyAllowed(uint64 _chainSelector, address _token);
     error ExceedsMaxLTV();
+    error NotAllowed();
 
     event Deposit(address indexed user, uint64 indexed chainSelector, address indexed token, uint256 amount);
     event Redeem(address indexed user, uint64 indexed chainSelector, address indexed token, uint256 amount);
@@ -40,6 +44,9 @@ contract MainRouter is CCIPBase, FunctionsBase {
         REDEEM,
         MINT
     }
+
+    address private avalancheDepositor;
+    address private avalancheMinter;
 
     mapping (address => uint16) private userActivityCredit;
     mapping (address => uint256) private userProtocolCredit;
@@ -92,6 +99,28 @@ contract MainRouter is CCIPBase, FunctionsBase {
         _;
     }
 
+    modifier onlyAvalancheDepositor(address _caller) {
+        if (avalancheDepositor != _caller){
+            revert NotAllowed();
+        }
+        _;
+    }
+
+    modifier onlyAvalancheMinter(address _caller) {
+        if (avalancheMinter != _caller){
+            revert NotAllowed();
+        }
+        _;
+    }
+
+    function setAvalancheDepositor(address _depositorContract) external onlyOwner{
+        avalancheDepositor = _depositorContract;
+    }
+
+    function setAvalancheMinter(address _minterContract) external onlyOwner {
+        avalancheMinter = _minterContract;
+    }
+
     function redeem(
         uint64  _destinationChainSelector, 
         address _receiver, 
@@ -108,6 +137,11 @@ contract MainRouter is CCIPBase, FunctionsBase {
 
         if (!_checkHealthFactor(msg.sender)){
             revert HealthFactorTooLow();
+        }
+
+        if (chainSelector == _destinationChainSelector) {
+            IDepositor(_receiver).redeem(msg.sender, _token, _amount);
+            return;
         }
 
         bytes memory _data = abi.encode(TransactionSend.REDEEM, abi.encode(msg.sender, _token, _amount));
@@ -129,6 +163,11 @@ contract MainRouter is CCIPBase, FunctionsBase {
 
         if (!_checkExceedMaxLTV(msg.sender)){
             revert ExceedsMaxLTV();
+        }
+
+        if (chainSelector == _destinationChainSelector) {
+            IMinter(_receiver).mint(msg.sender, _amount);
+            return;
         }
 
         bytes memory _data = abi.encode(TransactionSend.MINT, abi.encode(msg.sender, _amount));
@@ -398,16 +437,32 @@ contract MainRouter is CCIPBase, FunctionsBase {
         override 
     {
         (TransactionReceive _transactionType, bytes memory _data) = abi.decode(message.data, (TransactionReceive, bytes));
-        uint64 sourceChainSelector = message.sourceChainSelector;
+        uint64 _sourceChainSelector = message.sourceChainSelector;
         if (_transactionType == TransactionReceive.DEPOSIT) {
             (address _depositor, address _token, uint256 _amount) = abi.decode(_data, (address, address, uint256));
-            deposited[_depositor][sourceChainSelector][_token] += _amount;
-            emit Deposit(_depositor, sourceChainSelector, _token, _amount);
+            _deposit(_depositor, _sourceChainSelector, _token, _amount);
         } else if (_transactionType == TransactionReceive.BURN) {
             (address _burner, uint256 _amount) = abi.decode(_data, (address, uint256));
-            minted[_burner][sourceChainSelector] -= _amount;
-            emit Burn(_burner, sourceChainSelector, _amount);
+            _burn(_burner, _sourceChainSelector, _amount);
         }
+    }
+
+    function deposit(address _depositor, uint64 _sourceChainSelector, address _token, uint256 _amount) external onlyAvalancheDepositor(msg.sender) {
+        _deposit(_depositor, _sourceChainSelector, _token, _amount);
+    }
+
+    function burn(address _burner, uint64 _sourceChainSelector, uint256 _amount) external onlyAvalancheMinter(msg.sender) {
+        _burn(_burner, _sourceChainSelector, _amount);
+    }
+
+    function _deposit(address _depositor, uint64 _sourceChainSelector, address _token, uint256 _amount) internal {
+        deposited[_depositor][_sourceChainSelector][_token] += _amount;
+        emit Deposit(_depositor, _sourceChainSelector, _token, _amount);
+    }
+
+    function _burn(address _burner, uint64 _sourceChainSelector, uint256 _amount) internal {
+        minted[_burner][_sourceChainSelector] -= _amount;
+        emit Burn(_burner, _sourceChainSelector, _amount);
     }
 
     function getTokenPrice(address _token) public view returns (uint256){
