@@ -13,14 +13,17 @@ contract DeployDeposit is Script, Parameters {
     
     function run() external returns (Depositor depositor) {
         ChainConfig config = new ChainConfig();
+        ChainConfig.ChainComponent memory component = config.run();
 
         TokenConfig tokenConfig = new TokenConfig();
         TokenConfig.Token memory token = tokenConfig.run();
 
-        address router = config.run().router;
+        address router = component.router;
+        uint64 chainSelector = component.chainSelector;
+
         vm.startBroadcast();
 
-        depositor = new Depositor(router, AVALANCHE_FUJI_CHAIN_SELECTOR, AVALANCHE_FUJI_MAIN_ROUTER);
+        depositor = new Depositor(chainSelector, router, AVALANCHE_FUJI_CHAIN_SELECTOR, AVALANCHE_FUJI_MAIN_ROUTER);
 
         depositor.setAllowedToken(token.wbtc.token, true);
         depositor.setAllowedToken(token.weth.token, true);

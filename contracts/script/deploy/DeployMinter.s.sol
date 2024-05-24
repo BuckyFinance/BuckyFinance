@@ -11,9 +11,13 @@ import { ChainConfig } from "../config/ChainConfig.s.sol";
 contract DeployMinter is Script, Parameters {
     function run() external returns (Minter minter) {
         ChainConfig config = new ChainConfig();
-        address router = config.run().router;
+        ChainConfig.ChainComponent memory component = config.run();
+
+        address router = component.router;
+        uint64 chainSelector = component.chainSelector;
+
         vm.startBroadcast();
-        minter = new Minter(router, AVALANCHE_FUJI_CHAIN_SELECTOR, AVALANCHE_FUJI_MAIN_ROUTER);
+        minter = new Minter(chainSelector, router, AVALANCHE_FUJI_CHAIN_SELECTOR, AVALANCHE_FUJI_MAIN_ROUTER);
         
         minter.setAllowedDestinationChain(AVALANCHE_FUJI_CHAIN_SELECTOR, true);
         minter.setAllowedSourceChain(AVALANCHE_FUJI_CHAIN_SELECTOR, true);

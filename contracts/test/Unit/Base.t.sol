@@ -51,9 +51,9 @@ contract Demo is Test {
             ccipLnM
         ) = ccipLocalSimulator.configuration();
 
-        mainRouter = new MainRouter(address(destinationRouter), functionsRouter, donId);
-        depositor = new Depositor(address(sourceRouter), chainSelector, address(mainRouter));
-        minter = new Minter(address(sourceRouter), chainSelector, address(mainRouter));
+        mainRouter = new MainRouter(chainSelector, address(destinationRouter), functionsRouter, donId);
+        depositor = new Depositor(chainSelector, address(sourceRouter), chainSelector, address(mainRouter));
+        minter = new Minter(chainSelector, address(sourceRouter), chainSelector, address(mainRouter));
         dsc = minter.getDsc();
 
         weth = new ERC20Mock();
