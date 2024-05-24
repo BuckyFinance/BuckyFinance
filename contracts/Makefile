@@ -29,4 +29,10 @@ mint:
 burn:
 	@forge script script/interaction/Burn.s.sol:Burn --sig "burn(uint256,uint256)" $(AMOUNT) $(ETHER) --rpc-url $(RPC_URL) --account $(ACCOUNT) --sender $(OWNER_ADDRESS) --broadcast
 
+setAvalanche:
+	@forge script script/interaction/MainRouterSetAvalanche.s.sol:SetAvalanche --rpc-url $(AVALANCHE_FUJI_RPC_URL) --account $(ACCOUNT) --sender $(OWNER_ADDRESS) --broadcast
+
+setAllowedSender:
+	@forge script script/interaction/MainRouterSetAllowedSender.s.sol:SetAllowedSender --sig "setAllowedSender(address)" $(DEPOSITOR) --rpc-url $(AVALANCHE_FUJI_RPC_URL) --account $(ACCOUNT) --sender $(OWNER_ADDRESS) --broadcast
+
 .PHONY: deploy_avalanche_fuji deploy_ethereum_sepolia deploy_arbitrum_sepolia deploy_polygon_amoy deploy_optimism_sepolia deploy_base_sepolia deploy_all
