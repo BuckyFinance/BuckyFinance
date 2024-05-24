@@ -14,6 +14,9 @@ contract Depositor is CCIPBase {
     error NotEnoughFeePay(uint256 userFeePay, uint256 fees);
     error NotAllowedToken(address token);
 
+    event Deposit(address indexed user, address indexed token, uint256 indexed amount);
+    event Redeem(address indexed user, address indexed token, uint256 indexed amount);
+
     enum TransactionReceive {
         DEPOSIT,
         BURN
@@ -63,7 +66,7 @@ contract Depositor is CCIPBase {
         feePay[msg.sender] += msg.value;
         _deposit(msg.sender, _token, _amount);
         bytes memory _data = abi.encode(TransactionReceive.DEPOSIT, abi.encode(msg.sender, _token, _amount));
-        _ccipSend(msg.sender, _data);
+        _ccipSend(msg.sender, _token, _amount, _data);
     }
 
     function _deposit(address _sender, address _token, uint256 _amount) internal {
@@ -79,6 +82,8 @@ contract Depositor is CCIPBase {
 
     function _ccipSend(
         address _sender,
+        address _token,
+        uint256 _amount,
         bytes memory _data
     )   internal 
         onlyAllowListedDestinationChain(mainRouterChainSelector)
@@ -104,6 +109,8 @@ contract Depositor is CCIPBase {
             mainRouterChainSelector,
             _message
         );
+
+        emit Deposit(_sender, _token, _amount);
     }
 
 
@@ -119,6 +126,7 @@ contract Depositor is CCIPBase {
         if (_transactionType == TransactionSend.REDEEM) {
             (address _user, address _token, uint256 _amount) = abi.decode(_data, (address, address, uint256));
             _redeem(_user, _token, _amount);
+            emit Redeem(_user, _token, _amount);
         }
     }
 

@@ -15,6 +15,9 @@ contract Minter is CCIPBase {
 
     error NotEnoughFeePay(uint256 userFeePay, uint256 fees);
 
+    event Minted(address indexed user, uint256 indexed amount);
+    event Burned(address indexed user, uint256 indexed amount);
+
     enum TransactionReceive {
         DEPOSIT,
         BURN
@@ -58,16 +61,18 @@ contract Minter is CCIPBase {
         dsc.burn(_amount);
         
         bytes memory _data = abi.encode(TransactionReceive.BURN, abi.encode(msg.sender, _amount));
-        _ccipSend(msg.sender, _data);
+        _ccipSend(msg.sender, _amount, _data);
     }
 
     function _mint(address _receiver, uint256 _amount) internal {
         minted[_receiver] += _amount;
         dsc.mint(_receiver, _amount);
+        emit Minted(_receiver, _amount);
     }
 
     function _ccipSend(
         address _sender,
+        uint256 _amount,
         bytes memory _data
     )   internal 
         onlyAllowListedDestinationChain(mainRouterChainSelector)
@@ -93,6 +98,8 @@ contract Minter is CCIPBase {
             mainRouterChainSelector,
             _message
         );
+
+        emit Burned(_sender, _amount);
     }
 
     function _ccipReceive(Client.Any2EVMMessage memory message) 
