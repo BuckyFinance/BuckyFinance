@@ -213,6 +213,51 @@ contract MainRouter is CCIPBase, FunctionsBase {
         emit Burn(_burner, _sourceChainSelector, _amount);
     }
 
+    function getRedeemFee(
+        uint64  _destinationChainSelector, 
+        address _receiver, 
+        address _token, 
+        uint256 _amount
+    ) public view returns (uint256) {
+        if (chainSelector == _destinationChainSelector) {
+            return 0;
+        }
+
+        bytes memory _data = abi.encode(TransactionSend.REDEEM, abi.encode(msg.sender, _token, _amount));
+        Client.EVM2AnyMessage memory _message = _buildCCIPMessage(
+            _receiver,
+            _data,
+            address(0)
+        );
+
+        IRouterClient _router = IRouterClient(getRouter());
+        uint256 _fees = _router.getFee(_destinationChainSelector, _message);
+        return _fees;
+    }
+
+    function getMintFee(
+        uint64 _destinationChainSelector,
+        address _receiver, 
+        uint256 _amount
+    ) public view returns (uint256) {
+        if (chainSelector == _destinationChainSelector) {
+            return 0;
+        }
+
+        bytes memory _data = abi.encode(TransactionSend.MINT, abi.encode(msg.sender, _amount));
+        Client.EVM2AnyMessage memory _message = _buildCCIPMessage(
+            _receiver,
+            _data,
+            address(0)
+        );
+
+        IRouterClient _router = IRouterClient(getRouter());
+        uint256 _fees = _router.getFee(_destinationChainSelector, _message);
+        return _fees;
+    }
+
+
+
     function getMaximumAllowedMinting(address _user) public view returns (uint256) {
         uint256 _userLTV = calculateLTV(_user);
         uint256 _totalCollateral = getUserOverallCollateralValue(_user);
