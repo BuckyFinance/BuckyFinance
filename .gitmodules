@@ -10,6 +10,6 @@
 [submodule "contracts/lib/chainlink-local"]
 	path = contracts/lib/chainlink-local
 	url = https://github.com/smartcontractkit/chainlink-local
-[submodule "contracts/lib/chainlink-brownie-contracts"]
+[submodule "lib/chainlink-brownie-contracts"]
 	path = contracts/lib/chainlink-brownie-contracts
 	url = https://github.com/smartcontractkit/chainlink-brownie-contracts
