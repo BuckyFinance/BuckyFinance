@@ -50,4 +50,7 @@ getDepositedTokenOnChain:
 getUSDDepositedOnChain:
 	cast call $(MAIN_ROUTER) "getUserCollateralOnChainValue(address,uint64)" $(USER) $(CHAIN_SELECTOR) --rpc-url $(AVALANCHE_FUJI_RPC_URL)
 
+getTotalMinted:
+	cast call $(MAIN_ROUTER) "getUserMintedOverall(address)" $(USER) --rpc-url $(AVALANCHE_FUJI_RPC_URL)
+
 .PHONY: deploy_avalanche_fuji deploy_ethereum_sepolia deploy_arbitrum_sepolia deploy_polygon_amoy deploy_optimism_sepolia deploy_base_sepolia deploy_all
