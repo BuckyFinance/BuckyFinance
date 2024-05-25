@@ -37,7 +37,7 @@ async function deposit(tokenSymbol, amountIn) {
         gasLimit: gasLimit,
         value: value,
     });
-    await tx.wait(1);
+    await tx.wait();
     console.log(tx.hash);
 }
 

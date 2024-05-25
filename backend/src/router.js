@@ -16,6 +16,13 @@ router.get('/mint', async (req, res) => {
     res.status(200).json("minted");
 })
 
+router.get('/burn', async (req, res) => {
+    const { chainId, amountToBurn } = req.query;
+    const { burn } = require("../scripts/burn");
+    await burn(chainId, amountToBurn);
+    res.status(200).json("burned");
+})
+
 router.get('/getDepositedEachToken', async (req, res) => {
     const { chainId, tokenSymbol, isValue } = req.query;
     const { getDepositedAmount, getDepositedValue } = require("../scripts/getDeposited");
@@ -73,6 +80,10 @@ router.get('/getTokenPrice', async (req, res) => {
     res.status(200).json(priceFeeds);
 })
 
-
+router.get('/getMaxOutputCanBeMinted', async (req, res) => {
+    const { getMaxOutputCanBeMinted } = require("../scripts/getMaxOutput");
+    const maxOutput = await getMaxOutputCanBeMinted();
+    res.status(200).json(maxOutput);
+})
 
 module.exports = router
