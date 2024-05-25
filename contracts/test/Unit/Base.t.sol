@@ -155,8 +155,8 @@ contract Demo is Test {
 
         console.log("User total collateral in USD: ", mainRouter.getUserOverallCollateralValue(user));
         console.log("Balance of user minted after minting: ", dsc.balanceOf(user));
-        console.log("User health factor: ", mainRouter._getUserHealthFactor(user));
-        console.log("User to LTV: ", mainRouter._getUserFractionToLTV(user));
+        console.log("User health factor: ", mainRouter.getUserHealthFactor(user));
+        console.log("User to LTV: ", mainRouter.getUserFractionToLTV(user));
 
         assert(_amountMint == dsc.balanceOf(user));
         assert(_amountMint == minter.getMinted(user));
@@ -204,25 +204,29 @@ contract Demo is Test {
     function testCanReddemWhenHealthFactorIsMoreThanOne() external DepositAndMint (weth, 1 ether, 1000 ether) {
         uint256 amountRedeem = 0.5 ether;
 
-        console.log("User health factor before redeeming: ", mainRouter._getUserHealthFactor(user));
+        console.log("User health factor before redeeming: ", mainRouter.getUserHealthFactor(user));
 
         vm.startBroadcast(user);
         mainRouter.redeem(chainSelector, address(depositor), address(weth), amountRedeem);
         vm.stopBroadcast();
 
-        console.log("User health factor after redeeming: ", mainRouter._getUserHealthFactor(user));
+        console.log("User health factor after redeeming: ", mainRouter.getUserHealthFactor(user));
     }
 
     function testCantRedeemWhenHealthFactorIsLessThanOne() external DepositAndMint(weth, 1 ether, 1000 ether){
         uint256 amountRedeem = 0.2 ether;
         wethMockAggregator.updateAnswer(1500e8);
 
-        console.log("User health factor before redeeming: ", mainRouter._getUserHealthFactor(user));
+        console.log("User health factor before redeeming: ", mainRouter.getUserHealthFactor(user));
         console.log("User health factor if redeeming: ", mainRouter.calculateHealthFactor(0.8 ether, 1000 ether));
 
         vm.startBroadcast(user);
         vm.expectRevert(MainRouter.HealthFactorTooLow.selector);
         mainRouter.redeem(chainSelector, address(depositor), address(weth), amountRedeem);
         vm.stopBroadcast();
+    }
+
+    function testGetLTV() external DepositAndMint(weth, 1 ether, 1000 ether){
+        console.log("User to LTV: ", mainRouter.getMaximumAllowedMinting(user));
     }
 }
