@@ -15,7 +15,8 @@ async function approveToken(wallet, tokenAddress, amountIn) {
     const amountInWei = ethers.utils.parseUnits(amountIn.toString(), 18);
 
     const tx = await tokenContract.approve(DEPOSITOR_ADDRESS, amountInWei);
-    console.log(tx.toString());
+    await tx.wait();
+    console.log(tx.hash);
 }
 
 async function deposit(tokenSymbol, amountIn) {

@@ -172,6 +172,11 @@
                 "name": "Tether USD",
                 "decimals": 6,
                 "address": "0xAcA1eA8547E247a3125Da273b16C17Badc4f0812"
+            },
+            "DSC": {
+                "name": "DSC",
+                "decimals": 18,
+                "address": "0x1dbAE396fE34546ac12Dd909e0C70496dcaF9146"
             }
         }
     },
@@ -216,6 +221,11 @@
                 "name": "Tether USD",
                 "decimals": 6,
                 "address": "0xAcA1eA8547E247a3125Da273b16C17Badc4f0812"
+            },
+            "DSC": {
+                "name": "DSC",
+                "decimals": 18,
+                "address": "0x701686f3aC25676B65D962afa2531b18A4c35f6f"
             }
         }
     },
