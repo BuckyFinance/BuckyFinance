@@ -19,12 +19,12 @@ abstract contract FunctionsBase is FunctionsClient, Ownable {
         bytes err
     );
 
-    address public functionsRouter;
-    bytes32 public donId;
-    uint64 public subscriptionId;
-    uint32 public gasLimit;
+    address internal functionsRouter;
+    bytes32 internal donId;
+    uint64 internal subscriptionId;
+    uint32 internal gasLimit;
 
-    mapping (bytes32 => address) requestIdToUser;
+    mapping (bytes32 => address) internal requestIdToUser;
 
     string source = 
         "const user = args[0];"
@@ -53,5 +53,25 @@ abstract contract FunctionsBase is FunctionsClient, Ownable {
 
     function setSource(string memory _source) external onlyOwner {
         source = _source;
+    }
+
+    function getFunctionsRouter() public view returns (address) {
+        return functionsRouter;
+    }
+
+    function getDonId() public view returns (bytes32) {
+        return donId;
+    }
+
+    function getSubscriptionId() public view returns (uint64) {
+        return subscriptionId;
+    }
+
+    function getGasLimit() public view returns (uint32) {
+        return gasLimit;
+    }
+
+    function getSource() public view returns (string memory) {
+        return source;
     }
 }

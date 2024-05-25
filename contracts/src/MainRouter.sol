@@ -121,6 +121,27 @@ contract MainRouter is CCIPBase, FunctionsBase {
         avalancheMinter = _minterContract;
     }
 
+    function addAllowedToken(uint64 _chainSelector, address _token, address _priceFeed) external onlyOwner {
+        if (isAllowedTokens[_chainSelector][_token]){
+            revert TokenAlreadyAllowed(_chainSelector, _token);
+        }
+        isAllowedTokens[_chainSelector][_token] = true;
+        allowedTokens[_chainSelector].add(_token);
+        priceFeeds[_chainSelector][_token] = _priceFeed;
+    }
+
+    function removeAllowedToken(
+        uint64 _chainSelector,
+        address _token
+    )   external 
+        onlyOwner 
+        onlyAllowedToken(_chainSelector, _token) 
+    {
+        isAllowedTokens[_chainSelector][_token] = false;
+        allowedTokens[_chainSelector].remove(_token);
+        priceFeeds[_chainSelector][_token] = address(0);
+    }
+
     function redeem(
         uint64  _destinationChainSelector, 
         address _receiver, 
@@ -135,7 +156,7 @@ contract MainRouter is CCIPBase, FunctionsBase {
         feePay[msg.sender] += msg.value;
         deposited[msg.sender][_destinationChainSelector][_token] -= _amount;
 
-        if (!_checkHealthFactor(msg.sender)){
+        if (!checkHealthFactor(msg.sender)){
             revert HealthFactorTooLow();
         }
 
@@ -161,7 +182,7 @@ contract MainRouter is CCIPBase, FunctionsBase {
         feePay[msg.sender] += msg.value;
         minted[msg.sender][_destinationChainSelector] += _amount;
 
-        if (!_checkExceedMaxLTV(msg.sender)){
+        if (!checkExceedMaxLTV(msg.sender)){
             revert ExceedsMaxLTV();
         }
 
@@ -174,74 +195,73 @@ contract MainRouter is CCIPBase, FunctionsBase {
         _ccipSend(_destinationChainSelector, _receiver, TransactionSend.MINT, address(0), _amount, _data);
     }
 
-    function addAllowedToken(uint64 _chainSelector, address _token, address _priceFeed) external onlyOwner{
-        if (isAllowedTokens[_chainSelector][_token]){
-            revert TokenAlreadyAllowed(_chainSelector, _token);
-        }
-        isAllowedTokens[_chainSelector][_token] = true;
-        allowedTokens[_chainSelector].add(_token);
-        priceFeeds[_chainSelector][_token] = _priceFeed;
+    function deposit(address _depositor, uint64 _sourceChainSelector, address _token, uint256 _amount) external onlyAvalancheDepositor(msg.sender) {
+        _deposit(_depositor, _sourceChainSelector, _token, _amount);
     }
 
-    function removeAllowedToken(
-        uint64 _chainSelector,
-        address _token
-    )   external 
-        onlyOwner 
-        onlyAllowedToken(_chainSelector, _token) 
-    {
-        isAllowedTokens[_chainSelector][_token] = false;
-        allowedTokens[_chainSelector].remove(_token);
-        priceFeeds[_chainSelector][_token] = address(0);
+    function burn(address _burner, uint64 _sourceChainSelector, uint256 _amount) external onlyAvalancheMinter(msg.sender) {
+        _burn(_burner, _sourceChainSelector, _amount);
     }
 
-    function _getUserFractionToLTV(address _user) public view returns (uint256 fraction) {
-        uint256 _userLTV = _calculateLTV(_user);
+        function _deposit(address _depositor, uint64 _sourceChainSelector, address _token, uint256 _amount) internal {
+        deposited[_depositor][_sourceChainSelector][_token] += _amount;
+        emit Deposit(_depositor, _sourceChainSelector, _token, _amount);
+    }
+
+    function _burn(address _burner, uint64 _sourceChainSelector, uint256 _amount) internal {
+        minted[_burner][_sourceChainSelector] -= _amount;
+        emit Burn(_burner, _sourceChainSelector, _amount);
+    }
+
+    function getMaximumAllowedMinting(address _user) public view returns (uint256) {
+        uint256 _userLTV = calculateLTV(_user);
+        uint256 _totalCollateral = getUserOverallCollateralValue(_user);
+        return _totalCollateral * _userLTV / LIQUIDATION_PRECISION;
+    }
+
+    function getUserFractionToLTV(address _user) public view returns (uint256 fraction) {
+        uint256 _userLTV = calculateLTV(_user);
         (uint256 _totalCollateral, uint256 _totalMinted) = getUserOverallInformation(_user);
-        fraction = _calculateUserFractionToLTV(_totalCollateral, _totalMinted, _userLTV);
+        fraction = calculateUserFractionToLTV(_totalCollateral, _totalMinted, _userLTV);
     }
 
-    function _getUserHealthFactor(address _user) public view returns (uint256 healthFactor) {
+    function getUserHealthFactor(address _user) public view returns (uint256 healthFactor) {
         (uint256 _totalCollateral, uint256 _totalMinted) = getUserOverallInformation(_user);
-        healthFactor = _calculateHealthFactor(_totalCollateral, _totalMinted);
+        healthFactor = calculateHealthFactor(_totalCollateral, _totalMinted);
     }
 
-    function _calculateUserFractionToLTV(uint256 _totalCollateral, uint256 _totalMinted, uint256 _ratio) private pure returns (uint256 fraction) {
+    function calculateUserFractionToLTV(uint256 _totalCollateral, uint256 _totalMinted, uint256 _ratio) public pure returns (uint256 fraction) {
         if (_totalMinted == 0){
             return type(uint256).max;
         }
-        return _calculateFraction(_totalCollateral, _totalMinted, _ratio);
+        return calculateFraction(_totalCollateral, _totalMinted, _ratio);
     }
 
-    function _calculateHealthFactor(uint256 _totalCollateral, uint256 _totalMinted) private pure returns (uint256 healthFactor) {
+    function calculateHealthFactor(uint256 _totalCollateral, uint256 _totalMinted) public pure returns (uint256 healthFactor) {
         if (_totalMinted == 0){
             return type(uint256).max;
         }
-        return _calculateFraction(_totalCollateral, _totalMinted, LIQUIDATION_THRESHOLD);
+        return calculateFraction(_totalCollateral, _totalMinted, LIQUIDATION_THRESHOLD);
     }
 
-    function _calculateFraction(uint256 _totalCollateral, uint256 _totalMinted, uint256 _ratio) private pure returns (uint256 answer) {
+    function calculateFraction(uint256 _totalCollateral, uint256 _totalMinted, uint256 _ratio) public pure returns (uint256 answer) {
         answer = (_totalCollateral * _ratio) / LIQUIDATION_PRECISION;
         answer = (answer * PRECISION) / _totalMinted;
     }
     
-    function calculateHealthFactor(uint256 _totalCollateral, uint256 _totalMinted) public pure returns (uint256){
-        return _calculateHealthFactor(_totalCollateral, _totalMinted);
+    function checkHealthFactor(address _user) public view returns(bool) {
+        return getUserHealthFactor(_user) > MIN_HEALTH_FACTOR;
     }
 
-    function _checkHealthFactor(address _user) public view returns(bool) {
-        return _getUserHealthFactor(_user) > MIN_HEALTH_FACTOR;
+    function checkExceedMaxLTV(address _user) public view returns (bool) {
+        return getUserFractionToLTV(_user) > MIN_HEALTH_FACTOR;
     }
 
-    function _checkExceedMaxLTV(address _user) public view returns (bool) {
-        return _getUserFractionToLTV(_user) > MIN_HEALTH_FACTOR;
+    function calculateLTV(address _user) public view returns(uint256){
+        return BASE_LTV + convertCreditToLTV(userActivityCredit[_user] - userProtocolCredit[_user]);
     }
 
-    function _calculateLTV(address _user) public view returns(uint256){
-        return BASE_LTV + _convertCreditToLTV(userActivityCredit[_user] - userProtocolCredit[_user]);
-    }
-
-    function _convertCreditToLTV(uint256 _activityCredit) public pure returns (uint256){
+    function convertCreditToLTV(uint256 _activityCredit) public pure returns (uint256){
         return (MAX_LTV - BASE_LTV) * _activityCredit / CREDIT_PRECISION;                          
     }
 
@@ -329,10 +349,10 @@ contract MainRouter is CCIPBase, FunctionsBase {
         view
         returns (uint256) 
     {
-        return _getCollateralValue(_chainSelector, _token, _getUserDepositedAmount(_user, _chainSelector, _token));
+        return getCollateralValue(_chainSelector, _token, getUserDepositedAmount(_user, _chainSelector, _token));
     }
 
-    function _getUserDepositedAmount(
+    function getUserDepositedAmount(
         address _user,
         uint64 _chainSelector,
         address _token
@@ -343,7 +363,7 @@ contract MainRouter is CCIPBase, FunctionsBase {
         return deposited[_user][_chainSelector][_token];
     }
 
-    function _getCollateralValue(
+    function getCollateralValue(
         uint64 _chainSelector, 
         address _token,
         uint256 _amount
@@ -390,6 +410,28 @@ contract MainRouter is CCIPBase, FunctionsBase {
 
     function getFeePay(address _user) public view returns (uint256){
         return feePay[_user];
+    }
+
+    function getTokenPrice(address _token) public view returns (uint256){
+        AggregatorV3Interface _priceFeed = AggregatorV3Interface(priceFeeds[uint64(allowedChains.at(0))][_token]);
+        (, int256 _price, , , ) = _priceFeed.staleCheckLatestRoundData();
+        return uint256(_price);
+    }
+
+    function getAvalancheDepositor() public view returns (address) {
+        return avalancheDepositor;
+    }
+
+    function getAvalancheMinter() public view returns (address) {
+        return avalancheMinter;
+    }
+
+    function getAllowedTokensOnChain(uint64 _chainSelector) public view returns(address[] memory){
+        address[] memory _tokens = new address[](allowedTokens[_chainSelector].length());
+        for (uint i = 0; i < allowedTokens[_chainSelector].length(); i++) {
+            _tokens[i] = allowedTokens[_chainSelector].at(i);
+        }
+        return _tokens;
     }
 
     // -----------CHAINLINK CCIP ----------- //
@@ -445,30 +487,6 @@ contract MainRouter is CCIPBase, FunctionsBase {
             (address _burner, uint256 _amount) = abi.decode(_data, (address, uint256));
             _burn(_burner, _sourceChainSelector, _amount);
         }
-    }
-
-    function deposit(address _depositor, uint64 _sourceChainSelector, address _token, uint256 _amount) external onlyAvalancheDepositor(msg.sender) {
-        _deposit(_depositor, _sourceChainSelector, _token, _amount);
-    }
-
-    function burn(address _burner, uint64 _sourceChainSelector, uint256 _amount) external onlyAvalancheMinter(msg.sender) {
-        _burn(_burner, _sourceChainSelector, _amount);
-    }
-
-    function _deposit(address _depositor, uint64 _sourceChainSelector, address _token, uint256 _amount) internal {
-        deposited[_depositor][_sourceChainSelector][_token] += _amount;
-        emit Deposit(_depositor, _sourceChainSelector, _token, _amount);
-    }
-
-    function _burn(address _burner, uint64 _sourceChainSelector, uint256 _amount) internal {
-        minted[_burner][_sourceChainSelector] -= _amount;
-        emit Burn(_burner, _sourceChainSelector, _amount);
-    }
-
-    function getTokenPrice(address _token) public view returns (uint256){
-        AggregatorV3Interface _priceFeed = AggregatorV3Interface(priceFeeds[uint64(allowedChains.at(0))][_token]);
-        (, int256 _price, , , ) = _priceFeed.staleCheckLatestRoundData();
-        return uint256(_price);
     }
     
     /// -----------CHAINLINK FUNCTIONS----------- ///
