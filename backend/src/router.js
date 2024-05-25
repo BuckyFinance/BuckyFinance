@@ -23,6 +23,13 @@ router.get('/burn', async (req, res) => {
     res.status(200).json("burned");
 })
 
+router.get('/redeem', async (req, res) => {
+    const { chainId, tokenSymbol, amountToRedeem } = req.query;
+    const { redeem } = require("../scripts/redeem");
+    await redeem(chainId, tokenSymbol, amountToRedeem);
+    res.status(200).json("redeemed");
+})
+
 router.get('/getDepositedEachToken', async (req, res) => {
     const { chainId, tokenSymbol, isValue } = req.query;
     const { getDepositedAmount, getDepositedValue } = require("../scripts/getDeposited");
@@ -68,8 +75,9 @@ router.get('/getTotalMintedValueOverallChain', async (req, res) => {
 })
 
 router.get('/getHealthFactor', async (req, res) => {
+    const { walletAddress } = req.query;
     const { getHealthFactor } = require("../scripts/getHealthFactor");
-    const healthFactor = await getHealthFactor();
+    const healthFactor = await getHealthFactor(walletAddress);
     res.status(200).json(healthFactor);
 })
 

@@ -8,7 +8,6 @@ const {
 const { getTotalMintedValueOnChain } = require("./getMinted");
 
 async function approveToken(wallet, tokenAddress, amountIn, chainId) {
-    const DSC_TOKEN_ADDRESS = "";
     const tokenContract = new Contract(tokenAddress, ERC20MockABI, wallet);
 
     const MINTER_ADDRESS = NetworkInfomation[chainId].MINTER_ADDRESS;

@@ -19,8 +19,9 @@ async function getDepositedAmount(chainId, tokenSymbol) {
     const walletAddress = "0xB1A296a720D9AAF5c5e9F805d8095e6d94882eE1";
     const deposited = await depositorContract.getDeposited(walletAddress, tokenAddress);
 
+    const depositedValueFormat = ethers.utils.formatUnits(deposited, "ether");
     console.log(`Deposited in ${chainId} with ${tokenSymbol}: ${deposited.toString()}`);
-    return deposited.toString();
+    return depositedValueFormat;
 }
 
 async function getDepositedValue(chainId, tokenSymbol) {
@@ -35,9 +36,11 @@ async function getDepositedValue(chainId, tokenSymbol) {
 
     const depositedAmount = await mainRouterContract._getUserDepositedAmount(walletAddress, CHAIN_SELECTOR, tokenAddress);
     const depositedValue = await mainRouterContract.getUserCollateralValue(walletAddress, CHAIN_SELECTOR, tokenAddress);
+
+
     console.log(`Deposited in ${chainId} with ${tokenSymbol} Amount: ${depositedAmount.toString()}`);
     console.log(`Deposited in ${chainId} with ${tokenSymbol} Value: ${depositedValue.toString()}`);
-    return depositedValue.toString();
+    return depositedValue;
 }
 
 
