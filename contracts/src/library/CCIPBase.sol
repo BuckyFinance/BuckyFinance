@@ -20,11 +20,11 @@ abstract contract CCIPBase is CCIPReceiver, Ownable {
 
     EnumerableSet.UintSet internal allowedChains;
 
-    mapping (uint64 => bool) allowListedDestinationChains;
-    mapping (uint64 => bool) public allowListedSourceChains;
-    mapping (address => bool) public allowListedSenders;
+    mapping (uint64 => bool) internal allowListedDestinationChains;
+    mapping (uint64 => bool) internal allowListedSourceChains;
+    mapping (address => bool) internal allowListedSenders;
 
-    uint64 chainSelector;
+    uint64 internal chainSelector;
 
     constructor(uint64 _chainSelector, address _router) CCIPReceiver(_router) Ownable(msg.sender) {
         chainSelector = _chainSelector;
@@ -70,6 +70,39 @@ abstract contract CCIPBase is CCIPReceiver, Ownable {
 
     function setAllowedSender(address _sender, bool allowed) external onlyOwner {
         allowListedSenders[_sender] = allowed;
+    }
+
+    function getAllowedChains() public view returns (uint64[] memory) {
+        uint256 length = allowedChains.length();
+        uint64[] memory result = new uint64[](length);
+        for (uint256 i = 0; i < length; i++) {
+            result[i] = uint64(allowedChains.at(i));
+        }
+        return result;
+    }
+
+    function getIsAllowedDestinationChain(uint64 _destinationChainSelector)
+        public
+        view
+        returns (bool)
+    {
+        return allowListedDestinationChains[_destinationChainSelector];
+    }
+
+    function getIsAllowedSourceChain(uint64 _sourceChainSelector)
+        public
+        view
+        returns (bool)
+    {
+        return allowListedSourceChains[_sourceChainSelector];
+    }
+
+    function getIsAllowedSender(address _sender) public view returns (bool) {
+        return allowListedSenders[_sender];
+    }
+
+    function getChainSelector() public view returns (uint64) {
+        return chainSelector;
     }
 
     function _buildCCIPMessage(
