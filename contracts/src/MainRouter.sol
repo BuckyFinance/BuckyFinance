@@ -196,10 +196,10 @@ contract MainRouter is CCIPBase, FunctionsBase {
             revert ExceedsMaxLTV();
         }
 
-        // if (chainSelector == _destinationChainSelector) {
-        //     IMinter(_receiver).mint(_sender, _amount);
-        //     return;
-        // }
+        if (chainSelector == _destinationChainSelector) {
+            IMinter(_receiver).mint(_sender, _amount);
+            return;
+        }
 
         bytes memory _data = abi.encode(TransactionSend.MINT, abi.encode(_sender, _amount));
         _ccipSend(_sender, _destinationChainSelector, _receiver, TransactionSend.MINT, address(0), _amount, _data);

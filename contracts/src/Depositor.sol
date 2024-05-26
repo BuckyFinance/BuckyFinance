@@ -101,10 +101,10 @@ contract Depositor is CCIPBase {
         feePay[msg.sender] += msg.value;
         _deposit(msg.sender, _token, _amount);
 
-        // if (chainSelector == mainRouterChainSelector) {
-        //     IMainRouter(mainRouter).depositAndMint(msg.sender, chainSelector, _token, _amount, _destinationChainSelector, _receiver, _amountToMint);
-        //     return;
-        // }
+        if (chainSelector == mainRouterChainSelector) {
+            IMainRouter(mainRouter).depositAndMint(msg.sender, chainSelector, _token, _amount, _destinationChainSelector, _receiver, _amountToMint);
+            return;
+        }
 
         bytes memory _data = abi.encode(TransactionReceive.DEPOSIT_MINT, abi.encode(msg.sender, _token, _amount, _destinationChainSelector, _receiver, _amountToMint));
         _ccipSend(msg.sender, _token, _amount, _data, ccipDepositAndMintGasLimit);
