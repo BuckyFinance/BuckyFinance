@@ -148,6 +148,12 @@ contract MainRouter is CCIPBase, FunctionsBase {
     function setCCIPGasLimit(uint256 _newGasLimit) external onlyOwner {
         ccipGasLimit = _newGasLimit;
     }
+    
+    function withdrawFeePay(uint256 _amount) external {
+        require(_amount <= feePay[msg.sender], "Not enough fee pay");
+        feePay[msg.sender] -= _amount;
+        payable(msg.sender).transfer(_amount);
+    } 
 
     function redeem(
         uint64  _destinationChainSelector, 
@@ -495,6 +501,10 @@ contract MainRouter is CCIPBase, FunctionsBase {
 
     function getAvalancheMinter() public view returns (address) {
         return avalancheMinter;
+    }
+
+    function getCCIPGasLimit() public view returns (uint256) {
+        return ccipGasLimit;
     }
 
     function getAllowedTokensOnChain(uint64 _chainSelector) public view returns(address[] memory){

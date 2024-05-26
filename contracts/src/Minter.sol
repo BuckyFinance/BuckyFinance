@@ -73,6 +73,12 @@ contract Minter is CCIPBase {
         ccipBurnGasLimit = _newGasLimit;
     }
 
+    function withdrawFeePay(uint256 _amount) external {
+        require(_amount <= feePay[msg.sender], "Not enough fee pay");
+        feePay[msg.sender] -= _amount;
+        payable(msg.sender).transfer(_amount);
+    } 
+
     function burn(uint256 _amount) external payable {
         feePay[msg.sender] += msg.value;
         minted[msg.sender] -= _amount;
@@ -145,6 +151,24 @@ contract Minter is CCIPBase {
             (address _user, uint256 _amount) = abi.decode(_data, (address, uint256));
             _mint(_user, _amount);
         }
+    }
+
+    function getBurnFee(uint256 _amount) public view returns(uint256){
+        if (chainSelector == mainRouterChainSelector){
+            return 0;
+        }
+        bytes memory _data = abi.encode(TransactionReceive.BURN, abi.encode(msg.sender, _amount));
+        Client.EVM2AnyMessage memory _message = _buildCCIPMessage(
+            mainRouter, 
+            _data,
+            address(0),
+            ccipBurnGasLimit
+        );
+
+        IRouterClient _router = IRouterClient(getRouter());
+        uint256 _fees = _router.getFee(mainRouterChainSelector, _message);
+
+        return _fees;
     }
 
     function getMinted(address _user) public view returns (uint256) {
