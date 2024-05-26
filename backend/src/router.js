@@ -1,7 +1,6 @@
 const express = require('express')
 const router = express.Router()
 
-
 router.get('/deposit', async (req, res) => {
     const { tokenSymbol, amountIn } = req.query;
     const { deposit } = require("../scripts/deposit");
@@ -28,6 +27,13 @@ router.get('/redeem', async (req, res) => {
     const { redeem } = require("../scripts/redeem");
     await redeem(chainId, tokenSymbol, amountToRedeem);
     res.status(200).json("redeemed");
+})
+
+router.get('/depositAndMint', async (req, res) => {
+    const { tokenSymbol, amountToDeposit, desChainId, amountToMint } = req.query;
+    const { depositAndMint } = require("../scripts/depositAndMint");
+    await depositAndMint(tokenSymbol, amountToDeposit, desChainId, amountToMint);
+    res.status(200).json("deposited and minted");
 })
 
 router.get('/getDepositedEachToken', async (req, res) => {

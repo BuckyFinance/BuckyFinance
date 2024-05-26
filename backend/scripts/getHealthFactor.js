@@ -2,8 +2,8 @@ const { ethers, Contract } = require("ethers")
 const NetworkInfomation = require("../src/NetworkInfomation.json");
 const MainRouterABI = require("../../contracts/abi/MainRouter.json");
 const {
-    currentChainID,
     getWallet,
+    getWalletAddress
 } = require("./helper")
 
 async function getHealthFactor(walletAddress) {
@@ -14,9 +14,22 @@ async function getHealthFactor(walletAddress) {
     const mainRouterContract = new Contract(mainRouterAddress, MainRouterABI, wallet);
 
     const healthFactor = await mainRouterContract.getUserHealthFactor(walletAddress);
-    console.log(`Health Factor of Address ${walletAddress}: ${healthFactor}`);
-    return healthFactor;
+    if (healthFactor.toString().length > 18) {
+        console.log("User hasn't minted")
+        return 0;
+    }
+
+    const healthFactorFormat = ethers.utils.formatUnits(healthFactor, "ether");
+    console.log(`Health Factor of Address ${walletAddress}: ${healthFactorFormat}`);
+    return healthFactorFormat;
 }
+
+async function main() {
+    const walletAddress = await getWalletAddress();
+    const healthFactor = await getHealthFactor(walletAddress);
+}
+
+// main();
 
 module.exports = {
     getHealthFactor,

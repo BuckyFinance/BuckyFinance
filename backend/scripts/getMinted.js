@@ -4,9 +4,9 @@ const DepositorABI = require("../../contracts/abi/Depositor.json");
 const MainRouterABI = require("../../contracts/abi/MainRouter.json");
 const NetworkInfomation = require("../src/NetworkInfomation.json");
 const {
-    currentChainID,
     getWallet,
     getCurrentChainId,
+    getWalletAddress,
 } = require("./helper")
 
 
@@ -19,8 +19,9 @@ async function getTotalMintedValueOnChain(chainId, walletAddress) {
     const CHAIN_SELECTOR = NetworkInfomation[chainId].CHAIN_SELECTOR;
 
     const { totalCollateral, totalMinted } = await mainRouterContract.getUserOnChainInformation(walletAddress, CHAIN_SELECTOR);
-    console.log(`Total minted in chain ${chainId}: ${totalMinted}`);
-    return totalMinted.toString();
+    const totalMintedFormat = ethers.utils.formatUnits(totalMinted, "ether");
+    console.log(`Total minted in chain ${chainId}: ${totalMintedFormat}`);
+    return totalMintedFormat;
 }
 
 async function getTotalMintedValueOverallChain(walletAddress) {
@@ -31,9 +32,18 @@ async function getTotalMintedValueOverallChain(walletAddress) {
     const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, wallet);
 
     const { totalCollateral, totalMinted } = await mainRouterContract.getUserOverallInformation(walletAddress);
-    console.log(`Total minted overall chain: ${totalMinted.toString()}`);
-    return totalMinted.toString();
+    const totalMintedFormat = ethers.utils.formatUnits(totalMinted);
+    console.log(`Total minted overall chain: ${totalMintedFormat}`);
+    return totalMintedFormat;
 }
+
+async function main() {
+    const walletAddress = await getWalletAddress();
+    await getTotalMintedValueOnChain(84532, walletAddress);
+    await getTotalMintedValueOverallChain(walletAddress);
+}
+
+// main();
 
 module.exports = {
     getTotalMintedValueOnChain,

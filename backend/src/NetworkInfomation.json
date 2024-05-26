@@ -2,9 +2,9 @@
     "11155111": {
         "name": "Ethereum Sepolia",
         "CHAIN_SELECTOR": "16015286601757825753",
-        "DEPOSITOR_ADDRESS": "0x597fA805bfc550d1d5BBA46425FC92555352aA51",
-        "MAIN_ROUTER_ADDRESS": "0x40EC0dB2C2f63F76AeBEfe1a4D88c895A2b30719",
-        "MINTER_ADDRESS": "0x170dd06d42000D32f325A102214b1304DAA757EB",
+        "DEPOSITOR_ADDRESS": "0x7803DB4950e0Bc60F11ef7e38971D0D2fEF23E2E",
+        "MAIN_ROUTER_ADDRESS": "0x9b0cb6E1B1BbA871b2738f3CCd10eC5eCe8DaBa7",
+        "MINTER_ADDRESS": "0x8dBe4e6E57bcF80b59263158589cfa5f8d0B7838",
         "TOKEN": {
             "WBTC": {
                 "name": "Wrapped Bitcoin",
@@ -40,15 +40,20 @@
                 "name": "Tether USD",
                 "decimals": 6,
                 "address": "0xB3718E52781F9Fc1C0b72A2966C2616E6d962a1C"
+            },
+            "DSC": {
+                "name": "DSC",
+                "decimals": 18,
+                "address": "0xDb287C159F397D561FA3B1235e0Afd652860ECdF"
             }
         }
     },
     "11155420": {
         "name": "Optimism Sepolia",
         "CHAIN_SELECTOR": "5224473277236331295",
-        "DEPOSITOR_ADDRESS": "0x2165936Af562a3901e6d60C18B2e4a2B09898be6",
-        "MAIN_ROUTER_ADDRESS": "0x40EC0dB2C2f63F76AeBEfe1a4D88c895A2b30719",
-        "MINTER_ADDRESS": "0x09484F76B7376D53FC5e4F52FaBEe3Fe3aac525c",
+        "DEPOSITOR_ADDRESS": "0xC621BC66a58781B80E64b0754b1555453c9312d8",
+        "MAIN_ROUTER_ADDRESS": "0x9b0cb6E1B1BbA871b2738f3CCd10eC5eCe8DaBa7",
+        "MINTER_ADDRESS": "0xD28f8454873CEb4de41d537257044510c3A1d616",
         "TOKEN": {
             "WBTC": {
                 "name": "Wrapped Bitcoin",
@@ -84,15 +89,20 @@
                 "name": "Tether USD",
                 "decimals": 6,
                 "address": "0x75b86D7B224Fd88f785BB5FaC5e261D9EFde3047"
+            },
+            "DSC": {
+                "name": "DSC",
+                "decimals": 18,
+                "address": "0x1A0303dCa8DBfb25DA3F3D37395BcC546ceC0Bf0"
             }
         }
     },
     "421614": {
         "name": "Arbitrum Sepolia",
         "CHAIN_SELECTOR": "3478487238524512106",
-        "DEPOSITOR_ADDRESS": "0xF543B7445B6f2699634e2863e98D65946Dd1D5c5",
-        "MAIN_ROUTER_ADDRESS": "0x40EC0dB2C2f63F76AeBEfe1a4D88c895A2b30719",
-        "MINTER_ADDRESS": "0xA7809a6373EE66a99269933395a311C01eD6d023",
+        "DEPOSITOR_ADDRESS": "0x04aA81701B59b5E390f0C2Cd7FA84BA63A82C944",
+        "MAIN_ROUTER_ADDRESS": "0x9b0cb6E1B1BbA871b2738f3CCd10eC5eCe8DaBa7",
+        "MINTER_ADDRESS": "0x9559e4655e0b5dD06Ce2fBecAC18C24abB54d0Fb",
         "TOKEN": {
             "WBTC": {
                 "name": "Wrapped Bitcoin",
@@ -128,15 +138,20 @@
                 "name": "Tether USD",
                 "decimals": 6,
                 "address": "0x75b86D7B224Fd88f785BB5FaC5e261D9EFde3047"
+            },
+            "DSC": {
+                "name": "DSC",
+                "decimals": 18,
+                "address": "0x15c51Cdd0b53789711C43a2d6C624dB20D52086E"
             }
         }
     },
     "43113": {
         "name": "Avalanche Fuji",
         "CHAIN_SELECTOR": "14767482510784806043",
-        "DEPOSITOR_ADDRESS": "",
-        "MAIN_ROUTER_ADDRESS": "0x40EC0dB2C2f63F76AeBEfe1a4D88c895A2b30719",
-        "MINTER_ADDRESS": "0xB093e4D95d5089F62E5C7A63387C62e1364De031",
+        "DEPOSITOR_ADDRESS": "0x35De3ceb32A829808A2D8f6Ae743d3ea62a2D7AA",
+        "MAIN_ROUTER_ADDRESS": "0x9b0cb6E1B1BbA871b2738f3CCd10eC5eCe8DaBa7",
+        "MINTER_ADDRESS": "0x18d2483BDdad0e6DF259C780fc9d7C9774ebAcF5",
         "TOKEN": {
             "WBTC": {
                 "name": "Wrapped Bitcoin",
@@ -176,65 +191,16 @@
             "DSC": {
                 "name": "DSC",
                 "decimals": 18,
-                "address": "0x1dbAE396fE34546ac12Dd909e0C70496dcaF9146"
+                "address": "0xf7d270b5f6879feb65ed169b82f933eC75b4b624"
             }
         }
     },
     "80002": {
         "name": "Polygon Amoy",
         "CHAIN_SELECTOR": "16281711391670634445",
-        "DEPOSITOR_ADDRESS": "",
-        "MAIN_ROUTER_ADDRESS": "0x40EC0dB2C2f63F76AeBEfe1a4D88c895A2b30719",
-        "MINTER_ADDRESS": "",
-        "TOKEN": {
-            "WBTC": {
-                "name": "Wrapped Bitcoin",
-                "decimals": 18,
-                "address": "0x0804BfEC3ef24bc6CA0eb399D108CC0313d86d9c"
-            },
-            "WETH": {
-                "name": "Wrapped Ether",
-                "decimals": 18,
-                "address": "0x51353BFb9fB8baE6d70b896401937C64E96BAcB9"
-            },
-            "LINK": {
-                "name": "Chainlink",
-                "decimals": 18,
-                "address": "0x3001d62eBc86ab3A4eF91aFed766BB70182e251c"
-            },
-            "AVAX": {
-                "name": "Avalanche",
-                "decimals": 18,
-                "address": "0xD28f8454873CEb4de41d537257044510c3A1d616"
-            },
-            "UNI": {
-                "name": "Uniswap",
-                "decimals": 18,
-                "address": "0x6cC55345982d82e3E6dC704a64cdbD58a6421b7A"
-            },
-            "USDC": {
-                "name": "USD Coin",
-                "decimals": 6,
-                "address": "0x620476fe1Bc36a37530b416B7d658024D5966b08"
-            },
-            "USDT": {
-                "name": "Tether USD",
-                "decimals": 6,
-                "address": "0xAcA1eA8547E247a3125Da273b16C17Badc4f0812"
-            },
-            "DSC": {
-                "name": "DSC",
-                "decimals": 18,
-                "address": "0x701686f3aC25676B65D962afa2531b18A4c35f6f"
-            }
-        }
-    },
-    "84532": {
-        "name": "Base Sepolia",
-        "CHAIN_SELECTOR": "10344971235874465080",
-        "DEPOSITOR_ADDRESS": "0x2165936Af562a3901e6d60C18B2e4a2B09898be6",
-        "MAIN_ROUTER_ADDRESS": "0x40EC0dB2C2f63F76AeBEfe1a4D88c895A2b30719",
-        "MINTER_ADDRESS": "0x09484F76B7376D53FC5e4F52FaBEe3Fe3aac525c",
+        "DEPOSITOR_ADDRESS": "0x51353BFb9fB8baE6d70b896401937C64E96BAcB9",
+        "MAIN_ROUTER_ADDRESS": "0x9b0cb6E1B1BbA871b2738f3CCd10eC5eCe8DaBa7",
+        "MINTER_ADDRESS": "0xa6669a015DB6816F1233111e248A4eFAD84920a5",
         "TOKEN": {
             "WBTC": {
                 "name": "Wrapped Bitcoin",
@@ -270,6 +236,60 @@
                 "name": "Tether USD",
                 "decimals": 6,
                 "address": "0x75b86D7B224Fd88f785BB5FaC5e261D9EFde3047"
+            },
+            "DSC": {
+                "name": "DCS",
+                "decimals": 18,
+                "address": "0x23d3E4b7293A2e1CC9aBce03bb920D7E42480d17"
+            }
+        }
+    },
+    "84532": {
+        "name": "Base Sepolia",
+        "CHAIN_SELECTOR": "10344971235874465080",
+        "DEPOSITOR_ADDRESS": "0x6aE8f2481a6B871482e4D66e7Ceed6960B37D229",
+        "MAIN_ROUTER_ADDRESS": "0x9b0cb6E1B1BbA871b2738f3CCd10eC5eCe8DaBa7",
+        "MINTER_ADDRESS": "0x1658727bd2E390837D39c2fffE41e16Dc1D6c27b",
+        "TOKEN": {
+            "WBTC": {
+                "name": "Wrapped Bitcoin",
+                "decimals": 18,
+                "address": "0xF6905F1E4ad86f8C3a1Ebfca3E04a9e4d2adDD0D"
+            },
+            "WETH": {
+                "name": "Wrapped Ether",
+                "decimals": 18,
+                "address": "0x9a24BD7833859d2364EaD5A4aF4b16799693DF12"
+            },
+            "LINK": {
+                "name": "Chainlink",
+                "decimals": 18,
+                "address": "0x244ec7F5753b2Fc10d0C2bAaB1AB55850E73a3AB"
+            },
+            "AVAX": {
+                "name": "Avalanche",
+                "decimals": 18,
+                "address": "0xe257e2a67407144C918acaD5e11c2582F77c0B1a"
+            },
+            "UNI": {
+                "name": "Uniswap",
+                "decimals": 18,
+                "address": "0x32B8F75d2AC926a0a906F24df3e8Fe2bA17Bd80a"
+            },
+            "USDC": {
+                "name": "USD Coin",
+                "decimals": 6,
+                "address": "0xDFf5Ba9FCff83cE455e45De7572B6259b0E7D7dE"
+            },
+            "USDT": {
+                "name": "Tether USD",
+                "decimals": 6,
+                "address": "0x75b86D7B224Fd88f785BB5FaC5e261D9EFde3047"
+            },
+            "DSC": {
+                "name": "DSC",
+                "decimals": 18,
+                "address": "0x29040D0C5f2881F0102876B45A9E989813deC61A"
             }
         }
     }
