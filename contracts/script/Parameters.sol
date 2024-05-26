@@ -122,4 +122,12 @@ contract Parameters {
     address public constant POLYGON_AMOY_MINTER = 0xa6669a015DB6816F1233111e248A4eFAD84920a5; // v2
     address public constant BASE_SEPOLIA_MINTER = 0x1658727bd2E390837D39c2fffE41e16Dc1D6c27b; // v2
     address public constant OPTIMISM_SEPOLIA_MINTER = 0xD28f8454873CEb4de41d537257044510c3A1d616; // v2
+
+    // --------DSC TOKEN---------//
+    address public constant AVALANCHE_FUJI_DSC = 0xf7d270b5f6879feb65ed169b82f933eC75b4b624;
+    address public constant POLYGON_AMOY_DSC = 0x23d3E4b7293A2e1CC9aBce03bb920D7E42480d17;
+    address public constant BASE_SEPOLIA_DSC = 0x29040D0C5f2881F0102876B45A9E989813deC61A;
+    address public constant ARBITRUM_SEPOLIA_DSC = 0x15c51Cdd0b53789711C43a2d6C624dB20D52086E;
+    address public constant ETHEREUM_SEPOLIA_DSC = 0xDb287C159F397D561FA3B1235e0Afd652860ECdF;
+    address public constant OPTIMISM_SEPOLIA_DSC = 0x1A0303dCa8DBfb25DA3F3D37395BcC546ceC0Bf0;
 }
