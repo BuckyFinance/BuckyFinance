@@ -1,3 +1,4 @@
+const { parse } = require("dotenv");
 const { ethers } = require("ethers")
 require("dotenv").config()
 
@@ -41,23 +42,54 @@ function getRpcUrl(chainId) {
 }
 
 function switchCurrentChainId(chainId) {
+    console.log("Old chain id: ", currentChainID)
     currentChainID = chainId;
+    console.log("New chain id: ", currentChainID)
 }
 
-async function getCurrentChainId() {
-    const provider = getProvider();
+function formatOnChain(amount) {
+    const amountFormat = ethers.utils.formatUnits(amount, "ether");
+    return amountFormat;
+}
 
-    const network = await provider.getNetwork();
-    const chainId = network.chainId;
-    const networkName = network.name;
+function parseOnChain(amount, decimals) {
+    const amountInWei = ethers.utils.parseUnits(amount, decimals);
+    return amountInWei;
+}
 
-    return chainId;
+// async function getCurrentChainId() {
+//     const provider = getProvider();
+
+//     const network = await provider.getNetwork();
+//     const chainId = network.chainId;
+//     const networkName = network.name;
+
+//     return chainId;
+// }
+
+function getCurrentChainId() {
+    return currentChainID;
+}
+
+async function getWalletAddress() {
+    const wallet = getWallet();
+    const walletAddress = await wallet.getAddress();
+    return walletAddress;
+}
+
+function getNameOfDecimals(decimals) {
+    if (decimals == 6) {
+        return "mwei";
+    } else {
+        return "ether";
+    }
 }
 
 module.exports = {
-    currentChainID,
     getProvider,
     getWallet,
     getCurrentChainId,
     switchCurrentChainId,
+    getWalletAddress,
+    getNameOfDecimals,
 }

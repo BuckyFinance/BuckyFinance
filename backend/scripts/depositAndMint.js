@@ -10,6 +10,10 @@ const {
 } = require("./helper");
 const { mint } = require("./mint");
 
+async function checkCanDepositAndMint() {
+
+}
+
 async function approveToken(wallet, tokenInfo, amountIn) {
     const currentChainID = getCurrentChainId();
     const tokenContract = new Contract(tokenInfo.address, ERC20MockABI, wallet);
@@ -21,7 +25,7 @@ async function approveToken(wallet, tokenInfo, amountIn) {
     console.log(`Approved token with tx hash: ${tx.hash}`);
 }
 
-async function deposit(tokenSymbol, amountIn) {
+async function depositAndMint(tokenSymbol, amountToDeposit, desChainId, amountToMint) {
     const currentChainID = getCurrentChainId();
     const wallet = getWallet(currentChainID);
 
@@ -29,29 +33,42 @@ async function deposit(tokenSymbol, amountIn) {
     const depositorContract = new Contract(DEPOSITOR_ADDRESS, DepositorABI, wallet);
     // console.log(depositorContract);
     const tokenInfo = NetworkInfomation[currentChainID]["TOKEN"][tokenSymbol];
-
-    const amountInWei = ethers.utils.parseUnits(amountIn.toString(), tokenInfo.decimals);
+    const CHAIN_SELECTOR = NetworkInfomation[desChainId].CHAIN_SELECTOR;
+    const receiverAddress = NetworkInfomation[desChainId].CHAIN_SELECTOR;
+    const amountToDepositInWei = ethers.utils.parseUnits(amountToDeposit.toString(), tokenInfo.decimals);
+    const amountToMintInWei = ethers.utils.parseUnits(amountToMint.toString(), 18);
     const value = ethers.utils.parseEther("0.02");
     const gasLimit = ethers.utils.hexlify(1000000);
-    await approveToken(wallet, tokenInfo, amountIn);
+    await approveToken(wallet, tokenInfo, amountToDeposit);
 
-    const tx = await depositorContract.deposit(tokenInfo.address, amountInWei, {
-        gasLimit: gasLimit,
-        value: value,
-    });
+    const canDepositAndMint = await checkCanDepositAndMint();
+    if (canDepositAndMint == false) {
+        console.log(`Can't deposit and mint`);
+        return null;
+    }
+    const tx = await depositorContract.depositAndMint(
+        tokenInfo.address,
+        amountToDepositInWei,
+        CHAIN_SELECTOR,
+        receiverAddress,
+        amountToMintInWei,
+        {
+            gasLimit: gasLimit,
+            value: value,
+        }
+    );
     await tx.wait();
-    console.log(`Deposited with tx hash: ${tx.hash}`);
+    console.log(`Deposited and minted from chain ${currentChainID} to chain ${desChainId} with tx hash: ${tx.hash}`);
 }
 
 async function main() {
     switchCurrentChainId(11155111);
-    const currentChainID = getCurrentChainId();
     // console.log(currentChainID);
-    deposit("UNI", 50);
+    await depositAndMint("UNI", 25, 84532, 10);
 }
 
-// main();
+main();
 
 module.exports = {
-    deposit
+    depositAndMint,
 }
