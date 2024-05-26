@@ -47,7 +47,7 @@ contract Parameters {
 
     //---------MAIN_ROUTER_CONTRACT_ON_AVALANCHE_FUJI---------//
     // Need to fix this after deploying the MainRouter contract
-    address public constant AVALANCHE_FUJI_MAIN_ROUTER = 0x40EC0dB2C2f63F76AeBEfe1a4D88c895A2b30719; // fixed from previous version
+    address public constant AVALANCHE_FUJI_MAIN_ROUTER = 0x9b0cb6E1B1BbA871b2738f3CCd10eC5eCe8DaBa7; // v2
 
     //---------AGGREGATOR PRICE_FEED_ON_AVALANCHE_FUJI------------
 
@@ -108,18 +108,18 @@ contract Parameters {
     address public constant OPTIMISM_SEPOLIA_USDT = 0x75b86D7B224Fd88f785BB5FaC5e261D9EFde3047;
 
     // ---------DEPOSITOR DEPLOYED CONTRACTS---------//
-    address public constant AVALANCHE_FUJI_DEPOSITOR = 0x84C3baAf6566eC0d022D7dB67bCF86c501007D59; // fixed from previous version
-    address public constant ETHEREUM_SEPOLIA_DEPOSITOR = 0x597fA805bfc550d1d5BBA46425FC92555352aA51;
-    address public constant ARBITRUM_SEPOLIA_DEPOSITOR = 0xF543B7445B6f2699634e2863e98D65946Dd1D5c5; // fixed from previous version
-    address public constant POLYGON_AMOY_DEPOSITOR = 0x09484F76B7376D53FC5e4F52FaBEe3Fe3aac525c;
-    address public constant BASE_SEPOLIA_DEPOSITOR = 0x2165936Af562a3901e6d60C18B2e4a2B09898be6;
-    address public constant OPTIMISM_SEPOLIA_DEPOSITOR = 0x2165936Af562a3901e6d60C18B2e4a2B09898be6;
+    address public constant AVALANCHE_FUJI_DEPOSITOR = 0x35De3ceb32A829808A2D8f6Ae743d3ea62a2D7AA; // v2
+    address public constant ETHEREUM_SEPOLIA_DEPOSITOR = 0x7803DB4950e0Bc60F11ef7e38971D0D2fEF23E2E; // v2
+    address public constant ARBITRUM_SEPOLIA_DEPOSITOR = 0x04aA81701B59b5E390f0C2Cd7FA84BA63A82C944; // v2
+    address public constant POLYGON_AMOY_DEPOSITOR = 0x51353BFb9fB8baE6d70b896401937C64E96BAcB9; // v2
+    address public constant BASE_SEPOLIA_DEPOSITOR = 0x6aE8f2481a6B871482e4D66e7Ceed6960B37D229; // v2
+    address public constant OPTIMISM_SEPOLIA_DEPOSITOR = 0xC621BC66a58781B80E64b0754b1555453c9312d8; // v2
 
     // ---------MINTER DEPLOYED CONTRACTS---------//
-    address public constant AVALANCHE_FUJI_MINTER = 0xB093e4D95d5089F62E5C7A63387C62e1364De031; // fixed from previous version
-    address public constant ETHEREUM_SEPOLIA_MINTER = 0x170dd06d42000D32f325A102214b1304DAA757EB;
-    address public constant ARBITRUM_SEPOLIA_MINTER = 0xA7809a6373EE66a99269933395a311C01eD6d023;
-    address public constant POLYGON_AMOY_MINTER = 0xdAD6D150fF45C7ed553C259Ed55dd0c3AA797c5c; // fixed from previous version
-    address public constant BASE_SEPOLIA_MINTER = 0x09484F76B7376D53FC5e4F52FaBEe3Fe3aac525c;
-    address public constant OPTIMISM_SEPOLIA_MINTER = 0x09484F76B7376D53FC5e4F52FaBEe3Fe3aac525c;
+    address public constant AVALANCHE_FUJI_MINTER = 0x18d2483BDdad0e6DF259C780fc9d7C9774ebAcF5; // v2
+    address public constant ETHEREUM_SEPOLIA_MINTER = 0x8dBe4e6E57bcF80b59263158589cfa5f8d0B7838; // v2
+    address public constant ARBITRUM_SEPOLIA_MINTER = 0x9559e4655e0b5dD06Ce2fBecAC18C24abB54d0Fb; // v2
+    address public constant POLYGON_AMOY_MINTER = 0xa6669a015DB6816F1233111e248A4eFAD84920a5; // v2
+    address public constant BASE_SEPOLIA_MINTER = 0x1658727bd2E390837D39c2fffE41e16Dc1D6c27b; // v2
+    address public constant OPTIMISM_SEPOLIA_MINTER = 0xD28f8454873CEb4de41d537257044510c3A1d616; // v2
 }
