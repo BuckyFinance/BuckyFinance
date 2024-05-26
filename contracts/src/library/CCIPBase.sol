@@ -108,7 +108,8 @@ abstract contract CCIPBase is CCIPReceiver, Ownable {
     function _buildCCIPMessage(
         address _receiver,
         bytes memory _data,
-        address _feeTokenAddress
+        address _feeTokenAddress,
+        uint256 gasLimit
     ) internal pure returns (Client.EVM2AnyMessage memory) {
         return
             Client.EVM2AnyMessage({
@@ -116,7 +117,7 @@ abstract contract CCIPBase is CCIPReceiver, Ownable {
                 data: _data,
                 tokenAmounts: new Client.EVMTokenAmount[](0),
                 extraArgs: Client._argsToBytes(
-                    Client.EVMExtraArgsV1({gasLimit: 200_000})
+                    Client.EVMExtraArgsV1({gasLimit: gasLimit})
                 ),
                 feeToken: _feeTokenAddress
             });

@@ -206,9 +206,9 @@ contract Demo is Test {
 
         console.log("User health factor before redeeming: ", mainRouter.getUserHealthFactor(user));
 
-        vm.startBroadcast(user);
+        vm.startPrank(user);
         mainRouter.redeem(chainSelector, address(depositor), address(weth), amountRedeem);
-        vm.stopBroadcast();
+        vm.stopPrank();
 
         console.log("User health factor after redeeming: ", mainRouter.getUserHealthFactor(user));
     }
@@ -220,10 +220,21 @@ contract Demo is Test {
         console.log("User health factor before redeeming: ", mainRouter.getUserHealthFactor(user));
         console.log("User health factor if redeeming: ", mainRouter.calculateHealthFactor(0.8 ether, 1000 ether));
 
-        vm.startBroadcast(user);
+        vm.startPrank(user);
         vm.expectRevert(MainRouter.HealthFactorTooLow.selector);
         mainRouter.redeem(chainSelector, address(depositor), address(weth), amountRedeem);
-        vm.stopBroadcast();
+        vm.stopPrank();
+    }
+
+    function testDepositAndMint() external {
+        vm.startPrank(user);
+        weth.approve(address(depositor), 1 ether);
+        depositor.depositAndMint(address(weth), 1 ether, chainSelector, address(minter), 1000 ether);
+        vm.stopPrank();
+
+        console.log(mainRouter.getUserOverallCollateralValue(user));
+        console.log(mainRouter.getUserMintedOverall(user));
+
     }
 
     function testGetLTV() external DepositAndMint(weth, 1 ether, 1000 ether){

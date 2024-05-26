@@ -22,7 +22,8 @@ contract Minter is CCIPBase {
 
     enum TransactionReceive {
         DEPOSIT,
-        BURN
+        BURN,
+        DEPOSIT_MINT
     }
 
     enum TransactionSend {
@@ -38,6 +39,8 @@ contract Minter is CCIPBase {
 
     address private mainRouter;
     uint64 private mainRouterChainSelector;
+
+    uint256 private ccipBurnGasLimit = 300_000;
 
     constructor(uint64 _chainSelector, address _router, uint64 _mainRouterChainSelector, address _mainRouter) CCIPBase(_chainSelector, _router) {
         mainRouter = _mainRouter;
@@ -66,6 +69,10 @@ contract Minter is CCIPBase {
         mainRouterChainSelector = _newMainRouterChainSelector;
     }
 
+    function setCCIPBurnGasLimit(uint256 _newGasLimit) external onlyOwner {
+        ccipBurnGasLimit = _newGasLimit;
+    }
+
     function burn(uint256 _amount) external payable {
         feePay[msg.sender] += msg.value;
         minted[msg.sender] -= _amount;
@@ -78,7 +85,7 @@ contract Minter is CCIPBase {
         }
 
         bytes memory _data = abi.encode(TransactionReceive.BURN, abi.encode(msg.sender, _amount));
-        _ccipSend(msg.sender, _amount, _data);
+        _ccipSend(msg.sender, _amount, _data, ccipBurnGasLimit);
     }
 
     function mint(address _receiver, uint256 _amount) external onlyMainRouter(msg.sender) {
@@ -94,7 +101,8 @@ contract Minter is CCIPBase {
     function _ccipSend(
         address _sender,
         uint256 _amount,
-        bytes memory _data
+        bytes memory _data,
+        uint256 _gasLimit
     )   internal 
         onlyAllowListedDestinationChain(mainRouterChainSelector)
         validateReceiver(mainRouter)
@@ -103,7 +111,8 @@ contract Minter is CCIPBase {
         Client.EVM2AnyMessage memory _message = _buildCCIPMessage(
             mainRouter, 
             _data,
-            address(0)
+            address(0),
+            _gasLimit
         );
 
         IRouterClient _router = IRouterClient(getRouter());

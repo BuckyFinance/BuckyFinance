@@ -21,7 +21,8 @@ contract Depositor is CCIPBase {
 
     enum TransactionReceive {
         DEPOSIT,
-        BURN
+        BURN,
+        DEPOSIT_MINT
     }
     enum TransactionSend {
         REDEEM,
@@ -35,6 +36,9 @@ contract Depositor is CCIPBase {
 
     address private mainRouter;
     uint64 private mainRouterChainSelector;
+
+    uint256 private ccipDepositGasLimit = 300_000;
+    uint256 private ccipDepositAndMintGasLimit = 500_000;
 
     constructor(uint64 _chainSelector, address _router, uint64 _mainRouterChainSelector, address _mainRouter) CCIPBase(_chainSelector, _router) {
         mainRouter = _mainRouter;
@@ -71,6 +75,14 @@ contract Depositor is CCIPBase {
         isAllowedToken[_token] = _isAllowed;
     }
 
+    function setCCIPDepositGasLimit(uint256 _newGasLimit) external onlyOwner {
+        ccipDepositGasLimit = _newGasLimit;
+    }
+
+    function setCCIPDepositAndMintGasLimit(uint256 _newGasLimit) external onlyOwner {
+        ccipDepositAndMintGasLimit = _newGasLimit;
+    }
+
     function deposit(address _token, uint256 _amount) external payable onlyAllowedToken(_token) {
         feePay[msg.sender] += msg.value;
         _deposit(msg.sender, _token, _amount);
@@ -82,7 +94,20 @@ contract Depositor is CCIPBase {
         }
 
         bytes memory _data = abi.encode(TransactionReceive.DEPOSIT, abi.encode(msg.sender, _token, _amount));
-        _ccipSend(msg.sender, _token, _amount, _data);
+        _ccipSend(msg.sender, _token, _amount, _data, ccipDepositGasLimit);
+    }
+
+    function depositAndMint(address _token, uint256 _amount, uint64 _destinationChainSelector,address _receiver, uint256 _amountToMint) external payable onlyAllowedToken(_token) {
+        feePay[msg.sender] += msg.value;
+        _deposit(msg.sender, _token, _amount);
+
+        // if (chainSelector == mainRouterChainSelector) {
+        //     IMainRouter(mainRouter).depositAndMint(msg.sender, chainSelector, _token, _amount, _destinationChainSelector, _receiver, _amountToMint);
+        //     return;
+        // }
+
+        bytes memory _data = abi.encode(TransactionReceive.DEPOSIT_MINT, abi.encode(msg.sender, _token, _amount, _destinationChainSelector, _receiver, _amountToMint));
+        _ccipSend(msg.sender, _token, _amount, _data, ccipDepositAndMintGasLimit);
     }
 
     function _deposit(address _sender, address _token, uint256 _amount) internal {
@@ -104,7 +129,8 @@ contract Depositor is CCIPBase {
         address _sender,
         address _token,
         uint256 _amount,
-        bytes memory _data
+        bytes memory _data,
+        uint256 _gasLimit
     )   internal 
         onlyAllowListedDestinationChain(mainRouterChainSelector)
         validateReceiver(mainRouter)
@@ -113,7 +139,8 @@ contract Depositor is CCIPBase {
         Client.EVM2AnyMessage memory _message = _buildCCIPMessage(
             mainRouter, 
             _data,
-            address(0)
+            address(0),
+            _gasLimit
         );
 
         IRouterClient _router = IRouterClient(getRouter());
