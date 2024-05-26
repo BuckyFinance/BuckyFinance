@@ -38,7 +38,8 @@ contract MainRouter is CCIPBase, FunctionsBase {
     enum TransactionReceive {
         DEPOSIT,
         BURN,
-        DEPOSIT_MINT
+        DEPOSIT_MINT,
+        BURN_MINT
     }
 
     enum TransactionSend {
@@ -223,6 +224,17 @@ contract MainRouter is CCIPBase, FunctionsBase {
     )   external onlyAvalancheDepositor(msg.sender) {
         _deposit(_depositor, _chainSelector, _token, _amount);
         _mint(_destinationChainSelector, _receiver, _depositor, _amountToMint);
+    }
+
+    function burnAndMint(
+        address _burner,
+        uint64 _chainSelector,
+        uint256 _amount,
+        uint64 _destinationChainSelector,
+        address _receiver
+    ) external onlyAvalancheMinter(msg.sender) {
+        _burn(_burner, _chainSelector, _amount);
+        _mint(_destinationChainSelector, _receiver, _burner, _amount);
     }
 
     function deposit(address _depositor, uint64 _sourceChainSelector, address _token, uint256 _amount) external onlyAvalancheDepositor(msg.sender) {
@@ -573,6 +585,10 @@ contract MainRouter is CCIPBase, FunctionsBase {
             (address _depositor, address _token, uint256 _amount, uint64 _destinationChainSelector, address _receiver, uint256 _amountToMint) = abi.decode(_data, (address, address, uint256, uint64, address, uint256));
             _deposit(_depositor, _sourceChainSelector, _token, _amount);
             _mint(_destinationChainSelector, _receiver, _depositor, _amountToMint);
+        } else if (_transactionType == TransactionReceive.BURN_MINT) {
+            (address _burner, uint256 _amount, uint64 _destinationChainSelector, address _receiver) = abi.decode(_data, (address, uint256, uint64, address));
+            _burn(_burner, _sourceChainSelector, _amount);
+            _mint(_destinationChainSelector, _receiver, _burner, _amount);
         }
     }
     

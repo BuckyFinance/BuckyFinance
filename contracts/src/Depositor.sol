@@ -22,7 +22,8 @@ contract Depositor is CCIPBase {
     enum TransactionReceive {
         DEPOSIT,
         BURN,
-        DEPOSIT_MINT
+        DEPOSIT_MINT,
+        BURN_MINT
     }
     enum TransactionSend {
         REDEEM,

@@ -23,7 +23,8 @@ contract Minter is CCIPBase {
     enum TransactionReceive {
         DEPOSIT,
         BURN,
-        DEPOSIT_MINT
+        DEPOSIT_MINT,
+        BURN_MINT
     }
 
     enum TransactionSend {
@@ -40,7 +41,8 @@ contract Minter is CCIPBase {
     address private mainRouter;
     uint64 private mainRouterChainSelector;
 
-    uint256 private ccipBurnGasLimit = 300_000;
+    uint256 private ccipBurnGasLimit = 500_000;
+    uint256 private ccipBurnAndMintGasLimit = 1_000_000;
 
     constructor(uint64 _chainSelector, address _router, uint64 _mainRouterChainSelector, address _mainRouter) CCIPBase(_chainSelector, _router) {
         mainRouter = _mainRouter;
@@ -92,6 +94,21 @@ contract Minter is CCIPBase {
 
         bytes memory _data = abi.encode(TransactionReceive.BURN, abi.encode(msg.sender, _amount));
         _ccipSend(msg.sender, _amount, _data, ccipBurnGasLimit);
+    }
+
+    function burnAndMint(uint256 _amount, uint64 _destinationChainSelector, address _receiver) external payable {
+        feePay[msg.sender] += msg.value;
+        minted[msg.sender] -= _amount;
+        IERC20(address(dsc)).safeTransferFrom(msg.sender, address(this), _amount);
+        dsc.burn(_amount);
+
+        if (chainSelector == mainRouterChainSelector) {
+            IMainRouter(mainRouter).burnAndMint(msg.sender, chainSelector, _amount, _destinationChainSelector, _receiver);
+            return;
+        }
+
+        bytes memory _data = abi.encode(TransactionReceive.BURN_MINT, abi.encode(msg.sender, _amount, _destinationChainSelector, _receiver));
+        _ccipSend(msg.sender, _amount, _data, ccipBurnAndMintGasLimit);
     }
 
     function mint(address _receiver, uint256 _amount) external onlyMainRouter(msg.sender) {
