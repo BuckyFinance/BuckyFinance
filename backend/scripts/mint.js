@@ -9,15 +9,13 @@ const {
 } = require("./helper");
 const { getMaxOutputCanBeMinted } = require("./getMaxOutput");
 
-
-
 async function mint(chainId, amountOut) {
     const avalancheFujiChainId = 43113;
     const wallet = getWallet(avalancheFujiChainId);
 
     const CHAIN_SELECTOR = NetworkInfomation[chainId].CHAIN_SELECTOR;
     const receiverAddress = NetworkInfomation[chainId].MINTER_ADDRESS;
-    const mainRouterAddress = NetworkInfomation[chainId].MAIN_ROUTER_ADDRESS;
+    const mainRouterAddress = NetworkInfomation[avalancheFujiChainId].MAIN_ROUTER_ADDRESS;
 
     const mainRouterContract = new Contract(mainRouterAddress, MainRouterABI, wallet);
     const amountOutInWei = ethers.utils.parseUnits(amountOut, 18);
@@ -26,16 +24,16 @@ async function mint(chainId, amountOut) {
 
     const canBeMinted = await getMaxOutputCanBeMinted();
 
-    if (canBeMinted < amountOut) {
-        return null;
-    }
+    // if (canBeMinted < amountOut) {
+    //     return null;
+    // }
 
     const tx = await mainRouterContract.mint(CHAIN_SELECTOR, receiverAddress, amountOutInWei, {
         gasLimit: gasLimit,
         value: value,
     });
     await tx.wait();
-    console.log(tx.hash);
+    console.log(`Minted with tx hash: ${tx.hash}`);
 }
 
 module.exports = {

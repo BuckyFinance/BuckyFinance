@@ -39,7 +39,7 @@ async function deposit(tokenSymbol, amountIn) {
         value: value,
     });
     await tx.wait();
-    console.log(tx.hash);
+    console.log(`Deposited with tx hash: ${tx.hash}`);
 }
 
 module.exports = {

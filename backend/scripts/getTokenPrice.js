@@ -19,7 +19,7 @@ async function getTokenPrice(tokenSymbol) {
     const tokenAddress = NetworkInfomation[avalancheFujiChainId]["TOKEN"][tokenSymbol].address;
 
     const priceFeedsInUsd = await mainRouterContract.getTokenPrice(tokenAddress);
-    console.log(priceFeedsInUsd.toString());
+    console.log(`Price of token ${tokenSymbol}: ${priceFeedsInUsd.toString()}`);
     return priceFeedsInUsd.toString();
 }
 

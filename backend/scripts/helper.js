@@ -17,7 +17,7 @@ function getProvider(rpcUrl) {
 function getWallet(chainId) {
     const rpcUrl = getRpcUrl(chainId);
     const provider = getProvider(rpcUrl);
-    const privateKey = process.env.PRIVATE_KEY;
+    const privateKey = process.env.PRIVATE_KEY; // replace with user wallet
     const wallet = new ethers.Wallet(privateKey, provider);
     return wallet;
 }
