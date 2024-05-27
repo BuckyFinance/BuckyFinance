@@ -188,6 +188,23 @@ contract Minter is CCIPBase {
         return _fees;
     }
 
+    function getBurnAndMintFee(uint256 _amount, uint64 _destinationChainSelector, address _receiver) public view returns(uint256) {
+        if (chainSelector == mainRouterChainSelector){
+            return 0;
+        }
+        bytes memory _data = abi.encode(TransactionReceive.BURN_MINT, abi.encode(msg.sender, _amount, _destinationChainSelector, _receiver));
+        Client.EVM2AnyMessage memory _message = _buildCCIPMessage(
+            mainRouter, 
+            _data,
+            address(0),
+            ccipBurnAndMintGasLimit
+        );
+
+        IRouterClient _router = IRouterClient(getRouter());
+        uint256 _fees = _router.getFee(mainRouterChainSelector, _message);
+        return _fees;
+    }
+
     function getMinted(address _user) public view returns (uint256) {
         return minted[_user];
     }

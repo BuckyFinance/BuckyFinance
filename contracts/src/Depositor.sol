@@ -38,7 +38,7 @@ contract Depositor is CCIPBase {
     address private mainRouter;
     uint64 private mainRouterChainSelector;
 
-    uint256 private ccipDepositGasLimit = 300_000;
+    uint256 private ccipDepositGasLimit = 500_000;
     uint256 private ccipDepositAndMintGasLimit = 1_000_000;
 
     constructor(uint64 _chainSelector, address _router, uint64 _mainRouterChainSelector, address _mainRouter) CCIPBase(_chainSelector, _router) {

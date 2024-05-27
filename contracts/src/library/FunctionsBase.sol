@@ -74,4 +74,8 @@ abstract contract FunctionsBase is FunctionsClient, Ownable {
     function getSource() public view returns (string memory) {
         return source;
     }
+
+    function getRequestIdToUser(bytes32 _requestId) public view returns (address) {
+        return requestIdToUser[_requestId];
+    }
 }

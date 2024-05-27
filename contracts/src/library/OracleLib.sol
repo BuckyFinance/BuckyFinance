@@ -24,6 +24,16 @@ library OracleLib {
         return secondsSince;
     }
 
+    function checkLatestRoundData(AggregatorV3Interface chainlinkFeed)
+        public
+        view
+        returns (uint80, int256, uint256, uint256, uint80)
+    {
+        (uint80 roundId, int256 answer, uint256 startedAt, uint256 updatedAt, uint80 answeredInRound) =
+            chainlinkFeed.latestRoundData();
+        return (roundId, answer, startedAt, updatedAt, answeredInRound);
+    }
+
     function staleCheckLatestRoundData(AggregatorV3Interface chainlinkFeed)
         public
         view
