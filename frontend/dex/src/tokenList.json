@@ -1,0 +1,344 @@
+[
+    {
+        "chainName": "Sepolia",
+        "chainID": 11155111,
+        "chainToken": "ETH",
+        "img": "https://cryptologos.cc/logos/ethereum-eth-logo.svg?v=032",
+        "tokens": [
+            {
+                "ticker": "WBTC",
+                "img": "https://cdn.moralis.io/eth/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png",
+                "name": "Wrapped Bitcoin",
+                "address": "0x4aa3B1639d45Cb98a67790b8509E47bD7aa16D2A",
+                "decimals": 8
+            },
+            {
+                "ticker": "WETH",
+                "img": "https://cdn.moralis.io/eth/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+                "name": "Wrapped Ethereum",
+                "address": "0x9124d3b5DfD072bB2d6cf3e3A59430d2a5D8A55D",
+                "decimals": 18
+            }, 
+            {
+                "ticker": "LINK",
+                "img": "https://cdn.moralis.io/eth/0x514910771af9ca656af840dff83e8264ecf986ca.png",
+                "name": "Chainlink",
+                "address": "0x31A4Ae750C0e8d477Dd39AF3662F93e69021AA50",
+                "decimals": 18
+            },
+            {
+                "ticker": "AVAX",
+                "img": "https://cryptologos.cc/logos/avalanche-avax-logo.png",
+                "name": "Avalanche",
+                "address": "0xdd36FB413B4470ab5CE67F975c6A2B192e6F84ba",
+                "decimals": 8
+            },
+            {
+                "ticker": "UNI",
+                "img": "https://cdn.moralis.io/eth/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.png",
+                "name": "Uniswap",
+                "address": "0x492E85cD024A271C4F19d8B7E9050Ef2bbFeDcCA",
+                "decimals": 18
+            },
+            {
+                "ticker": "USDC",
+                "img": "https://cdn.moralis.io/eth/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+                "name": "USD Coin",
+                "address": "0x65Ae0010421814B1303778Bc82a599f63028d899",
+                "decimals": 6
+            },
+            {
+                "ticker": "USDT",
+                "img": "https://cdn.moralis.io/eth/0xdac17f958d2ee523a2206206994597c13d831ec7.png",
+                "name": "Tether USD",
+                "address": "0xB3718E52781F9Fc1C0b72A2966C2616E6d962a1C",
+                "decimals": 6
+            }
+        ]  
+    },
+    {
+        "chainName": "Arbitrum Sepolia",
+        "chainID": 421614,
+        "chainToken": "ETH",
+        "img": "https://cryptologos.cc/logos/arbitrum-arb-logo.svg?v=032",
+        "tokens": [
+            {
+                "ticker": "WBTC",
+                "img": "https://cdn.moralis.io/eth/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png",
+                "name": "Wrapped Bitcoin",
+                "address": "0xF6905F1E4ad86f8C3a1Ebfca3E04a9e4d2adDD0D",
+                "decimals": 8
+            },
+            {
+                "ticker": "WETH",
+                "img": "https://cdn.moralis.io/eth/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+                "name": "Wrapped Ethereum",
+                "address": "0x9a24BD7833859d2364EaD5A4aF4b16799693DF12",
+                "decimals": 18
+            }, 
+            {
+                "ticker": "LINK",
+                "img": "https://cdn.moralis.io/eth/0x514910771af9ca656af840dff83e8264ecf986ca.png",
+                "name": "Chainlink",
+                "address": "0x244ec7F5753b2Fc10d0C2bAaB1AB55850E73a3AB",
+                "decimals": 18
+            },
+            {
+                "ticker": "AVAX",
+                "img": "https://cryptologos.cc/logos/avalanche-avax-logo.png",
+                "name": "Avalanche",
+                "address": "0xe257e2a67407144C918acaD5e11c2582F77c0B1a",
+                "decimals": 8
+            },
+            {
+                "ticker": "UNI",
+                "img": "https://cdn.moralis.io/eth/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.png",
+                "name": "Uniswap",
+                "address": "0x32B8F75d2AC926a0a906F24df3e8Fe2bA17Bd80a",
+                "decimals": 18
+            },
+            {
+                "ticker": "USDC",
+                "img": "https://cdn.moralis.io/eth/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+                "name": "USD Coin",
+                "address": "0xDFf5Ba9FCff83cE455e45De7572B6259b0E7D7dE",
+                "decimals": 6
+            },
+            {
+                "ticker": "USDT",
+                "img": "https://cdn.moralis.io/eth/0xdac17f958d2ee523a2206206994597c13d831ec7.png",
+                "name": "Tether USD",
+                "address": "0x75b86D7B224Fd88f785BB5FaC5e261D9EFde3047",
+                "decimals": 6
+            }
+        ]  
+    },
+    {
+        "chainName": "Avalanche Fuji",
+        "chainID": 43113,
+        "chainToken": "AVAX",
+        "img": "https://cryptologos.cc/logos/avalanche-avax-logo.svg?v=032",
+        "tokens": [
+            {
+                "ticker": "WBTC",
+                "img": "https://cdn.moralis.io/eth/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png",
+                "name": "Wrapped Bitcoin",
+                "address": "0x0804BfEC3ef24bc6CA0eb399D108CC0313d86d9c",
+                "decimals": 8
+            },
+            {
+                "ticker": "WETH",
+                "img": "https://cdn.moralis.io/eth/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+                "name": "Wrapped Ethereum",
+                "address": "0x51353BFb9fB8baE6d70b896401937C64E96BAcB9",
+                "decimals": 18
+            }, 
+            {
+                "ticker": "LINK",
+                "img": "https://cdn.moralis.io/eth/0x514910771af9ca656af840dff83e8264ecf986ca.png",
+                "name": "Chainlink",
+                "address": "0x3001d62eBc86ab3A4eF91aFed766BB70182e251c",
+                "decimals": 18
+            },
+            {
+                "ticker": "AVAX",
+                "img": "https://cryptologos.cc/logos/avalanche-avax-logo.png",
+                "name": "Avalanche",
+                "address": "0xD28f8454873CEb4de41d537257044510c3A1d616",
+                "decimals": 8
+            },
+            {
+                "ticker": "UNI",
+                "img": "https://cdn.moralis.io/eth/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.png",
+                "name": "Uniswap",
+                "address": "0x6cC55345982d82e3E6dC704a64cdbD58a6421b7A",
+                "decimals": 18
+            },
+            {
+                "ticker": "USDC",
+                "img": "https://cdn.moralis.io/eth/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+                "name": "USD Coin",
+                "address": "0x620476fe1Bc36a37530b416B7d658024D5966b08",
+                "decimals": 6
+            },
+            {
+                "ticker": "USDT",
+                "img": "https://cdn.moralis.io/eth/0xdac17f958d2ee523a2206206994597c13d831ec7.png",
+                "name": "Tether USD",
+                "address": "0xAcA1eA8547E247a3125Da273b16C17Badc4f0812",
+                "decimals": 6
+            }
+        ]  
+    },
+    {
+        "chainName": "Polygon Amoy",
+        "chainID": 80002,
+        "chainToken": "MATIC",
+        "img": "https://cryptologos.cc/logos/polygon-matic-logo.svg?v=032",
+        "tokens": [
+            {
+                "ticker": "WBTC",
+                "img": "https://cdn.moralis.io/eth/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png",
+                "name": "Wrapped Bitcoin",
+                "address": "0xF6905F1E4ad86f8C3a1Ebfca3E04a9e4d2adDD0D",
+                "decimals": 8
+            },
+            {
+                "ticker": "WETH",
+                "img": "https://cdn.moralis.io/eth/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+                "name": "Wrapped Ethereum",
+                "address": "0x9a24BD7833859d2364EaD5A4aF4b16799693DF12",
+                "decimals": 18
+            }, 
+            {
+                "ticker": "LINK",
+                "img": "https://cdn.moralis.io/eth/0x514910771af9ca656af840dff83e8264ecf986ca.png",
+                "name": "Chainlink",
+                "address": "0x244ec7F5753b2Fc10d0C2bAaB1AB55850E73a3AB",
+                "decimals": 18
+            },
+            {
+                "ticker": "AVAX",
+                "img": "https://cryptologos.cc/logos/avalanche-avax-logo.png",
+                "name": "Avalanche",
+                "address": "0xe257e2a67407144C918acaD5e11c2582F77c0B1a",
+                "decimals": 8
+            },
+            {
+                "ticker": "UNI",
+                "img": "https://cdn.moralis.io/eth/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.png",
+                "name": "Uniswap",
+                "address": "0x32B8F75d2AC926a0a906F24df3e8Fe2bA17Bd80a",
+                "decimals": 18
+            },
+            {
+                "ticker": "USDC",
+                "img": "https://cdn.moralis.io/eth/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+                "name": "USD Coin",
+                "address": "0xDFf5Ba9FCff83cE455e45De7572B6259b0E7D7dE",
+                "decimals": 6
+            },
+            {
+                "ticker": "USDT",
+                "img": "https://cdn.moralis.io/eth/0xdac17f958d2ee523a2206206994597c13d831ec7.png",
+                "name": "Tether USD",
+                "address": "0x75b86D7B224Fd88f785BB5FaC5e261D9EFde3047",
+                "decimals": 6
+            }
+        ]  
+    },
+    {
+        "chainName": "Base Sepolia",
+        "chainID": 84532,
+        "chainToken": "ETH",
+        "img": "https://avatars.githubusercontent.com/u/108554348?s=200&v=4",
+        "tokens": [
+            {
+                "ticker": "WBTC",
+                "img": "https://cdn.moralis.io/eth/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png",
+                "name": "Wrapped Bitcoin",
+                "address": "0xF6905F1E4ad86f8C3a1Ebfca3E04a9e4d2adDD0D",
+                "decimals": 8
+            },
+            {
+                "ticker": "WETH",
+                "img": "https://cdn.moralis.io/eth/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+                "name": "Wrapped Ethereum",
+                "address": "0x9a24BD7833859d2364EaD5A4aF4b16799693DF12",
+                "decimals": 18
+            }, 
+            {
+                "ticker": "LINK",
+                "img": "https://cdn.moralis.io/eth/0x514910771af9ca656af840dff83e8264ecf986ca.png",
+                "name": "Chainlink",
+                "address": "0x244ec7F5753b2Fc10d0C2bAaB1AB55850E73a3AB",
+                "decimals": 18
+            },
+            {
+                "ticker": "AVAX",
+                "img": "https://cryptologos.cc/logos/avalanche-avax-logo.png",
+                "name": "Avalanche",
+                "address": "0xe257e2a67407144C918acaD5e11c2582F77c0B1a",
+                "decimals": 8
+            },
+            {
+                "ticker": "UNI",
+                "img": "https://cdn.moralis.io/eth/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.png",
+                "name": "Uniswap",
+                "address": "0x32B8F75d2AC926a0a906F24df3e8Fe2bA17Bd80a",
+                "decimals": 18
+            },
+            {
+                "ticker": "USDC",
+                "img": "https://cdn.moralis.io/eth/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+                "name": "USD Coin",
+                "address": "0xDFf5Ba9FCff83cE455e45De7572B6259b0E7D7dE",
+                "decimals": 6
+            },
+            {
+                "ticker": "USDT",
+                "img": "https://cdn.moralis.io/eth/0xdac17f958d2ee523a2206206994597c13d831ec7.png",
+                "name": "Tether USD",
+                "address": "0x75b86D7B224Fd88f785BB5FaC5e261D9EFde3047",
+                "decimals": 6
+            }
+        ]  
+    },
+    {
+        "chainName": "OP Sepolia",
+        "chainID": 11155420,
+        "chainToken": "ETH",
+        "img": "https://cryptologos.cc/logos/optimism-ethereum-op-logo.svg?v=032",
+        "tokens": [
+            {
+                "ticker": "WBTC",
+                "img": "https://cdn.moralis.io/eth/0x2260fac5e5542a773aa44fbcfedf7c193bc2c599.png",
+                "name": "Wrapped Bitcoin",
+                "address": "0xF6905F1E4ad86f8C3a1Ebfca3E04a9e4d2adDD0D",
+                "decimals": 8
+            },
+            {
+                "ticker": "WETH",
+                "img": "https://cdn.moralis.io/eth/0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2.png",
+                "name": "Wrapped Ethereum",
+                "address": "0x9a24BD7833859d2364EaD5A4aF4b16799693DF12",
+                "decimals": 18
+            }, 
+            {
+                "ticker": "LINK",
+                "img": "https://cdn.moralis.io/eth/0x514910771af9ca656af840dff83e8264ecf986ca.png",
+                "name": "Chainlink",
+                "address": "0x244ec7F5753b2Fc10d0C2bAaB1AB55850E73a3AB",
+                "decimals": 18
+            },
+            {
+                "ticker": "AVAX",
+                "img": "https://cryptologos.cc/logos/avalanche-avax-logo.png",
+                "name": "Avalanche",
+                "address": "0xe257e2a67407144C918acaD5e11c2582F77c0B1a",
+                "decimals": 8
+            },
+            {
+                "ticker": "UNI",
+                "img": "https://cdn.moralis.io/eth/0x1f9840a85d5af5bf1d1762f925bdaddc4201f984.png",
+                "name": "Uniswap",
+                "address": "0x32B8F75d2AC926a0a906F24df3e8Fe2bA17Bd80a",
+                "decimals": 18
+            },
+            {
+                "ticker": "USDC",
+                "img": "https://cdn.moralis.io/eth/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
+                "name": "USD Coin",
+                "address": "0xDFf5Ba9FCff83cE455e45De7572B6259b0E7D7dE",
+                "decimals": 6
+            },
+            {
+                "ticker": "USDT",
+                "img": "https://cdn.moralis.io/eth/0xdac17f958d2ee523a2206206994597c13d831ec7.png",
+                "name": "Tether USD",
+                "address": "0x75b86D7B224Fd88f785BB5FaC5e261D9EFde3047",
+                "decimals": 6
+            }
+        ]  
+    }
+]

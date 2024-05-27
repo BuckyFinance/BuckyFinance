@@ -70,19 +70,19 @@ contract MainRouter is CCIPBase, FunctionsBase {
 
     mapping (address => uint256) private feePay;
 
-    uint256 ccipGasLimit = 300_000;
+    uint256 private ccipGasLimit = 300_000;
 
-    uint256 private constant BASE_LTV = 65e18;
-    uint256 private constant MAX_LTV = 75e18;
-    uint256 private constant LIQUIDATION_THRESHOLD = 80e18;
-    uint256 private constant LIQUIDATION_PENALTY = 6e18;
+    uint256 public constant BASE_LTV = 65e18;
+    uint256 public constant MAX_LTV = 75e18;
+    uint256 public constant LIQUIDATION_THRESHOLD = 80e18;
+    uint256 public constant LIQUIDATION_PENALTY = 6e18;
 
 
-    uint256 private constant MIN_HEALTH_FACTOR = 1e18;
-    uint256 private constant FEED_PRECISION = 1e10;
-    uint256 private constant LIQUIDATION_PRECISION = 1e20;
-    uint256 private constant PRECISION = 1e18;
-    uint256 private constant CREDIT_PRECISION = 1e3;
+    uint256 public constant MIN_HEALTH_FACTOR = 1e18;
+    uint256 public constant FEED_PRECISION = 1e10;
+    uint256 public constant LIQUIDATION_PRECISION = 1e20;
+    uint256 public constant PRECISION = 1e18;
+    uint256 public constant CREDIT_PRECISION = 1e3;
 
     constructor (
         uint64 _chainSelector,
@@ -144,6 +144,17 @@ contract MainRouter is CCIPBase, FunctionsBase {
         isAllowedTokens[_chainSelector][_token] = false;
         allowedTokens[_chainSelector].remove(_token);
         priceFeeds[_chainSelector][_token] = address(0);
+    }
+
+    function changePriceFeed(
+        uint64 _chainSelector,
+        address _token,
+        address _priceFeed
+    )   external 
+        onlyOwner 
+        onlyAllowedToken(_chainSelector, _token) 
+    {
+        priceFeeds[_chainSelector][_token] = _priceFeed;
     }
 
     function setCCIPGasLimit(uint256 _newGasLimit) external onlyOwner {
