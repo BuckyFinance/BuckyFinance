@@ -29,8 +29,7 @@ async function mint(chainId, amountOut) {
     const amountOutInWei = ethers.utils.parseUnits(amountOut, 18);
     const gasLimit = ethers.utils.hexlify(1000000);
     const value = await getMintFeeOnChain(mainRouterContract, CHAIN_SELECTOR, receiverAddress, amountOutInWei);
-    const walletAddress = await getWalletAddress();
-    const canBeMinted = await getMaxOutputCanBeMinted(walletAddress);
+    const canBeMinted = await getMaxOutputCanBeMinted();
 
     // console.log(canBeMinted);
     // console.log(amountOut);

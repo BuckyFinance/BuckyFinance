@@ -6,9 +6,10 @@ const {
     getWalletAddress
 } = require("./helper")
 
-async function getHealthFactor(walletAddress) {
+async function getHealthFactor() {
     const avalancheFujiChainId = 43113;
     const wallet = getWallet(avalancheFujiChainId);
+    const walletAddress = await getWalletAddress();
 
     const mainRouterAddress = NetworkInfomation[avalancheFujiChainId].MAIN_ROUTER_ADDRESS;
     const mainRouterContract = new Contract(mainRouterAddress, MainRouterABI, wallet);

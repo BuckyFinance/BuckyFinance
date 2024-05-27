@@ -10,9 +10,10 @@ const {
 const { getTotalDepositedValueOverallChain } = require("../scripts/getDeposited");
 const { getTotalMintedValueOverallChain } = require("../scripts/getMinted");
 
-async function getMaxOutputCanBeMintedOnChain(walletAddress) {
+async function getMaxOutputCanBeMintedOnChain() {
     const avalancheFujiChainId = 43113;
     const wallet = getWallet(avalancheFujiChainId);
+    const walletAddress = await getWalletAddress();
     const MAIN_ROUTER_ADDRESS = NetworkInfomation[avalancheFujiChainId].MAIN_ROUTER_ADDRESS;
     const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, wallet);
 
@@ -22,11 +23,11 @@ async function getMaxOutputCanBeMintedOnChain(walletAddress) {
     return canBeMintedFormat;
 }
 
-async function getMaxOutputCanBeMinted(walletAddress) {
-    const totalDeposited = await getTotalDepositedValueOverallChain(walletAddress);
+async function getMaxOutputCanBeMinted() {
+    const totalDeposited = await getTotalDepositedValueOverallChain();
     const LTV = 0.65;
     const maxOutput = totalDeposited * LTV;
-    const totalMinted = await getTotalMintedValueOverallChain(walletAddress);
+    const totalMinted = await getTotalMintedValueOverallChain();
     const canBeMinted = maxOutput - totalMinted;
     console.log(`Max Output can be minted: ${canBeMinted}`);
     return canBeMinted;
@@ -37,7 +38,7 @@ async function main() {
     const currentChainID = getCurrentChainId();
     const walletAddress = await getWalletAddress();
     // const canBeMinted = await getMaxOutputCanBeMinted(walletAddress);
-    const canBeMinted = await getMaxOutputCanBeMintedOnChain(walletAddress);
+    const canBeMinted = await getMaxOutputCanBeMintedOnChain();
 }
 
 // main();

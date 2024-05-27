@@ -10,9 +10,10 @@ const {
 } = require("./helper")
 
 
-async function getTotalMintedValueOnChain(chainId, walletAddress) {
+async function getTotalMintedValueOnChain(chainId) {
     const avalancheFujiChainId = 43113;
     const wallet = getWallet(avalancheFujiChainId);
+    const walletAddress = await getWalletAddress();
 
     const MAIN_ROUTER_ADDRESS = NetworkInfomation[chainId].MAIN_ROUTER_ADDRESS;
     const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, wallet);
@@ -24,9 +25,10 @@ async function getTotalMintedValueOnChain(chainId, walletAddress) {
     return totalMintedFormat;
 }
 
-async function getTotalMintedValueOverallChain(walletAddress) {
+async function getTotalMintedValueOverallChain() {
     const avalancheFujiChainId = 43113;
     const wallet = getWallet(avalancheFujiChainId);
+    const walletAddress = await getWalletAddress();
 
     const MAIN_ROUTER_ADDRESS = NetworkInfomation[avalancheFujiChainId].MAIN_ROUTER_ADDRESS;
     const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, wallet);
@@ -39,8 +41,8 @@ async function getTotalMintedValueOverallChain(walletAddress) {
 
 async function main() {
     const walletAddress = await getWalletAddress();
-    await getTotalMintedValueOnChain(84532, walletAddress);
-    await getTotalMintedValueOverallChain(walletAddress);
+    await getTotalMintedValueOnChain(84532);
+    await getTotalMintedValueOverallChain();
 }
 
 // main();

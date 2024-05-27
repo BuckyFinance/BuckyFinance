@@ -6,9 +6,10 @@ const {
     getWalletAddress,
 } = require("./helper")
 
-async function getFractionToLTV(walletAddress) {
+async function getFractionToLTV() {
     const avalancheFujiChainId = 43113;
     const wallet = getWallet(avalancheFujiChainId);
+    const walletAddress = await getWalletAddress();
 
     const mainRouterAddress = NetworkInfomation[avalancheFujiChainId].MAIN_ROUTER_ADDRESS;
     const mainRouterContract = new Contract(mainRouterAddress, MainRouterABI, wallet);
@@ -25,7 +26,7 @@ async function getFractionToLTV(walletAddress) {
 
 async function main() {
     const walletAddress = await getWalletAddress();
-    const fractionToLTV = await getFractionToLTV(walletAddress);
+    const fractionToLTV = await getFractionToLTV();
     console.log(fractionToLTV);
 }
 

@@ -23,8 +23,7 @@ async function redeem(chainId, tokenSymbol, amountToRedeem) {
     const wallet = getWallet(avalancheFujiChainId);
     const MAIN_ROUTER_ADDRESS = NetworkInfomation[chainId].MAIN_ROUTER_ADDRESS;
     const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, wallet);
-    const walletAddress = getWalletAddress();
-    const totalDepositedOnChain = await getDepositedAmount(chainId, tokenSymbol, walletAddress);
+    const totalDepositedOnChain = await getDepositedAmount(chainId, tokenSymbol);
 
     // console.log(totalDepositedOnChain);
     // console.log(amountToRedeem);

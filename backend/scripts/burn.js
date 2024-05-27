@@ -30,7 +30,7 @@ async function burn(chainId, amountToBurn) {
     const MINTER_ADDRESS = NetworkInfomation[chainId].MINTER_ADDRESS;
     const minterContract = new Contract(MINTER_ADDRESS, MinterABI, wallet);
     const walletAddress = await getWalletAddress();
-    const totalMintedOnchain = await getTotalMintedValueOnChain(chainId, walletAddress);
+    const totalMintedOnchain = await getTotalMintedValueOnChain(chainId);
     // console.log(totalMintedOnchain);
     // console.log(amountToBurn);
     if (totalMintedOnchain < amountToBurn) {

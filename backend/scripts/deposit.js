@@ -31,6 +31,7 @@ async function deposit(tokenSymbol, amountIn) {
     const tokenInfo = NetworkInfomation[currentChainID]["TOKEN"][tokenSymbol];
 
     const amountInWei = ethers.utils.parseUnits(amountIn.toString(), tokenInfo.decimals);
+    // get fee to deposit on chain
     const value = ethers.utils.parseEther("0.02");
     const gasLimit = ethers.utils.hexlify(1000000);
     await approveToken(wallet, tokenInfo, amountIn);
@@ -44,7 +45,7 @@ async function deposit(tokenSymbol, amountIn) {
 }
 
 async function main() {
-    switchCurrentChainId(11155111);
+    switchCurrentChainId(84532);
     const currentChainID = getCurrentChainId();
     // console.log(currentChainID);
     deposit("UNI", 50);

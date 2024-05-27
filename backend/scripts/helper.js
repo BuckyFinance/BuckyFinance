@@ -20,6 +20,7 @@ function getWallet(chainId) {
     const provider = getProvider(rpcUrl);
     const privateKey = process.env.PRIVATE_KEY; // replace with user wallet
     const wallet = new ethers.Wallet(privateKey, provider);
+    // console.log(wallet);
     return wallet;
 }
 
@@ -84,6 +85,12 @@ function getNameOfDecimals(decimals) {
         return "ether";
     }
 }
+
+async function main() {
+    getWallet(11155111);
+}
+
+// main();
 
 module.exports = {
     getProvider,
