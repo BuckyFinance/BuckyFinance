@@ -23,6 +23,12 @@ mint_token:
 deposit_token:
 	@forge script script/interaction/Deposit.s.sol:Deposit --sig "deposit(address,uint256,uint256)" $(TOKEN) $(AMOUNT) $(ETHER) --rpc-url $(RPC_URL) --account $(ACCOUNT) --sender $(OWNER_ADDRESS) --broadcast
 
+deposit_and_mint:
+	@forge script script/interaction/DepositAndMint.s.sol:DepositAndMint --sig "depositAndMint(address,uint256,uint64,address,uint256,uint256)" $(TOKEN) $(AMOUNT) $(CHAIN_SELECTOR) $(MINTER) $(AMOUNT_TO_MINT) $(ETHER) --account $(ACCOUNT) --sender $(OWNER_ADDRESS) --rpc-url $(RPC_URL) --broadcast
+
+setCCIPFee:
+	@forge script script/interaction/SetCCIPFee.s.sol:SetCCIPFee --sig "setFee(uint256)" $(FEE) --rpc-url $(RPC_URL) --account $(ACCOUNT) --sender $(OWNER_ADDRESS) --broadcast
+
 redeem_token:
 	@forge script script/interaction/Redeem.s.sol:Redeem -sig "redeem(uint64,address,address,uint256,uint256)" $(CHAIN_SELECTOR) $(DEPOSITOR) $(TOKEN) $(AMOUNT) $(ETHER) --rpc-url $(AVALANCHE_FUJI_RPC_URL) --account $(ACCOUNT) --sender $(OWNER_ADDRESS) --broadcast
 
@@ -39,18 +45,18 @@ setAllowedSender:
 	@forge script script/interaction/SetAllowedSender.s.sol:SetAllowedSender --sig "setAllowedSender(address,address)" $(CONTRACT) $(SENDER) --rpc-url $(RPC_URL) --account $(ACCOUNT) --sender $(OWNER_ADDRESS) --broadcast
 
 getTotalCollateral:
-	cast call $(MAIN_ROUTER) "getUserOverallCollateralValue(address)" $(USER) --rpc-url $(AVALANCHE_FUJI_RPC_URL)
+	cast call $(MAIN_ROUTER) "getUserOverallCollateralValue(address)(uint256)" $(USER) --rpc-url $(AVALANCHE_FUJI_RPC_URL)
 
 getUSDDepositedTokenOnChain:
-	cast call $(MAIN_ROUTER) "getUserCollateralValue(address,uint64,address)" $(USER) $(CHAIN_SELECTOR) $(TOKEN) --rpc-url $(AVALANCHE_FUJI_RPC_URL)
+	cast call $(MAIN_ROUTER) "getUserCollateralValue(address,uint64,address)(uint256)" $(USER) $(CHAIN_SELECTOR) $(TOKEN) --rpc-url $(AVALANCHE_FUJI_RPC_URL)
 
 getDepositedTokenOnChain:
-	cast call $(MAIN_ROUTER) "_getUserDepositedAmount(address,uint64,address)" $(USER) $(CHAIN_SELECTOR) $(TOKEN) --rpc-url $(AVALANCHE_FUJI_RPC_URL)
+	cast call $(MAIN_ROUTER) "getUserDepositedAmount(address,uint64,address)(uint256)" $(USER) $(CHAIN_SELECTOR) $(TOKEN) --rpc-url $(AVALANCHE_FUJI_RPC_URL)
 
 getUSDDepositedOnChain:
-	cast call $(MAIN_ROUTER) "getUserCollateralOnChainValue(address,uint64)" $(USER) $(CHAIN_SELECTOR) --rpc-url $(AVALANCHE_FUJI_RPC_URL)
+	cast call $(MAIN_ROUTER) "getUserCollateralOnChainValue(address,uint64)(uint256)" $(USER) $(CHAIN_SELECTOR) --rpc-url $(AVALANCHE_FUJI_RPC_URL)
 
 getTotalMinted:
-	cast call $(MAIN_ROUTER) "getUserMintedOverall(address)" $(USER) --rpc-url $(AVALANCHE_FUJI_RPC_URL)
+	cast call $(MAIN_ROUTER) "getUserMintedOverall(address)(uint256)" $(USER) --rpc-url $(AVALANCHE_FUJI_RPC_URL)
 
 .PHONY: deploy_avalanche_fuji deploy_ethereum_sepolia deploy_arbitrum_sepolia deploy_polygon_amoy deploy_optimism_sepolia deploy_base_sepolia deploy_all

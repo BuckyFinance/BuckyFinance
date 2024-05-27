@@ -22,7 +22,8 @@ contract Depositor is CCIPBase {
     enum TransactionReceive {
         DEPOSIT,
         BURN,
-        DEPOSIT_MINT
+        DEPOSIT_MINT,
+        BURN_MINT
     }
     enum TransactionSend {
         REDEEM,
@@ -38,7 +39,7 @@ contract Depositor is CCIPBase {
     uint64 private mainRouterChainSelector;
 
     uint256 private ccipDepositGasLimit = 300_000;
-    uint256 private ccipDepositAndMintGasLimit = 500_000;
+    uint256 private ccipDepositAndMintGasLimit = 1_000_000;
 
     constructor(uint64 _chainSelector, address _router, uint64 _mainRouterChainSelector, address _mainRouter) CCIPBase(_chainSelector, _router) {
         mainRouter = _mainRouter;
@@ -102,6 +103,7 @@ contract Depositor is CCIPBase {
         _deposit(msg.sender, _token, _amount);
 
         if (chainSelector == mainRouterChainSelector) {
+            emit Deposit(msg.sender, _token, _amount);
             IMainRouter(mainRouter).depositAndMint(msg.sender, chainSelector, _token, _amount, _destinationChainSelector, _receiver, _amountToMint);
             return;
         }
@@ -177,6 +179,44 @@ contract Depositor is CCIPBase {
         }
     }
 
+    function withdrawFeePay(uint256 _amount) external {
+        require(_amount <= feePay[msg.sender], "Not enough fee pay");
+        feePay[msg.sender] -= _amount;
+        payable(msg.sender).transfer(_amount);
+    } 
+
+    function getDepositFee(address _token, uint256 _amount) public view returns(uint256) {
+        if (chainSelector == mainRouterChainSelector) {
+            return 0;
+        }
+        bytes memory _data = abi.encode(TransactionReceive.DEPOSIT, abi.encode(msg.sender, _token, _amount));
+        Client.EVM2AnyMessage memory _message = _buildCCIPMessage(
+            mainRouter,
+            _data,
+            address(0),
+            ccipDepositGasLimit
+        );
+        IRouterClient _router = IRouterClient(getRouter());
+        uint256 _fees = _router.getFee(mainRouterChainSelector, _message);
+        return _fees;
+    }
+
+    function getDepositAndMintFee(address _token, uint256 _amount, uint64 _destinationChainSelector,address _receiver, uint256 _amountToMint) public view returns(uint256) {
+        if (chainSelector == mainRouterChainSelector) {
+            return 0;
+        }
+        bytes memory _data = abi.encode(TransactionReceive.DEPOSIT_MINT, abi.encode(msg.sender, _token, _amount, _destinationChainSelector, _receiver, _amountToMint));
+        Client.EVM2AnyMessage memory _message = _buildCCIPMessage(
+            mainRouter,
+            _data,
+            address(0),
+            ccipDepositGasLimit
+        );
+        IRouterClient _router = IRouterClient(getRouter());
+        uint256 _fees = _router.getFee(mainRouterChainSelector, _message);
+        return _fees;
+    }
+
     function getDeposited(address _user, address _token) public view returns (uint256) {
         return deposited[_user][_token];
     }
@@ -195,5 +235,13 @@ contract Depositor is CCIPBase {
 
     function getMainRouterChainSelector() public view returns (uint64) {
         return mainRouterChainSelector;
+    }
+
+    function getCCIPDepositGasLimit() public view returns (uint256) {
+        return ccipDepositGasLimit;
+    }
+
+    function getCCIPDepositAndMintGasLimit() public view returns (uint256) {
+        return ccipDepositAndMintGasLimit;
     }
 }

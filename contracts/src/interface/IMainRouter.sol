@@ -13,4 +13,11 @@ interface IMainRouter {
         address _receiver, 
         uint256 _amountToMint
     )   external;
+    function burnAndMint(
+        address _burner,
+        uint64 _chainSelector,
+        uint256 _amount,
+        uint64 _destinationChainSelector,
+        address _receiver
+    ) external;
 }

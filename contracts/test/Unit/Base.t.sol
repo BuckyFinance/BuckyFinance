@@ -237,6 +237,16 @@ contract Demo is Test {
 
     }
 
+    function testBurnAndMint() external DepositAndMint(weth, 1 ether, 1000 ether) {
+        vm.startPrank(user);
+        dsc.approve(address(minter), 500 ether);
+        minter.burnAndMint(500 ether, chainSelector, address(minter));
+        vm.stopPrank();
+
+        console.log(mainRouter.getUserOverallCollateralValue(user));
+        console.log(mainRouter.getUserMintedOverall(user));
+    }
+
     function testGetLTV() external DepositAndMint(weth, 1 ether, 1000 ether){
         console.log("User to LTV: ", mainRouter.getMaximumAllowedMinting(user));
     }

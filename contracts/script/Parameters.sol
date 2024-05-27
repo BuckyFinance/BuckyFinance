@@ -7,7 +7,7 @@ contract Parameters {
     address public constant BTC_PRICE_FEED = 0x31CF013A08c6Ac228C94551d535d5BAfE19c602a;
     address public constant ETH_PRICE_FEED = 0x86d67c3D38D2bCeE722E601025C25a575021c6EA;
     address public constant LINK_PRICE_FEED = 0x34C4c526902d88a3Aa98DB8a9b802603EB1E3470;
-    address public constant AVAX_PRICE_FEED = 0x34C4c526902d88a3Aa98DB8a9b802603EB1E3470;
+    address public constant AVAX_PRICE_FEED = 0x5498BB86BC934c8D34FDA08E81D444153d0D06aD;
     address public constant UNI_PRICE_FEED = 0x7b219F57a8e9C7303204Af681e9fA69d17ef626f;
     address public constant USDC_PRICE_FEED = 0x7898AcCC83587C3C55116c5230C17a6Cd9C71bad;
     address public constant USDT_PRICE_FEED = 0x7898AcCC83587C3C55116c5230C17a6Cd9C71bad;
@@ -122,4 +122,12 @@ contract Parameters {
     address public constant POLYGON_AMOY_MINTER = 0xa6669a015DB6816F1233111e248A4eFAD84920a5; // v2
     address public constant BASE_SEPOLIA_MINTER = 0x1658727bd2E390837D39c2fffE41e16Dc1D6c27b; // v2
     address public constant OPTIMISM_SEPOLIA_MINTER = 0xD28f8454873CEb4de41d537257044510c3A1d616; // v2
+
+    // --------DSC TOKEN---------//
+    address public constant AVALANCHE_FUJI_DSC = 0xf7d270b5f6879feb65ed169b82f933eC75b4b624;
+    address public constant POLYGON_AMOY_DSC = 0x23d3E4b7293A2e1CC9aBce03bb920D7E42480d17;
+    address public constant BASE_SEPOLIA_DSC = 0x29040D0C5f2881F0102876B45A9E989813deC61A;
+    address public constant ARBITRUM_SEPOLIA_DSC = 0x15c51Cdd0b53789711C43a2d6C624dB20D52086E;
+    address public constant ETHEREUM_SEPOLIA_DSC = 0xDb287C159F397D561FA3B1235e0Afd652860ECdF;
+    address public constant OPTIMISM_SEPOLIA_DSC = 0x1A0303dCa8DBfb25DA3F3D37395BcC546ceC0Bf0;
 }
