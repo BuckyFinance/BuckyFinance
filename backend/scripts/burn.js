@@ -3,15 +3,23 @@ const MinterABI = require("../../contracts/abi/Minter.json");
 const ERC20MockABI = require("../../contracts/abi/ERC20Mock.json");
 const NetworkInfomation = require("../src/NetworkInfomation.json");
 const {
-    getWallet
+    getWallet,
+    getWalletAddress
 } = require("./helper");
 const { getTotalMintedValueOnChain } = require("./getMinted");
 
-async function approveToken(wallet, tokenAddress, amountIn, chainId) {
-    const tokenContract = new Contract(tokenAddress, ERC20MockABI, wallet);
+async function getBurnFeeOnChain(minterContract, amountToBurnInWei) {
+    const burnFee = await minterContract.getBurnFee(amountToBurnInWei);
+    const burnFeeFormat = ethers.utils.formatUnits(burnFee, "ether");
+    console.log(`Burn fee: ${burnFeeFormat}`);
+    return burnFeeFormat;
+}
+
+async function approveToken(wallet, tokenInfo, amountIn, chainId) {
+    const tokenContract = new Contract(tokenInfo.address, ERC20MockABI, wallet);
 
     const MINTER_ADDRESS = NetworkInfomation[chainId].MINTER_ADDRESS;
-    const amountInWei = ethers.utils.parseUnits(amountIn.toString(), 18);
+    const amountInWei = ethers.utils.parseUnits(amountIn.toString(), tokenInfo.decimals);
     const tx = await tokenContract.approve(MINTER_ADDRESS, amountInWei);
     await tx.wait();
     console.log(`Approved with transaction hash: ${tx.hash}`);
@@ -21,21 +29,20 @@ async function burn(chainId, amountToBurn) {
     const wallet = getWallet(chainId);
     const MINTER_ADDRESS = NetworkInfomation[chainId].MINTER_ADDRESS;
     const minterContract = new Contract(MINTER_ADDRESS, MinterABI, wallet);
-
-    const totalMintedOnchain = await getTotalMintedValueOnChain(chainId);
-    const totalMintedOnchainFormat = ethers.utils.formatUnits(totalMintedOnchain, "ether");
-    // console.log(totalMintedOnchainFormat);
+    const walletAddress = await getWalletAddress();
+    const totalMintedOnchain = await getTotalMintedValueOnChain(chainId, walletAddress);
+    // console.log(totalMintedOnchain);
     // console.log(amountToBurn);
-    // if (totalMintedOnchainFormat < amountToBurn) {
-    //     return null;
-    // }
+    if (totalMintedOnchain < amountToBurn) {
+        return null;
+    }
 
-    const tokenAddress = NetworkInfomation[chainId]["TOKEN"]["DSC"].address;
-    await approveToken(wallet, tokenAddress, amountToBurn, chainId);
+    const tokenInfo = NetworkInfomation[chainId]["TOKEN"]["DSC"];
+    await approveToken(wallet, tokenInfo, amountToBurn, chainId);
 
     const gasLimit = ethers.utils.hexlify(1000000);
-    const value = ethers.utils.parseEther("0.02");
     const amountToBurnInWei = ethers.utils.parseUnits(amountToBurn, 18);
+    const value = await getBurnFeeOnChain(minterContract, amountToBurnInWei);
     const tx = await minterContract.burn(amountToBurnInWei, {
         gasLimit: gasLimit,
         value: value
@@ -43,6 +50,13 @@ async function burn(chainId, amountToBurn) {
     await tx.wait();
     console.log(`Burned with transaction hash: ${tx.hash}`);
 }
+
+async function main() {
+    const desChainId = 84532;
+    await burn(desChainId, "2");
+}
+
+// main();
 
 module.exports = {
     burn,
