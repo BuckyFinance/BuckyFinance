@@ -1,7 +1,7 @@
 require("dotenv").config();
 const { ethers, Contract } = require('ethers');
-const DepositorABI = require("../../contracts/abi/Depositor.json");
-const MainRouterABI = require("../../contracts/abi/MainRouter.json");
+const DepositorABI = require("../../../../../contracts/abi/Depositor.json");
+const MainRouterABI = require("../../../../../contracts/abi/MainRouter.json");
 const NetworkInfomation = require("../src/NetworkInfomation.json");
 const {
     currentChainID,

@@ -1,6 +1,6 @@
 const { Contract, ethers } = require("ethers");
-const MinterABI = require("../../contracts/abi/Minter.json");
-const ERC20MockABI = require("../../contracts/abi/ERC20Mock.json");
+const MinterABI = require("../../../../../contracts/abi/Minter.json");
+const ERC20MockABI = require("../../../../../contracts/abi/ERC20Mock.json");
 const NetworkInfomation = require("../src/NetworkInfomation.json");
 const {
     getWallet,
@@ -62,7 +62,7 @@ async function main() {
     await burn(desChainId, "11", "", false);
 }
 
-main();
+// main();
 
 module.exports = {
     burn,

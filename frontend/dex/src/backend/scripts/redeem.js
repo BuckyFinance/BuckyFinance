@@ -1,6 +1,6 @@
 const { Contract, ethers } = require("ethers");
-const MainRouterABI = require("../../contracts/abi/MainRouter.json");
-const ERC20MockABI = require("../../contracts/abi/ERC20Mock.json");
+const MainRouterABI = require("../../../../../contracts/abi/MainRouter.json");
+const ERC20MockABI = require("../../../../../contracts/abi/ERC20Mock.json");
 const NetworkInfomation = require("../src/NetworkInfomation.json");
 const {
     currentChainID,
