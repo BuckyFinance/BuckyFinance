@@ -68,7 +68,7 @@ router.get('/getMaxOutput', async (req, res) => {
 })
 
 router.get('/getTotalMintedOnChain', async (req, res) => {
-    const { chainId, walletAddress } = req.query;
+    const { chainId } = req.query;
     const { getTotalMintedValueOnChain } = require("../scripts/getMinted");
     const minted = await getTotalMintedValueOnChain(chainId);
     res.status(200).json(minted);

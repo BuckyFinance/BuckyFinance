@@ -1,0 +1,32 @@
+*** MAIN FUNCTION *** (set 'isCalledFromFE' = true)
+----- Deposit --------
+deposit(tokenSymbol, amountIn, signerFromFE, isCalledFromFE)
+----- Mint -----
+mint(desChainId, amountOut, signerFromFE, isCalledFromFE)
+----- Burn -----
+burn(desChainId, amountToBurn, signerFromFE, isCalledFromFrontend)
+----- Redeem ----
+redeem(desChainId, tokenSymbol, amountToRedeem, signerFromFE, isCalledFromFE)
+
+
+*** READ FUNCTION ***
+----- Get deposited amount -----
+getDepositedAmount(desChainId, tokenSymbol, walletAddress)
+----- Get deposited value -----
+getDepositedValue(desChainId, tokenSymbol, walletAddress)
+----- Get Total Deposited value On Chain -------
+getTotalDepositedValueOnChain(desChainId, walletAddress)
+----- Get Total Deposited value overall chain ------
+getTotalDepositedValueOverallChain(walletAddress)
+----- Get fraction to ltv ------
+getFractionToLTV(walletAddress)
+----- Get Health Factor --------
+getHealthFactor(walletAddress)
+----- Get max output can be minted  -------
+getMaxOutputCanBeMintedOnChain(walletAddress)
+----- Get total minted on chain -------
+getTotalMintedValueOnChain(desChainId, walletAddress)
+----- Get total minted overall chain ------
+getTotalMintedValueOverallChain(walletAddress)
+----- Get token price ------
+getTokenPrice(tokenSymbol) 

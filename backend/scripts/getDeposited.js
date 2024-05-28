@@ -4,6 +4,7 @@ const DepositorABI = require("../../contracts/abi/Depositor.json");
 const MainRouterABI = require("../../contracts/abi/MainRouter.json");
 const NetworkInfomation = require("../src/NetworkInfomation.json");
 const {
+    getProvider,
     getWallet,
     getCurrentChainId,
     switchCurrentChainId,
@@ -11,64 +12,59 @@ const {
     getNameOfDecimals,
 } = require("./helper")
 
-async function getDepositedAmount(chainId, tokenSymbol) {
-    const wallet = getWallet(chainId);
-    const walletAddress = await getWalletAddress();
+async function getDepositedAmount(desChainId, tokenSymbol, walletAddress) {
+    const provider = getProvider(desChainId);
 
-    const DEPOSITOR_ADDRESS = NetworkInfomation[chainId].DEPOSITOR_ADDRESS;
-    const depositorContract = new Contract(DEPOSITOR_ADDRESS, DepositorABI, wallet);
+    const DEPOSITOR_ADDRESS = NetworkInfomation[desChainId].DEPOSITOR_ADDRESS;
+    const depositorContract = new Contract(DEPOSITOR_ADDRESS, DepositorABI, provider);
 
-    const tokenInfo = NetworkInfomation[chainId]["TOKEN"][tokenSymbol];
+    const tokenInfo = NetworkInfomation[desChainId]["TOKEN"][tokenSymbol];
     const deposited = await depositorContract.getDeposited(walletAddress, tokenInfo.address);
 
     const nameOfDecimals = getNameOfDecimals(tokenInfo.decimals);
     const depositedValueFormat = ethers.utils.formatUnits(deposited, nameOfDecimals);
-    console.log(`Deposited in ${chainId} with ${tokenSymbol} Amount: ${depositedValueFormat.toString()}`);
+    console.log(`Deposited in ${desChainId} with ${tokenSymbol} Amount: ${depositedValueFormat.toString()}`);
     return depositedValueFormat;
 }
 
-async function getDepositedValue(chainId, tokenSymbol) {
+async function getDepositedValue(desChainId, tokenSymbol, walletAddress) {
     const avalancheFujiChainId = 43113;
-    const wallet = getWallet(avalancheFujiChainId);
-    const walletAddress = await getWalletAddress();
+    const provider = getProvider(avalancheFujiChainId);
 
-    const MAIN_ROUTER_ADDRESS = NetworkInfomation[chainId].MAIN_ROUTER_ADDRESS;
-    const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, wallet);
-    const CHAIN_SELECTOR = NetworkInfomation[chainId].CHAIN_SELECTOR;
-    const tokenInfo = NetworkInfomation[chainId]["TOKEN"][tokenSymbol];
+    const MAIN_ROUTER_ADDRESS = NetworkInfomation[desChainId].MAIN_ROUTER_ADDRESS;
+    const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, provider);
+    const CHAIN_SELECTOR = NetworkInfomation[desChainId].CHAIN_SELECTOR;
+    const tokenInfo = NetworkInfomation[desChainId]["TOKEN"][tokenSymbol];
 
     const depositedAmount = await mainRouterContract.getUserDepositedAmount(walletAddress, CHAIN_SELECTOR, tokenInfo.address);
     const depositedValue = await mainRouterContract.getUserCollateralValue(walletAddress, CHAIN_SELECTOR, tokenInfo.address);
     const nameOfDecimals = getNameOfDecimals(tokenInfo.decimals);
     const depositedValueFormat = ethers.utils.formatUnits(depositedValue, nameOfDecimals);
-    console.log(`Deposited in ${chainId} with ${tokenSymbol} Value: ${depositedValueFormat.toString()}`);
+    console.log(`Deposited in ${desChainId} with ${tokenSymbol} Value: ${depositedValueFormat.toString()}`);
 
     return depositedValueFormat;
 }
 
 
-async function getTotalDepositedValueOnChain(chainId) {
+async function getTotalDepositedValueOnChain(desChainId, walletAddress) {
     const avalancheFujiChainId = 43113;
-    const wallet = getWallet(avalancheFujiChainId);
-    const walletAddress = await getWalletAddress();
-
-    const MAIN_ROUTER_ADDRESS = NetworkInfomation[chainId].MAIN_ROUTER_ADDRESS;
-    const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, wallet);
-    const CHAIN_SELECTOR = NetworkInfomation[chainId].CHAIN_SELECTOR;
+    const provider = getProvider(avalancheFujiChainId);
+    const MAIN_ROUTER_ADDRESS = NetworkInfomation[desChainId].MAIN_ROUTER_ADDRESS;
+    const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, provider);
+    const CHAIN_SELECTOR = NetworkInfomation[desChainId].CHAIN_SELECTOR;
 
     const { totalCollateral, totalMinted } = await mainRouterContract.getUserOnChainInformation(walletAddress, CHAIN_SELECTOR);
     const totalCollateralFormat = ethers.utils.formatUnits(totalCollateral, "ether");
-    console.log(`Total Collateral in chain ${chainId}: ${totalCollateralFormat.toString()}`);
+    console.log(`Total Collateral in chain ${desChainId}: ${totalCollateralFormat.toString()}`);
     return totalCollateralFormat.toString();
 }
 
-async function getTotalDepositedValueOverallChain() {
+async function getTotalDepositedValueOverallChain(walletAddress) {
     const avalancheFujiChainId = 43113;
-    const wallet = getWallet(avalancheFujiChainId);
-    const walletAddress = await getWalletAddress();
+    const provider = getProvider(avalancheFujiChainId);
 
     const MAIN_ROUTER_ADDRESS = NetworkInfomation[avalancheFujiChainId].MAIN_ROUTER_ADDRESS;
-    const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, wallet);
+    const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, provider);
 
     const { totalCollateral, totalMinted } = await mainRouterContract.getUserOverallInformation(walletAddress);
 
@@ -78,13 +74,13 @@ async function getTotalDepositedValueOverallChain() {
 }
 
 async function main() {
-    switchCurrentChainId(11155111);
-    const currentChainID = getCurrentChainId();
-    const walletAddress = await getWalletAddress();
-    const depositedAmountOnchain = await getDepositedAmount(currentChainID, "UNI");
-    const depositedValueOnchain = await getDepositedValue(currentChainID, "UNI");
-    const totalDepositedValueOnChain = await getTotalDepositedValueOnChain(currentChainID);
-    const totalDepositedValueOverallChain = await getTotalDepositedValueOverallChain();
+    // switchCurrentChainId(11155111);
+    // const currentChainID = getCurrentChainId();
+    const walletAddress = "0xB1A296a720D9AAF5c5e9F805d8095e6d94882eE1";
+    const depositedAmountOnchain = await getDepositedAmount(11155111, "UNI", walletAddress);
+    const depositedValueOnchain = await getDepositedValue(11155111, "UNI", walletAddress);
+    const totalDepositedValueOnChain = await getTotalDepositedValueOnChain(11155111, walletAddress);
+    const totalDepositedValueOverallChain = await getTotalDepositedValueOverallChain(walletAddress);
 }
 
 // main();

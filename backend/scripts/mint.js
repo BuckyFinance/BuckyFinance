@@ -17,19 +17,27 @@ async function getMintFeeOnChain(mainRouterContract, CHAIN_SELECTOR, receiverAdd
     return mintFee;
 }
 
-async function mint(chainId, amountOut) {
+// must to move to avalanche before call mint
+async function mint(desChainId, amountOut, signerFromFE, isCalledFromFE) {
     const avalancheFujiChainId = 43113;
-    const wallet = getWallet(avalancheFujiChainId);
+    let wallet;
+    if (isCalledFromFE == true) {
+        wallet = signerFromFE;
+    } else {
+        wallet = getWallet(avalancheFujiChainId);
+    }
+    const walletAddress = await wallet.getAddress();
 
-    const CHAIN_SELECTOR = NetworkInfomation[chainId].CHAIN_SELECTOR;
-    const receiverAddress = NetworkInfomation[chainId].MINTER_ADDRESS;
+    const CHAIN_SELECTOR = NetworkInfomation[desChainId].CHAIN_SELECTOR;
+    const receiverAddress = NetworkInfomation[desChainId].MINTER_ADDRESS;
     const mainRouterAddress = NetworkInfomation[avalancheFujiChainId].MAIN_ROUTER_ADDRESS;
 
     const mainRouterContract = new Contract(mainRouterAddress, MainRouterABI, wallet);
     const amountOutInWei = ethers.utils.parseUnits(amountOut, 18);
     const gasLimit = ethers.utils.hexlify(1000000);
-    const value = await getMintFeeOnChain(mainRouterContract, CHAIN_SELECTOR, receiverAddress, amountOutInWei);
-    const canBeMinted = await getMaxOutputCanBeMinted();
+    // const value = await getMintFeeOnChain(mainRouterContract, CHAIN_SELECTOR, receiverAddress, amountOutInWei);
+    const value = ethers.utils.parseEther("0.02");
+    const canBeMinted = await getMaxOutputCanBeMinted(walletAddress);
 
     // console.log(canBeMinted);
     // console.log(amountOut);
@@ -43,12 +51,12 @@ async function mint(chainId, amountOut) {
         value: value,
     });
     await tx.wait();
-    console.log(`Minted on chain ${chainId} with tx hash: ${tx.hash}`);
+    console.log(`Minted on chain ${desChainId} with tx hash: ${tx.hash}`);
 }
 
 async function main() {
-    const chainIdDestination = 84532;
-    await mint(chainIdDestination, "32");
+    const chainIdDestination = 43113;
+    await mint(chainIdDestination, "112", "", false);
 }
 
 // main();
