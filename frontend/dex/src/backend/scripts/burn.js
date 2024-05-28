@@ -1,6 +1,6 @@
 const { Contract, ethers } = require("ethers");
-const MinterABI = require("../../../../../contracts/abi/Minter.json");
-const ERC20MockABI = require("../../../../../contracts/abi/ERC20Mock.json");
+const MinterABI = require("../abi/MainRouter.json");
+const ERC20MockABI = require("../abi/ERC20Mock.json");
 const NetworkInfomation = require("../src/NetworkInfomation.json");
 const {
     getWallet,
