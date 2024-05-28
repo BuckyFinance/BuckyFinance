@@ -18,13 +18,19 @@ async function getFeeToRedeemOnChain(mainRouterContract, CHAIN_SELECTOR, receive
     return feeToRedeem;
 }
 
-async function redeem(chainId, tokenSymbol, amountToRedeem) {
+async function redeem(desChainId, tokenSymbol, amountToRedeem, signerFromFE, isCalledFromFE) {
     const avalancheFujiChainId = 43113;
-    const wallet = getWallet(avalancheFujiChainId);
-    const MAIN_ROUTER_ADDRESS = NetworkInfomation[chainId].MAIN_ROUTER_ADDRESS;
+    let wallet;
+    if (isCalledFromFE == true) {
+        wallet = signerFromFE;
+    } else {
+        wallet = getWallet(avalancheFujiChainId);
+    }
+    const walletAddress = await wallet.getAddress();
+
+    const MAIN_ROUTER_ADDRESS = NetworkInfomation[desChainId].MAIN_ROUTER_ADDRESS;
     const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, wallet);
-    const walletAddress = getWalletAddress();
-    const totalDepositedOnChain = await getDepositedAmount(chainId, tokenSymbol, walletAddress);
+    const totalDepositedOnChain = await getDepositedAmount(desChainId, tokenSymbol, walletAddress);
 
     // console.log(totalDepositedOnChain);
     // console.log(amountToRedeem);
@@ -32,12 +38,13 @@ async function redeem(chainId, tokenSymbol, amountToRedeem) {
         return null;
     }
 
-    const tokenInfo = NetworkInfomation[chainId]["TOKEN"][tokenSymbol];
+    const tokenInfo = NetworkInfomation[desChainId]["TOKEN"][tokenSymbol];
     const amountToRedeemInWei = ethers.utils.parseUnits(amountToRedeem, 18);
-    const CHAIN_SELECTOR = NetworkInfomation[chainId].CHAIN_SELECTOR;
-    const receiverAddress = NetworkInfomation[chainId].DEPOSITOR_ADDRESS
+    const CHAIN_SELECTOR = NetworkInfomation[desChainId].CHAIN_SELECTOR;
+    const receiverAddress = NetworkInfomation[desChainId].DEPOSITOR_ADDRESS
     const gasLimit = ethers.utils.hexlify(1000000);
     const value = await getFeeToRedeemOnChain(mainRouterContract, CHAIN_SELECTOR, receiverAddress, tokenInfo, amountToRedeemInWei);
+    // const value = await ethers.utils.parseEther("0.02");
     const tx = await mainRouterContract.redeem(CHAIN_SELECTOR, receiverAddress, tokenInfo.address, amountToRedeemInWei, {
         gasLimit: gasLimit,
         value: value
@@ -47,12 +54,12 @@ async function redeem(chainId, tokenSymbol, amountToRedeem) {
 }
 
 async function main() {
-    switchCurrentChainId(11155111);
-    const currentChainID = getCurrentChainId();
-    await redeem(currentChainID, "UNI", "25");
+    // switchCurrentChainId(11155111);
+    // const currentChainID = getCurrentChainId();
+    await redeem(11155111, "UNI", "20");
 }
 
-// main();
+main();
 
 module.exports = {
     redeem,

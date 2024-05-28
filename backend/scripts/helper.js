@@ -9,17 +9,18 @@ const OPTIMISM_RPC_URL = process.env.OPTIMISM_RPC_URL;
 const FUJI_RPC_URL = process.env.FUJI_RPC_URL;
 const BASE_RPC_URL = process.env.BASE_RPC_URL;
 
-let currentChainID = 421614;
+let currentChainID = 11155111;
 
-function getProvider(rpcUrl) {
+function getProvider(chainId) {
+    const rpcUrl = getRpcUrl(chainId);
     return new ethers.providers.JsonRpcProvider(rpcUrl);
 }
 
 function getWallet(chainId) {
-    const rpcUrl = getRpcUrl(chainId);
-    const provider = getProvider(rpcUrl);
+    const provider = getProvider(chainId);
     const privateKey = process.env.PRIVATE_KEY; // replace with user wallet
     const wallet = new ethers.Wallet(privateKey, provider);
+    // console.log(wallet);
     return wallet;
 }
 
@@ -84,6 +85,12 @@ function getNameOfDecimals(decimals) {
         return "ether";
     }
 }
+
+async function main() {
+    getWallet(11155111);
+}
+
+// main();
 
 module.exports = {
     getProvider,

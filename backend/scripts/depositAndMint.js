@@ -9,8 +9,16 @@ const {
     switchCurrentChainId,
 } = require("./helper");
 const { mint } = require("./mint");
+const { getTokenPrice } = require("../scripts/getTokenPrice");
 
-async function checkCanDepositAndMint() {
+async function checkCanDepositAndMint(tokenSymbol, amountToDeposit, amountToMint) {
+    const tokenPrice = getTokenPrice(tokenSymbol);
+    const depositValue = tokenPrice * amountToDeposit;
+
+    if (depositValue >= amountToMint) {
+        return true;
+    }
+    return false;
 
 }
 
@@ -41,7 +49,7 @@ async function depositAndMint(tokenSymbol, amountToDeposit, desChainId, amountTo
     const gasLimit = ethers.utils.hexlify(1000000);
     await approveToken(wallet, tokenInfo, amountToDeposit);
 
-    const canDepositAndMint = await checkCanDepositAndMint();
+    const canDepositAndMint = await checkCanDepositAndMint(tokenSymbol, amountToDeposit, amountToMint);
     if (canDepositAndMint == false) {
         console.log(`Can't deposit and mint`);
         return null;

@@ -4,14 +4,15 @@ const MainRouterABI = require("../../contracts/abi/MainRouter.json");
 const {
     getWallet,
     getWalletAddress,
+    getProvider,
 } = require("./helper")
 
 async function getFractionToLTV(walletAddress) {
     const avalancheFujiChainId = 43113;
-    const wallet = getWallet(avalancheFujiChainId);
+    const provider = getProvider(avalancheFujiChainId);
 
     const mainRouterAddress = NetworkInfomation[avalancheFujiChainId].MAIN_ROUTER_ADDRESS;
-    const mainRouterContract = new Contract(mainRouterAddress, MainRouterABI, wallet);
+    const mainRouterContract = new Contract(mainRouterAddress, MainRouterABI, provider);
 
     const fractionToLTV = await mainRouterContract.getUserFractionToLTV(walletAddress);
     if (fractionToLTV.toString().length > 18) {
@@ -25,7 +26,7 @@ async function getFractionToLTV(walletAddress) {
 
 async function main() {
     const walletAddress = await getWalletAddress();
-    const fractionToLTV = await getFractionToLTV(walletAddress);
+    const fractionToLTV = await getFractionToLTV();
     console.log(fractionToLTV);
 }
 
