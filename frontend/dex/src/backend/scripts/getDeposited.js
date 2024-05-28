@@ -1,7 +1,7 @@
 require("dotenv").config();
 const { ethers, Contract } = require('ethers');
-const DepositorABI = require("../../../../../contracts/abi/Depositor.json");
-const MainRouterABI = require("../../../../../contracts/abi/MainRouter.json");
+const DepositorABI = require("../abi/Depositor.json");
+const MainRouterABI = require("../abi/MainRouter.json");
 const NetworkInfomation = require("../src/NetworkInfomation.json");
 const {
     getProvider,
@@ -83,7 +83,7 @@ async function main() {
     const totalDepositedValueOverallChain = await getTotalDepositedValueOverallChain(walletAddress);
 }
 
-// main();
+main();
 
 module.exports = {
     getDepositedAmount,

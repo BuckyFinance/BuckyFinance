@@ -1,6 +1,6 @@
 const { ethers, Contract } = require("ethers")
 const NetworkInfomation = require("../src/NetworkInfomation.json");
-const MainRouterABI = require("../../../../../contracts/abi/MainRouter.json");
+const MainRouterABI = require("../abi/MainRouter.json");
 const {
     getWallet,
     getWalletAddress,

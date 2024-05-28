@@ -1,5 +1,5 @@
 const { Contract, ethers } = require("ethers");
-const ERC20MockABI = require("../../../../../contracts/abi/ERC20Mock.json");
+const ERC20MockABI = require("../abi/ERC20Mock.json");
 const NetworkInfomation = require("../src/NetworkInfomation.json");
 const {
     getWallet

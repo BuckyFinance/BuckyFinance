@@ -1,7 +1,7 @@
 require("dotenv").config();
 const { ethers, Contract } = require('ethers');
-const DepositorABI = require("../../../../../contracts/abi//Depositor.json");
-const ERC20MockABI = require("../../../../../contracts/abi/ERC20Mock.json");
+const DepositorABI = require("../abi/Depositor.json");
+const ERC20MockABI = require("../abi/ERC20Mock.json");
 const NetworkInfomation = require("../src/NetworkInfomation.json");
 const {
     getWallet,
