@@ -1,5 +1,5 @@
 const { Contract, ethers } = require("ethers");
-const MinterABI = require("../abi/MainRouter.json");
+const MinterABI = require("../abi/Minter.json");
 const ERC20MockABI = require("../abi/ERC20Mock.json");
 const NetworkInfomation = require("../src/NetworkInfomation.json");
 const {
@@ -25,9 +25,9 @@ async function approveToken(wallet, tokenInfo, amountIn, desChainId) {
     console.log(`Approved with transaction hash: ${tx.hash}`);
 }
 
-async function burn(desChainId, amountToBurn, signerFromFE, isCalledFromFrontend) {
+async function burn(desChainId, amountToBurn, signerFromFE, isCalledFromFE) {
     let wallet;
-    if (isCalledFromFrontend == true) {
+    if (isCalledFromFE == true) {
         wallet = signerFromFE;
     } else {
         wallet = getWallet(desChainId);
@@ -49,6 +49,8 @@ async function burn(desChainId, amountToBurn, signerFromFE, isCalledFromFrontend
     const amountToBurnInWei = ethers.utils.parseUnits(amountToBurn, 18);
     // const value = await getBurnFeeOnChain(minterContract, amountToBurnInWei);
     const value = ethers.utils.parseEther("0.02");
+    // console.log(minterContract);
+    // console.log(amountToBurnInWei.toString());
     const tx = await minterContract.burn(amountToBurnInWei, {
         gasLimit: gasLimit,
         value: value
@@ -58,11 +60,11 @@ async function burn(desChainId, amountToBurn, signerFromFE, isCalledFromFrontend
 }
 
 async function main() {
-    const desChainId = 43113;
-    await burn(desChainId, "11", "", false);
+    const desChainId = 84532;
+    await burn(desChainId, "2", "", false);
 }
 
-// main();
+main();
 
 module.exports = {
     burn,
