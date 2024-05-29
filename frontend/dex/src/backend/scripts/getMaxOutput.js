@@ -1,20 +1,21 @@
 const { ethers, Contract } = require("ethers");
-const MainRouterABI = require("../../contracts/abi/MainRouter.json");
+const MainRouterABI = require("../abi/MainRouter.json");
 const NetworkInfomation = require("../src/NetworkInfomation.json");
 const {
     getWallet,
     switchCurrentChainId,
     getCurrentChainId,
     getWalletAddress,
+    getProvider,
 } = require("../scripts/helper");
 const { getTotalDepositedValueOverallChain } = require("../scripts/getDeposited");
 const { getTotalMintedValueOverallChain } = require("../scripts/getMinted");
 
 async function getMaxOutputCanBeMintedOnChain(walletAddress) {
     const avalancheFujiChainId = 43113;
-    const wallet = getWallet(avalancheFujiChainId);
+    const provider = getProvider(avalancheFujiChainId);
     const MAIN_ROUTER_ADDRESS = NetworkInfomation[avalancheFujiChainId].MAIN_ROUTER_ADDRESS;
-    const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, wallet);
+    const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, provider);
 
     const canBeMinted = await mainRouterContract.getMaximumAllowedMinting(walletAddress);
     const canBeMintedFormat = ethers.utils.formatUnits(canBeMinted, "ether");
@@ -33,11 +34,12 @@ async function getMaxOutputCanBeMinted(walletAddress) {
 }
 
 async function main() {
-    switchCurrentChainId(11155111);
-    const currentChainID = getCurrentChainId();
-    const walletAddress = await getWalletAddress();
-    // const canBeMinted = await getMaxOutputCanBeMinted(walletAddress);
-    const canBeMinted = await getMaxOutputCanBeMintedOnChain(walletAddress);
+    // switchCurrentChainId(11155111);
+    // const currentChainID = getCurrentChainId();
+    // const walletAddress = await getWalletAddress();
+    const walletAddress = "0xB1A296a720D9AAF5c5e9F805d8095e6d94882eE1";
+    const canBeMinted = await getMaxOutputCanBeMinted(walletAddress);
+    // const canBeMinted = await getMaxOutputCanBeMintedOnChain(walletAddress);
 }
 
 // main();

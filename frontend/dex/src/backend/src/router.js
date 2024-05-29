@@ -37,28 +37,27 @@ router.get('/depositAndMint', async (req, res) => {
 })
 
 router.get('/getDepositedEachToken', async (req, res) => {
-    const { chainId, tokenSymbol, isValue, walletAddress } = req.query;
+    const { chainId, tokenSymbol, isValue } = req.query;
     const { getDepositedAmount, getDepositedValue } = require("../scripts/getDeposited");
     let deposited;
     if (isValue == 'true') {
-        deposited = await getDepositedValue(chainId, tokenSymbol, walletAddress);
+        deposited = await getDepositedValue(chainId, tokenSymbol);
     } else {
-        deposited = await getDepositedAmount(chainId, tokenSymbol, walletAddress);
+        deposited = await getDepositedAmount(chainId, tokenSymbol);
     }
     res.status(200).json(deposited);
 })
 
 router.get('/getTotalDepositedOnChain', async (req, res) => {
-    const { chainId, walletAddress } = req.query;
+    const { chainId } = req.query;
     const { getTotalDepositedValueOnChain } = require("../scripts/getDeposited");
-    const deposited = await getTotalDepositedValueOnChain(chainId, walletAddress);
+    const deposited = await getTotalDepositedValueOnChain(chainId);
     res.status(200).json(deposited);
 })
 
 router.get('/getTotalDepositedOverralChain', async (req, res) => {
-    const { walletAddress } = req.query;
     const { getTotalDepositedValueOverallChain } = require("../scripts/getDeposited");
-    const deposited = await getTotalDepositedValueOverallChain(walletAddress);
+    const deposited = await getTotalDepositedValueOverallChain();
     res.status(200).json(deposited);
 })
 
@@ -69,30 +68,27 @@ router.get('/getMaxOutput', async (req, res) => {
 })
 
 router.get('/getTotalMintedOnChain', async (req, res) => {
-    const { chainId, walletAddress } = req.query;
+    const { chainId } = req.query;
     const { getTotalMintedValueOnChain } = require("../scripts/getMinted");
-    const minted = await getTotalMintedValueOnChain(chainId, walletAddress);
+    const minted = await getTotalMintedValueOnChain(chainId);
     res.status(200).json(minted);
 })
 
 router.get('/getTotalMintedValueOverallChain', async (req, res) => {
-    const { walletAddress } = req.query;
     const { getTotalMintedValueOverallChain } = require("../scripts/getMinted");
-    const minted = await getTotalMintedValueOverallChain(walletAddress);
+    const minted = await getTotalMintedValueOverallChain();
     res.status(200).json(minted);
 })
 
 router.get('/getHealthFactor', async (req, res) => {
-    const { walletAddress } = req.query;
     const { getHealthFactor } = require("../scripts/getHealthFactor");
-    const healthFactor = await getHealthFactor(walletAddress);
+    const healthFactor = await getHealthFactor();
     res.status(200).json(healthFactor);
 })
 
 router.get('/getFractionToLTV', async (req, res) => {
-    const { walletAddress } = req.query;
     const { getFractionToLTV } = require("../scripts/getFractionToLTV");
-    const fractionToLTV = await getFractionToLTV(walletAddress);
+    const fractionToLTV = await getFractionToLTV();
     res.status(200).json(fractionToLTV);
 })
 

@@ -29,6 +29,10 @@ import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
 import { TextField } from '@mui/material';
 import { useSwitchChain } from 'wagmi'
 
+import { useDeposited } from '../hooks/useDeposited';
+import { useMinted } from '../hooks/useMinted';
+import { useTotalCollateralValue, useTotalMintedValue } from '../hooks/useOverall';
+
 // function Swap() {
 // 	const [slippage, setSlippage] = useState(2.5);
 // 	const [tokenOneAmount, setTokenOneAmount] = useState(null);
@@ -176,9 +180,10 @@ const SplitScreen = (props) => {
 	const [totalMinted, setTotalMinted] = useState(Math.random() * 100000);
 	const [chainSpecificMinted, setChainSpecificMinted] = useState(Math.random() * 100000);
 	const [creditScore, setCreditScore] = useState(686);
+	
 	const [buttonStates, setButtonStates] =  useState(
 		tokenList.map(() => NO_STATE)
-	);
+		);
 	const [mintState, setMintState] = useState(NO_STATE);
 	const [modalOpen, setModalOpen] = useState(false);
 	const [modalTitle, setModalTitle] = useState('Title');
@@ -202,6 +207,7 @@ const SplitScreen = (props) => {
 			index += 1;
 		}
 	});
+	const {tokenDeposited, totalCollateralValueOnChain} = useDeposited(tokenList, account.address,chainList[currentCollateralChain].chainID );
 	const [currentMintChain, setCurrentMintChain] = useState(() => {
 		var index = 0;
 		for(const chain of chainList){
@@ -211,23 +217,27 @@ const SplitScreen = (props) => {
 			index += 1;
 		}
 	});
+	const {tokenMinted} = useMinted( account.address, chainList[currentMintChain].chainID);
 	const [currentModalChain, setCurrentModalChain] = useState(0);
-	  
-
+	const {totalCollateralValue} = useTotalCollateralValue(account.address);
+	const {totalMintedValue} = useTotalMintedValue(account.address);
+	
+		
+		
 	const chainDropdown = chainList.map((chain, index) => (
-		{
-			key: index.toString(),
-			label: (
-				<div className='dropdownChoice' onClick={() => changeCollateralChain(index)}>
-					<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '40px'}}>
-						<img src={chainList[index].img} alt="assetOneLogo" className='assetLogo' />
-					</div>
-					<div>
-						{chainList[index].chainName}
-					</div>
+	{
+		key: index.toString(),
+		label: (
+			<div className='dropdownChoice' onClick={() => changeCollateralChain(index)}>
+				<div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '40px'}}>
+					<img src={chainList[index].img} alt="assetOneLogo" className='assetLogo' />
 				</div>
-			),
-		}
+				<div>
+					{chainList[index].chainName}
+				</div>
+			</div>
+		),
+	}
 	));
 
 	const chainMintDropdown = chainList.map((chain, index) => (
@@ -408,7 +418,7 @@ const SplitScreen = (props) => {
 												<div>
 													Total Collateral
 													<div style={{fontFamily: 'Kanit'}}>
-													{(Math.random() * 100000).toFixed(2)}$
+													{totalCollateralValueOnChain.toFixed(2)}$
 													</div>
 												</div>
 											</TableCell>
@@ -416,7 +426,7 @@ const SplitScreen = (props) => {
 									</TableHead>
 									<TableBody style={{overflowY: 'scroll',height: '100%'}}>
 
-										{tokenList?.map((e,i) => {
+										{tokenDeposited?.map((e,i) => {
 											return(
 												<TableRow>
 													<TableCell component="th" scope="row" style={{color: 'white', fontWeight: 'bold'}} >
@@ -428,7 +438,7 @@ const SplitScreen = (props) => {
 															</div>
 														</div>
 													</TableCell>
-													<TableCell style={{fontFamily: 'Kanit', color: 'white', fontWeight: 'bold'}} align="right">{(Math.random() * 100000).toFixed(5)} </TableCell>
+													<TableCell style={{fontFamily: 'Kanit', color: 'white', fontWeight: 'bold'}} align="right"> {e.deposited} </TableCell>
 													<TableCell style={{fontFamily: 'Kanit', color: 'white', fontWeight: 'bold'}} align="right">{(Math.random() * 100000).toFixed(5)} </TableCell>
 													<TableCell style={{color: 'white', fontWeight: 'bold'}} align="right">
 														{buttonStates[i] == NO_STATE && 
@@ -507,7 +517,7 @@ const SplitScreen = (props) => {
 										</div>
 										{(mintState == NO_STATE) &&
 											<div style={{fontSize: '64px', fontFamily: "Kanit"}}>
-												{chainSpecificMinted.toFixed(2)}
+												{tokenMinted.toFixed(2)}
 											</div>
 										}
 
@@ -609,7 +619,7 @@ const SplitScreen = (props) => {
 											Health Factor
 										</div>
 										<div className='dataNumber'>
-											{(totalCollateral / totalMinted).toFixed(2)}
+											{(totalCollateralValue / totalMintedValue).toFixed(2)}
 										</div>
 									</div>
 								</div>
@@ -626,7 +636,7 @@ const SplitScreen = (props) => {
 											Total Collateral
 										</div>
 										<div className='dataNumber'>
-											{totalCollateral.toFixed(2)}$
+											{totalCollateralValue.toFixed(2)}$
 										</div>
 									</div>
 									<div className='dataBoxContainer'>
@@ -634,7 +644,7 @@ const SplitScreen = (props) => {
 											Total Minted
 										</div>
 										<div className='dataNumber'>
-											{totalMinted.toFixed(2)}$
+											{totalMintedValue.toFixed(2)}$
 										</div>
 									</div>
 								</div>

@@ -67,17 +67,7 @@ const theme = createTheme({
 function App(props) {
 	const {config} = props;
 	const account = useAccount();
-
-	async function getSigner(){
-		const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-		const signer = provider.getSigner();
-		return signer;
-	}
-
-	async function getChainId(){
-		return account.chainId;
-	}
-
+	
 	return (
 		<ThemeProvider theme={theme}>
 			<div className="App" >
