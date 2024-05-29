@@ -59,6 +59,9 @@ contract MainRouter is CCIPBase, FunctionsBase {
     // Chain Selector => Token => isAllowed
     mapping (uint64 => mapping(address => bool)) private isAllowedTokens;
     mapping (uint64 => EnumerableSet.AddressSet) private allowedTokens;
+    
+    // Chain Selector => Token => Token Decimals
+    mapping (uint64 => mapping(address => uint8)) private tokenDecimals;
 
 
 
@@ -72,11 +75,12 @@ contract MainRouter is CCIPBase, FunctionsBase {
 
     uint256 private ccipGasLimit = 300_000;
 
+    uint16 public constant BASE_ACTIVITY_CREDIT = 300;
+
     uint256 public constant BASE_LTV = 65e18;
     uint256 public constant MAX_LTV = 75e18;
     uint256 public constant LIQUIDATION_THRESHOLD = 80e18;
     uint256 public constant LIQUIDATION_PENALTY = 6e18;
-
 
     uint256 public constant MIN_HEALTH_FACTOR = 1e18;
     uint256 public constant FEED_PRECISION = 1e10;
@@ -125,13 +129,14 @@ contract MainRouter is CCIPBase, FunctionsBase {
         avalancheMinter = _minterContract;
     }
 
-    function addAllowedToken(uint64 _chainSelector, address _token, address _priceFeed) external onlyOwner {
+    function addAllowedToken(uint64 _chainSelector, address _token, address _priceFeed, uint8 _tokenDecimal) external onlyOwner {
         if (isAllowedTokens[_chainSelector][_token]){
             revert TokenAlreadyAllowed(_chainSelector, _token);
         }
         isAllowedTokens[_chainSelector][_token] = true;
         allowedTokens[_chainSelector].add(_token);
         priceFeeds[_chainSelector][_token] = _priceFeed;
+        tokenDecimals[_chainSelector][_token] = _tokenDecimal;
     }
 
     function removeAllowedToken(
@@ -144,8 +149,8 @@ contract MainRouter is CCIPBase, FunctionsBase {
         isAllowedTokens[_chainSelector][_token] = false;
         allowedTokens[_chainSelector].remove(_token);
         priceFeeds[_chainSelector][_token] = address(0);
+        tokenDecimals[_chainSelector][_token] = 0;
     }
-
     function changePriceFeed(
         uint64 _chainSelector,
         address _token,
@@ -474,7 +479,7 @@ contract MainRouter is CCIPBase, FunctionsBase {
     {
         AggregatorV3Interface _priceFeed = AggregatorV3Interface(priceFeeds[_chainSelector][_token]);
         (, int256 _price, , , ) = _priceFeed.staleCheckLatestRoundData();
-        return (uint256(_price) * FEED_PRECISION) * _amount / PRECISION;
+        return (uint256(_price) * FEED_PRECISION) * _amount * 10**(18 - tokenDecimals[_chainSelector][_token]) / PRECISION;
     }
 
     function getDeposited(
@@ -537,6 +542,7 @@ contract MainRouter is CCIPBase, FunctionsBase {
         }
         return _tokens;
     }
+
 
     // -----------CHAINLINK CCIP ----------- //
 
@@ -632,6 +638,10 @@ contract MainRouter is CCIPBase, FunctionsBase {
         
         if (_returnedCredit > 0) {
             userActivityCredit[_user] = _returnedCredit;
+        }
+
+        if (userActivityCredit[_user] == 0){
+            userActivityCredit[_user] = BASE_ACTIVITY_CREDIT;
         }
 
         emit Response(_user, _requestId, _returnedCredit, _response, _err);
