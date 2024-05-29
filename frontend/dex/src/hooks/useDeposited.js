@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import {getDepositedAmount,getTotalDepositedValueOnChain} from "../backend/scripts/getDeposited.js"
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;    
 
@@ -9,30 +10,19 @@ export const useDeposited = (tokenList, walletAddress, chainId) => {
     const [totalCollateralValueOnChain, setTotalCollateralValueOnChain] = useState(0);
 
     const getDeposited =  async () => {
-        const promises = tokenList.map(({ticker}) => axios.get(`${API_BASE_URL}/api/v1/getDepositedEachToken`, {
-            params: {
-                chainId: chainId,
-                tokenSymbol: ticker,
-                isValue: false,
-                walletAddress: walletAddress,
-            }
-        }));
+        console.log("Hallo");
+        const promises = tokenList.map(({ticker}) => getDepositedAmount(chainId, ticker, walletAddress));
         const deposited = await Promise.all(promises);
         setTokenDeposited(tokenList.map((token, index) => ({
             ...token,
-            deposited: deposited[index].data,
+            deposited: deposited[index],
         })));
-
+        console.log(deposited);
     }
 
     const getTotalCollateralValue = async() => {
-        const response = await axios.get(`${API_BASE_URL}/api/v1/getTotalDepositedOnChain`, {
-            params: {
-                chainId: chainId,
-                walletAddress: walletAddress,
-            }
-        });
-        setTotalCollateralValueOnChain(parseFloat(response.data));
+        const response = await getTotalDepositedValueOnChain(chainId, walletAddress);
+        setTotalCollateralValueOnChain(parseFloat(response));
     }
 
     useEffect(() => {

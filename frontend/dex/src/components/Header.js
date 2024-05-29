@@ -11,7 +11,10 @@ function Header(props) {
 			<div className='leftH'>
 				<img src={Logo} className='logo' alt='logo'></img>
 				<Link to="/" className='link'>
-					<div className='headerItem'>Hallo</div>
+					<div className='headerItem'>Dashboard</div>
+				</Link>
+				<Link to="/swap" className='link'>
+					<div className='headerItem'>Swap</div>
 				</Link>
 			</div>
 			<div className='rightH'>
