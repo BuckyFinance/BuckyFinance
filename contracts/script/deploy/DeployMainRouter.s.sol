@@ -40,12 +40,12 @@ contract DeployMainRouter is Script, Parameters {
     }
 
     function addAllowedToken(MainRouter mainRouter, TokenConfig.Token memory token) public {
-        mainRouter.addAllowedToken(token.wbtc.chainSelector, token.wbtc.token, token.wbtc.priceFeed);
-        mainRouter.addAllowedToken(token.weth.chainSelector, token.weth.token, token.weth.priceFeed);
-        mainRouter.addAllowedToken(token.link.chainSelector, token.link.token, token.link.priceFeed);
-        mainRouter.addAllowedToken(token.avax.chainSelector, token.avax.token, token.avax.priceFeed);
-        mainRouter.addAllowedToken(token.uni.chainSelector, token.uni.token, token.uni.priceFeed);
-        mainRouter.addAllowedToken(token.usdc.chainSelector, token.usdc.token, token.usdc.priceFeed);
-        mainRouter.addAllowedToken(token.usdt.chainSelector, token.usdt.token, token.usdt.priceFeed);
+        mainRouter.addAllowedToken(token.wbtc.chainSelector, token.wbtc.token, token.wbtc.priceFeed, 18);
+        mainRouter.addAllowedToken(token.weth.chainSelector, token.weth.token, token.weth.priceFeed, 18);
+        mainRouter.addAllowedToken(token.link.chainSelector, token.link.token, token.link.priceFeed, 18);
+        mainRouter.addAllowedToken(token.avax.chainSelector, token.avax.token, token.avax.priceFeed, 18);
+        mainRouter.addAllowedToken(token.uni.chainSelector, token.uni.token, token.uni.priceFeed, 18);
+        mainRouter.addAllowedToken(token.usdc.chainSelector, token.usdc.token, token.usdc.priceFeed, 6);
+        mainRouter.addAllowedToken(token.usdt.chainSelector, token.usdt.token, token.usdt.priceFeed, 6);
     }
 }

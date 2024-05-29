@@ -35,9 +35,9 @@ async function mint(desChainId, amountOut, signerFromFE, isCalledFromFE) {
     const mainRouterContract = new Contract(mainRouterAddress, MainRouterABI, wallet);
     const amountOutInWei = ethers.utils.parseUnits(amountOut, 18);
     const gasLimit = ethers.utils.hexlify(1000000);
-    const value = await getMintFeeOnChain(mainRouterContract, CHAIN_SELECTOR, receiverAddress, amountOutInWei);
-    // const value = ethers.utils.parseEther("0.02");
-    const canBeMinted = await getMaxOutputCanBeMinted(walletAddress);
+    // const value = await getMintFeeOnChain(mainRouterContract, CHAIN_SELECTOR, receiverAddress, amountOutInWei);
+    const value = ethers.utils.parseEther("0.02");
+    const canBeMinted = parseFloat(await getMaxOutputCanBeMinted(walletAddress));
 
     // console.log(canBeMinted);
     // console.log(amountOut);
@@ -50,8 +50,9 @@ async function mint(desChainId, amountOut, signerFromFE, isCalledFromFE) {
         gasLimit: gasLimit,
         value: value,
     });
-    await tx.wait();
+    //await tx.wait();
     console.log(`Minted on chain ${desChainId} with tx hash: ${tx.hash}`);
+    return tx.hash;
 }
 
 async function main() {

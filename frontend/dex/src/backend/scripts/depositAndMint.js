@@ -1,4 +1,3 @@
-require("dotenv").config();
 const { ethers, Contract } = require('ethers');
 const DepositorABI = require("../abi/Depositor.json");
 const ERC20MockABI = require("../abi/ERC20Mock.json");

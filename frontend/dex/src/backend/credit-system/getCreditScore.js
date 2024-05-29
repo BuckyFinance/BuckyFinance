@@ -1,7 +1,6 @@
-require("dotenv").config()
 const axios = require('axios')
 
-const accessToken = process.env.CRED_API_TOKEN
+const accessToken = process.env.REACT_APP_CRED_API_TOKEN
 const accountAddressExample = '0xB1A296a720D9AAF5c5e9F805d8095e6d94882eE1'
 
 async function getCreditScore(accountAddress) {

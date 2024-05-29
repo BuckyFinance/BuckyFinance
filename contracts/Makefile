@@ -59,4 +59,7 @@ getUSDDepositedOnChain:
 getTotalMinted:
 	cast call $(MAIN_ROUTER) "getUserMintedOverall(address)(uint256)" $(USER) --rpc-url $(AVALANCHE_FUJI_RPC_URL)
 
+getCredit:
+	forge script script/interaction/GetCredit.s.sol:GetCredit --sig "getCredit(address,string[])(bytes32)" $(USER) $(ARGS) --rpc-url $(AVALANCHE_FUJI_RPC_URL) --account $(ACC) --sender $(SENDER) --broadcast
+
 .PHONY: deploy_avalanche_fuji deploy_ethereum_sepolia deploy_arbitrum_sepolia deploy_polygon_amoy deploy_optimism_sepolia deploy_base_sepolia deploy_all

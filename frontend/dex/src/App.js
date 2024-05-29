@@ -1,5 +1,6 @@
 import "./App.css";
 import Header from "./components/Header"
+import Dashboard from "./components/Dashboard"
 import Swap from "./components/Swap"
 import Tokens from "./components/Tokens"
 import {Routes, Route} from 'react-router-dom'
@@ -68,24 +69,14 @@ function App(props) {
 	const {config} = props;
 	const account = useAccount();
 
-	async function getSigner(){
-		const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-		const signer = provider.getSigner();
-		return signer;
-	}
-
-	async function getChainId(){
-		return account.chainId;
-	}
-
 	return (
 		<ThemeProvider theme={theme}>
 			<div className="App" >
 				<Header connectButton={<ConnectButton />} />
 				<div className="mainWindow">
 					<Routes>
-						<Route path='/' element={<Swap account={account} config={config} />}></Route>
-						<Route path='/tokens' element={<Tokens/>}></Route>
+						<Route path='/' element={<Dashboard account={account} config={config} />}></Route>
+						<Route path='/swap' element={<Swap  account={account} />}></Route>
 					</Routes>
 				</div>
 			</div>

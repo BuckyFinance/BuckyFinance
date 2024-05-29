@@ -35,13 +35,14 @@ async function burn(desChainId, amountToBurn, signerFromFE, isCalledFromFE) {
     const MINTER_ADDRESS = NetworkInfomation[desChainId].MINTER_ADDRESS;
     const minterContract = new Contract(MINTER_ADDRESS, MinterABI, wallet);
     const walletAddress = await wallet.getAddress();
-    const totalMintedOnchain = await getTotalMintedValueOnChain(desChainId, walletAddress);
+    const totalMintedOnchain = parseFloat(await getTotalMintedValueOnChain(desChainId, walletAddress));
+
     // console.log(totalMintedOnchain);
     // console.log(amountToBurn);
     if (totalMintedOnchain < amountToBurn) {
         return null;
     }
-
+    
     const tokenInfo = NetworkInfomation[desChainId]["TOKEN"]["DSC"];
     await approveToken(wallet, tokenInfo, amountToBurn, desChainId);
 
@@ -55,8 +56,9 @@ async function burn(desChainId, amountToBurn, signerFromFE, isCalledFromFE) {
         gasLimit: gasLimit,
         value: value
     });
-    await tx.wait();
+ //   await tx.wait();
     console.log(`Burned with transaction hash: ${tx.hash}`);
+    return tx.hash;
 }
 
 async function main() {
@@ -64,7 +66,7 @@ async function main() {
     await burn(desChainId, "2", "", false);
 }
 
-main();
+//main();
 
 module.exports = {
     burn,
