@@ -39,9 +39,9 @@ async function getTotalMintedValueOverallChain(walletAddress) {
 }
 
 async function main() {
-    const walletAddress = await getWalletAddress();
-    await getTotalMintedValueOnChain(84532);
-    await getTotalMintedValueOverallChain();
+    const walletAddress = "0xB1A296a720D9AAF5c5e9F805d8095e6d94882eE1"
+    await getTotalMintedValueOnChain(84532, walletAddress);
+    await getTotalMintedValueOverallChain(walletAddress);
 }
 
 // main();
