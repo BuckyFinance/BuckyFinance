@@ -47,7 +47,6 @@ async function mint(desChainId, amountOut, signerFromFE, isCalledFromFE) {
     }
 
     const tx = await mainRouterContract.mint(CHAIN_SELECTOR, receiverAddress, amountOutInWei, {
-        gasLimit: gasLimit,
         value: value,
     });
     //await tx.wait();
@@ -57,10 +56,10 @@ async function mint(desChainId, amountOut, signerFromFE, isCalledFromFE) {
 
 async function main() {
     const chainIdDestination = 421614;
-    await mint(421614, "100", "", false);
+    await mint(43113, "2", "", false);
 }
 
-// main();
+main();
 
 module.exports = {
     mint,

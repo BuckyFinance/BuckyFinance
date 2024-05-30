@@ -48,7 +48,7 @@ async function deposit(tokenSymbol, amountIn, signerFromFE, isCalledFromFE) {
     await approveToken(wallet, currentChainID, tokenInfo, amountIn);
 
     const tx = await depositorContract.deposit(tokenInfo.address, amountInWei, {
-        gasLimit: gasLimit,
+        // gasLimit: gasLimit,
         value: value,
     });
     //  await tx.wait();
