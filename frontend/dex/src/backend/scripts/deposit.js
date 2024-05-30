@@ -1,4 +1,3 @@
-require("dotenv").config();
 const { ethers, Contract } = require('ethers');
 const DepositorABI = require("../abi/Depositor.json");
 const ERC20MockABI = require("../abi/ERC20Mock.json");
@@ -45,7 +44,7 @@ async function deposit(tokenSymbol, amountIn, signerFromFE, isCalledFromFE) {
         gasLimit: gasLimit,
         value: value,
     });
-    await tx.wait();
+  //  await tx.wait();
     console.log(`Deposited with tx hash: ${tx.hash}`);
     return tx.hash;
 }

@@ -30,7 +30,7 @@ async function redeem(desChainId, tokenSymbol, amountToRedeem, signerFromFE, isC
 
     const MAIN_ROUTER_ADDRESS = NetworkInfomation[desChainId].MAIN_ROUTER_ADDRESS;
     const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, wallet);
-    const totalDepositedOnChain = await getDepositedAmount(desChainId, tokenSymbol, walletAddress);
+    const totalDepositedOnChain = parseFloat(await getDepositedAmount(desChainId, tokenSymbol, walletAddress));
 
     // console.log(totalDepositedOnChain);
     // console.log(amountToRedeem);
@@ -49,8 +49,9 @@ async function redeem(desChainId, tokenSymbol, amountToRedeem, signerFromFE, isC
         gasLimit: gasLimit,
         value: value
     });
-    await tx.wait();
+    //await tx.wait();
     console.log(`Redeemed with transaction hash: ${tx.hash}`);
+    return tx.hash;
 }
 
 async function main() {
@@ -59,7 +60,7 @@ async function main() {
     await redeem(11155111, "UNI", "20");
 }
 
-main();
+// main();
 
 module.exports = {
     redeem,

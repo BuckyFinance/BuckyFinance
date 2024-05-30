@@ -1,13 +1,11 @@
-const { parse } = require("dotenv");
 const { ethers } = require("ethers")
-require("dotenv").config()
 
-const SEPOLIA_RPC_URL = process.env.SEPOLIA_RPC_URL;
-const ARBITRUM_RPC_URL = process.env.ARBITRUM_RPC_URL;
-const AMOY_RPC_URL = process.env.AMOY_RPC_URL;
-const OPTIMISM_RPC_URL = process.env.OPTIMISM_RPC_URL;
-const FUJI_RPC_URL = process.env.FUJI_RPC_URL;
-const BASE_RPC_URL = process.env.BASE_RPC_URL;
+const SEPOLIA_RPC_URL = process.env.REACT_APP_SEPOLIA_RPC_URL;
+const ARBITRUM_RPC_URL = process.env.REACT_APP_ARBITRUM_RPC_URL;
+const AMOY_RPC_URL = process.env.REACT_APP_AMOY_RPC_URL;
+const OPTIMISM_RPC_URL = process.env.REACT_APP_OPTIMISM_RPC_URL;
+const FUJI_RPC_URL = process.env.REACT_APP_FUJI_RPC_URL;
+const BASE_RPC_URL = process.env.REACT_APP_BASE_RPC_URL;
 
 let currentChainID = 11155111;
 
