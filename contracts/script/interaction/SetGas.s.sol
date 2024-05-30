@@ -8,6 +8,7 @@ import { ERC20Mock } from "../Mocks/ERC20Mock.sol";
 import { Depositor } from "../../src/Depositor.sol";
 import { ChainConfig } from "../config/ChainConfig.s.sol";
 import { Parameters } from "../Parameters.sol";
+import { Minter } from "../../src/Minter.sol";
 
 contract SetGas is Script, Parameters {
     function run() external {
@@ -15,7 +16,7 @@ contract SetGas is Script, Parameters {
         ChainConfig.ChainComponent memory chain = config.run();
 
         vm.startBroadcast();
-        Depositor(payable(chain.depositor)).setCCIPDepositAndMintGasLimit{gas: 5000000}(1_500_000);
+        // Minter(payable(chain.minter)).set
         vm.stopBroadcast();
     }
 }

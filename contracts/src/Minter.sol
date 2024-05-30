@@ -75,6 +75,10 @@ contract Minter is CCIPBase {
         ccipBurnGasLimit = _newGasLimit;
     }
 
+    function setCCIPBurnAndMintGasLimit(uint256 _newGasLimit) external onlyOwner {
+        ccipBurnAndMintGasLimit = _newGasLimit;
+    }
+
     function withdrawFeePay(uint256 _amount) external {
         require(_amount <= feePay[msg.sender], "Not enough fee pay");
         feePay[msg.sender] -= _amount;
