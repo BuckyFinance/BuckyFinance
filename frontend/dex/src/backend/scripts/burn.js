@@ -53,7 +53,6 @@ async function burn(desChainId, amountToBurn, signerFromFE, isCalledFromFE) {
     // console.log(minterContract);
     // console.log(amountToBurnInWei.toString());
     const tx = await minterContract.burn(amountToBurnInWei, {
-        gasLimit: gasLimit,
         value: value
     });
     //   await tx.wait();
