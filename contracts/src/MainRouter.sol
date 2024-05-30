@@ -573,6 +573,8 @@ contract MainRouter is CCIPBase, FunctionsBase {
             revert NotEnoughFeePay(feePay[_sender], _fees);
         }
 
+        feePay[_sender] -= _fees;
+
         _messageId = _router.ccipSend{value: _fees}(_destinationChainSelector, _message);
 
         if (_transactionType == TransactionSend.REDEEM) {
