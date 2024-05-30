@@ -16,7 +16,8 @@ async function getTokenPrice(tokenSymbol) {
 
     const MAIN_ROUTER_ADDRESS = NetworkInfomation[avalancheFujiChainId].MAIN_ROUTER_ADDRESS;
     const mainRouterContract = new Contract(MAIN_ROUTER_ADDRESS, MainRouterABI, provider);
-    const tokenAddress = NetworkInfomation[avalancheFujiChainId]["TOKEN"][tokenSymbol].address;
+    const tokenInfo = NetworkInfomation[avalancheFujiChainId]["TOKEN"][tokenSymbol];
+    const tokenAddress = tokenInfo.address;
 
     const priceFeedsInUsd = await mainRouterContract.getTokenPrice(tokenAddress);
     const priceFeedsInUsdFormat = ethers.utils.formatUnits(priceFeedsInUsd, 8);
