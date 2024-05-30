@@ -7,7 +7,13 @@ const {
     getCurrentChainId,
     switchCurrentChainId,
 } = require("./helper");
-const { mint } = require("./mint");
+
+async function getDepositFee(depositorContract, tokenAddress, amountInWei) {
+    const depositFee = await depositorContract.getDepositFee(tokenAddress, amountInWei);
+    const depositFeeFormat = ethers.utils.formatUnits(depositFee, "ether");
+    console.log(`Deposit Fee: ${depositFeeFormat}`);
+    return depositFee;
+}
 
 async function approveToken(wallet, currentChainID, tokenInfo, amountIn) {
     const tokenContract = new Contract(tokenInfo.address, ERC20MockABI, wallet);
@@ -36,7 +42,8 @@ async function deposit(tokenSymbol, amountIn, signerFromFE, isCalledFromFE) {
 
     const amountInWei = ethers.utils.parseUnits(amountIn.toString(), tokenInfo.decimals);
     // get fee to deposit on chain
-    const value = ethers.utils.parseEther("0.02");
+    // const value = ethers.utils.parseEther("0.002");
+    const value = await getDepositFee(depositorContract, tokenInfo.address, amountInWei);
     const gasLimit = ethers.utils.hexlify(1000000);
     await approveToken(wallet, currentChainID, tokenInfo, amountIn);
 
@@ -44,15 +51,15 @@ async function deposit(tokenSymbol, amountIn, signerFromFE, isCalledFromFE) {
         gasLimit: gasLimit,
         value: value,
     });
-  //  await tx.wait();
+    //  await tx.wait();
     console.log(`Deposited with tx hash: ${tx.hash}`);
     return tx.hash;
 }
 
 async function main() {
-    // switchCurrentChainId(84532);
-    // const currentChainID = getCurrentChainId();
-    // console.log(currentChainID);
+    switchCurrentChainId(84532);
+    const currentChainID = getCurrentChainId();
+    console.log(currentChainID);
     await deposit("UNI", 25, "", false);
 }
 

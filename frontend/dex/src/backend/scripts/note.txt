@@ -7,7 +7,14 @@ mint(desChainId, amountOut, signerFromFE, isCalledFromFE)
 burn(desChainId, amountToBurn, signerFromFE, isCalledFromFrontend)
 ----- Redeem ----
 redeem(desChainId, tokenSymbol, amountToRedeem, signerFromFE, isCalledFromFE)
-
+----- deposit fee pay -----
+depositFeePay(amount, signerFromFE, isCalledFromFE)
+----- withdraw fee pay ------
+withdrawFeePay(amountToWithdraw, signerFromFE, isCalledFromFE)
+----- deposit and mint ------ (deposit tokenSymbol in currentChainId and mint in desChainId)
+depositAndMint(tokenSymbol, amountToDeposit, desChainId, amountToMint, signerFromFE, isCalledFromFE)
+----- burn and mint ------ (burn and mint amount are the same, mint in desChainId)
+burnAndMint(amountToBurnAndMint, desChainId, signerFromFE, isCalledFromFE)
 
 *** READ FUNCTION ***
 ----- Get deposited amount -----
@@ -32,3 +39,5 @@ getTotalMintedValueOverallChain(walletAddress)
 getTokenPrice(tokenSymbol) 
 ----- Get balance of token -----
 getBalance(chainId, tokenSymbol, walletAddress)
+----- Get current fee pay ------ (error)
+getFeePay(walletAddress)
