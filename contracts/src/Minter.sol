@@ -128,6 +128,7 @@ contract Minter is CCIPBase {
         uint256 _amountToCover,
         uint256 _gasLimit
     )   external payable {
+        feePay[msg.sender] += msg.value;
         IERC20(address(dsc)).safeTransferFrom(msg.sender, address(this), _amountToCover);
         dsc.burn(_amountToCover);
 
