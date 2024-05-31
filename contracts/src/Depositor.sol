@@ -210,7 +210,7 @@ contract Depositor is CCIPBase {
             mainRouter,
             _data,
             address(0),
-            ccipDepositGasLimit
+            ccipDepositAndMintGasLimit
         );
         IRouterClient _router = IRouterClient(getRouter());
         uint256 _fees = _router.getFee(mainRouterChainSelector, _message);

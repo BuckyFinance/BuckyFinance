@@ -22,7 +22,7 @@ abstract contract FunctionsBase is FunctionsClient, Ownable {
     address internal functionsRouter;
     bytes32 internal donId;
     uint64 internal subscriptionId;
-    uint32 internal gasLimit;
+    uint32 internal gasLimit = 300_000;
 
     mapping (bytes32 => address) internal requestIdToUser;
 
@@ -40,6 +40,14 @@ abstract contract FunctionsBase is FunctionsClient, Ownable {
 
     constructor(address _functionRouter, bytes32 _donId) FunctionsClient(_functionRouter) {
         functionsRouter = _functionRouter;
+        donId = _donId;
+    }
+
+    function setFunctionsRouter(address _functionsRouter) external onlyOwner {
+        functionsRouter = _functionsRouter;
+    }
+
+    function setDonId(bytes32 _donId) external onlyOwner {
         donId = _donId;
     }
 

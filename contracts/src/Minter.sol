@@ -24,7 +24,8 @@ contract Minter is CCIPBase {
         DEPOSIT,
         BURN,
         DEPOSIT_MINT,
-        BURN_MINT
+        BURN_MINT,
+        LIQUIDATE
     }
 
     enum TransactionSend {
