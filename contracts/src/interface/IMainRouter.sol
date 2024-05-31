@@ -20,4 +20,14 @@ interface IMainRouter {
         uint64 _destinationChainSelector,
         address _receiver
     ) external;
+
+    function liquidate(
+        uint64 _sourceChainSelector,
+        address _liquidatedUser,
+        address _token, 
+        uint64 _chainSelector, 
+        address _receiver, 
+        uint256 _amountToCover,
+        address sender
+    )   external;
 }

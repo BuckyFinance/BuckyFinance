@@ -17,13 +17,14 @@ contract Depositor is CCIPBase {
     error NotAllowed();
 
     event Deposit(address indexed user, address indexed token, uint256 indexed amount);
-    event Redeem(address indexed user, address indexed token, uint256 indexed amount);
+    event Redeem(address indexed _from, address indexed to, address indexed token, uint256 amount);
 
     enum TransactionReceive {
         DEPOSIT,
         BURN,
         DEPOSIT_MINT,
-        BURN_MINT
+        BURN_MINT,
+        LIQUIDATE
     }
     enum TransactionSend {
         REDEEM,
@@ -117,13 +118,13 @@ contract Depositor is CCIPBase {
         deposited[_sender][_token] += _amount;
     }
 
-    function redeem(address _receiver, address _token, uint256 _amount) external onlyMainRouter(msg.sender){
-        _redeem(_receiver, _token, _amount);
+    function redeem(address _from, address _to, address _token, uint256 _amount) external onlyMainRouter(msg.sender){
+        _redeem(_from, _to, _token, _amount);
     }
 
-    function _redeem(address _receiver, address _token, uint256 _amount) internal onlyAllowedToken(_token) {
-        deposited[_receiver][_token] -= _amount;
-        IERC20(_token).safeTransfer(_receiver, _amount);
+    function _redeem(address _from, address _to, address _token, uint256 _amount) internal onlyAllowedToken(_token) {
+        deposited[_from][_token] -= _amount;
+        IERC20(_token).safeTransfer(_to, _amount);
     }
 
 
@@ -173,9 +174,9 @@ contract Depositor is CCIPBase {
     {
         (TransactionSend _transactionType, bytes memory _data) = abi.decode(message.data, (TransactionSend, bytes));
         if (_transactionType == TransactionSend.REDEEM) {
-            (address _user, address _token, uint256 _amount) = abi.decode(_data, (address, address, uint256));
-            _redeem(_user, _token, _amount);
-            emit Redeem(_user, _token, _amount);
+            (address _from, address _to, address _token, uint256 _amount) = abi.decode(_data, (address, address, address, uint256));
+            _redeem(_from, _to, _token, _amount);
+            emit Redeem(_from, _to, _token, _amount);
         }
     }
 

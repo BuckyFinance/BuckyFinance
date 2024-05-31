@@ -120,6 +120,33 @@ contract Minter is CCIPBase {
         _mint(_receiver, _amount);
     }
 
+    function liquidate(
+        address _liquidatedUser, 
+        address _token, 
+        uint64 _destinationChainSelector, 
+        address _receiver, 
+        uint256 _amountToCover,
+        uint256 _gasLimit
+    )   external payable {
+        IERC20(address(dsc)).safeTransferFrom(msg.sender, address(this), _amountToCover);
+        dsc.burn(_amountToCover);
+
+        if (chainSelector == mainRouterChainSelector) {
+            IMainRouter(mainRouter).liquidate(chainSelector, _liquidatedUser, _token, _destinationChainSelector, _receiver, _amountToCover, msg.sender);
+            return;
+        }
+
+        bytes memory _data = abi.encode(TransactionReceive.LIQUIDATE, abi.encode(
+            _liquidatedUser, 
+            _token, 
+            _destinationChainSelector, 
+            _receiver,  
+            _amountToCover,
+            msg.sender
+        ));
+        _ccipSend(msg.sender, _amountToCover, _data, _gasLimit);
+    }
+
     function _mint(address _receiver, uint256 _amount) internal {
         minted[_receiver] += _amount;
         dsc.mint(_receiver, _amount);
