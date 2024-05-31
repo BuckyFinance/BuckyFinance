@@ -2,8 +2,8 @@
     "11155111": {
         "name": "Ethereum Sepolia",
         "CHAIN_SELECTOR": "16015286601757825753",
-        "DEPOSITOR_ADDRESS": "0x7803DB4950e0Bc60F11ef7e38971D0D2fEF23E2E",
-        "MAIN_ROUTER_ADDRESS": "0x9b0cb6E1B1BbA871b2738f3CCd10eC5eCe8DaBa7",
+        "DEPOSITOR_ADDRESS": "0x8d554e76becf75012c9168fbc7df2Da0CcfA4B4E",
+        "MAIN_ROUTER_ADDRESS": "0xF7be8E30E35bf739e9e63B5D334D91de34cEFA8D",
         "MINTER_ADDRESS": "0x8dBe4e6E57bcF80b59263158589cfa5f8d0B7838",
         "TOKEN": {
             "WBTC": {
@@ -51,9 +51,9 @@
     "11155420": {
         "name": "Optimism Sepolia",
         "CHAIN_SELECTOR": "5224473277236331295",
-        "DEPOSITOR_ADDRESS": "0xC621BC66a58781B80E64b0754b1555453c9312d8",
-        "MAIN_ROUTER_ADDRESS": "0x9b0cb6E1B1BbA871b2738f3CCd10eC5eCe8DaBa7",
-        "MINTER_ADDRESS": "0xD28f8454873CEb4de41d537257044510c3A1d616",
+        "DEPOSITOR_ADDRESS": "0xdF7980DAFD8844A0693c46202e0d34C2014773f3",
+        "MAIN_ROUTER_ADDRESS": "0xF7be8E30E35bf739e9e63B5D334D91de34cEFA8D",
+        "MINTER_ADDRESS": "0x9022604de68EdfBD041c3EecDDA9E3F28Ac365FA",
         "TOKEN": {
             "WBTC": {
                 "name": "Wrapped Bitcoin",
@@ -93,16 +93,16 @@
             "DSC": {
                 "name": "DSC",
                 "decimals": 18,
-                "address": "0x1A0303dCa8DBfb25DA3F3D37395BcC546ceC0Bf0"
+                "address": "0xF975ABb3E230C3a089bA330249C782c1d0F51708"
             }
         }
     },
     "421614": {
         "name": "Arbitrum Sepolia",
         "CHAIN_SELECTOR": "3478487238524512106",
-        "DEPOSITOR_ADDRESS": "0x04aA81701B59b5E390f0C2Cd7FA84BA63A82C944",
-        "MAIN_ROUTER_ADDRESS": "0x9b0cb6E1B1BbA871b2738f3CCd10eC5eCe8DaBa7",
-        "MINTER_ADDRESS": "0x9559e4655e0b5dD06Ce2fBecAC18C24abB54d0Fb",
+        "DEPOSITOR_ADDRESS": "0x6D9729c62efbAF4Ec65920a8f26ad9bc9533D2f5",
+        "MAIN_ROUTER_ADDRESS": "0xF7be8E30E35bf739e9e63B5D334D91de34cEFA8D",
+        "MINTER_ADDRESS": "0x73744f28ff269C5A4F8f3a825DA5028724C6890e",
         "TOKEN": {
             "WBTC": {
                 "name": "Wrapped Bitcoin",
@@ -142,16 +142,16 @@
             "DSC": {
                 "name": "DSC",
                 "decimals": 18,
-                "address": "0x15c51Cdd0b53789711C43a2d6C624dB20D52086E"
+                "address": "0x3B21674254B6020d360B4ed4517CBe59b10DBAe3"
             }
         }
     },
     "43113": {
         "name": "Avalanche Fuji",
         "CHAIN_SELECTOR": "14767482510784806043",
-        "DEPOSITOR_ADDRESS": "0x35De3ceb32A829808A2D8f6Ae743d3ea62a2D7AA",
-        "MAIN_ROUTER_ADDRESS": "0x9b0cb6E1B1BbA871b2738f3CCd10eC5eCe8DaBa7",
-        "MINTER_ADDRESS": "0x18d2483BDdad0e6DF259C780fc9d7C9774ebAcF5",
+        "DEPOSITOR_ADDRESS": "0x0F38096F37B067Be83Ae62437e9b9408375669Bb",
+        "MAIN_ROUTER_ADDRESS": "0xF7be8E30E35bf739e9e63B5D334D91de34cEFA8D",
+        "MINTER_ADDRESS": "0x90F7279A2b221B46C3e03377C3E9f8EE0Fd6A277",
         "TOKEN": {
             "WBTC": {
                 "name": "Wrapped Bitcoin",
@@ -191,16 +191,16 @@
             "DSC": {
                 "name": "DSC",
                 "decimals": 18,
-                "address": "0xf7d270b5f6879feb65ed169b82f933eC75b4b624"
+                "address": "0xFB4230A5dff059091fe22A4Be5CB1a4e5468ADeA"
             }
         }
     },
     "80002": {
         "name": "Polygon Amoy",
         "CHAIN_SELECTOR": "16281711391670634445",
-        "DEPOSITOR_ADDRESS": "0x51353BFb9fB8baE6d70b896401937C64E96BAcB9",
-        "MAIN_ROUTER_ADDRESS": "0x9b0cb6E1B1BbA871b2738f3CCd10eC5eCe8DaBa7",
-        "MINTER_ADDRESS": "0xa6669a015DB6816F1233111e248A4eFAD84920a5",
+        "DEPOSITOR_ADDRESS": "0xB2080CE3E7dAA9ED149bb78E6Bb244Ba0f5CAc0A",
+        "MAIN_ROUTER_ADDRESS": "0xF7be8E30E35bf739e9e63B5D334D91de34cEFA8D",
+        "MINTER_ADDRESS": "0xb6D37130Dfe32681F9A97d18F7BB475167344BeD",
         "TOKEN": {
             "WBTC": {
                 "name": "Wrapped Bitcoin",
@@ -240,16 +240,16 @@
             "DSC": {
                 "name": "DCS",
                 "decimals": 18,
-                "address": "0x23d3E4b7293A2e1CC9aBce03bb920D7E42480d17"
+                "address": "0x9306Da79208982a13C8a73736071FE62fC1A310e"
             }
         }
     },
     "84532": {
         "name": "Base Sepolia",
         "CHAIN_SELECTOR": "10344971235874465080",
-        "DEPOSITOR_ADDRESS": "0x6aE8f2481a6B871482e4D66e7Ceed6960B37D229",
-        "MAIN_ROUTER_ADDRESS": "0x9b0cb6E1B1BbA871b2738f3CCd10eC5eCe8DaBa7",
-        "MINTER_ADDRESS": "0x1658727bd2E390837D39c2fffE41e16Dc1D6c27b",
+        "DEPOSITOR_ADDRESS": "0xA2696CD53F0E8c8Fdc2D2fd842C7670ba0662794",
+        "MAIN_ROUTER_ADDRESS": "0xF7be8E30E35bf739e9e63B5D334D91de34cEFA8D",
+        "MINTER_ADDRESS": "0x4ff263b5e695dC0F6B555C5118c3e426ea4783E1",
         "TOKEN": {
             "WBTC": {
                 "name": "Wrapped Bitcoin",
@@ -289,7 +289,7 @@
             "DSC": {
                 "name": "DSC",
                 "decimals": 18,
-                "address": "0x29040D0C5f2881F0102876B45A9E989813deC61A"
+                "address": "0xB0a1491A0E429ce4a74C98b87172Eb0a886CC906"
             }
         }
     }

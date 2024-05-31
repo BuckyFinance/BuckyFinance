@@ -46,7 +46,6 @@ async function redeem(desChainId, tokenSymbol, amountToRedeem, signerFromFE, isC
     const value = await getFeeToRedeemOnChain(mainRouterContract, CHAIN_SELECTOR, receiverAddress, tokenInfo, amountToRedeemInWei);
     // const value = await ethers.utils.parseEther("0.02");
     const tx = await mainRouterContract.redeem(CHAIN_SELECTOR, receiverAddress, tokenInfo.address, amountToRedeemInWei, {
-        gasLimit: gasLimit,
         value: value
     });
     //await tx.wait();

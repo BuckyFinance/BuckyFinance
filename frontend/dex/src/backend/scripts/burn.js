@@ -12,7 +12,7 @@ async function getBurnFeeOnChain(minterContract, amountToBurnInWei) {
     const burnFee = await minterContract.getBurnFee(amountToBurnInWei);
     const burnFeeFormat = ethers.utils.formatUnits(burnFee, "ether");
     console.log(`Burn fee: ${burnFeeFormat}`);
-    return burnFeeFormat;
+    return burnFee;
 }
 
 async function approveToken(wallet, tokenInfo, amountIn, desChainId) {
@@ -42,31 +42,30 @@ async function burn(desChainId, amountToBurn, signerFromFE, isCalledFromFE) {
     if (totalMintedOnchain < amountToBurn) {
         return null;
     }
-    
+
     const tokenInfo = NetworkInfomation[desChainId]["TOKEN"]["DSC"];
     await approveToken(wallet, tokenInfo, amountToBurn, desChainId);
 
     const gasLimit = ethers.utils.hexlify(1000000);
     const amountToBurnInWei = ethers.utils.parseUnits(amountToBurn, 18);
-    // const value = await getBurnFeeOnChain(minterContract, amountToBurnInWei);
-    const value = ethers.utils.parseEther("0.02");
+    const value = await getBurnFeeOnChain(minterContract, amountToBurnInWei);
+    // const value = ethers.utils.parseEther("0.02");
     // console.log(minterContract);
     // console.log(amountToBurnInWei.toString());
     const tx = await minterContract.burn(amountToBurnInWei, {
-        gasLimit: gasLimit,
         value: value
     });
- //   await tx.wait();
+    //   await tx.wait();
     console.log(`Burned with transaction hash: ${tx.hash}`);
     return tx.hash;
 }
 
 async function main() {
-    const desChainId = 84532;
-    await burn(desChainId, "2", "", false);
+    const desChainId = 80002;
+    await burn(desChainId, "1", "", false);
 }
 
-//main();
+// main();
 
 module.exports = {
     burn,

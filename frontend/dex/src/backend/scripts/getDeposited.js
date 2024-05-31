@@ -82,7 +82,7 @@ async function main() {
     const totalDepositedValueOverallChain = await getTotalDepositedValueOverallChain(walletAddress);
 }
 
-main();
+// main();
 
 module.exports = {
     getDepositedAmount,
