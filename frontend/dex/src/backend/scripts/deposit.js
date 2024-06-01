@@ -57,10 +57,10 @@ async function deposit(tokenSymbol, amountIn, signerFromFE, isCalledFromFE) {
 }
 
 async function main() {
-    switchCurrentChainId(84532);
+    switchCurrentChainId(11155111);
     const currentChainID = getCurrentChainId();
     console.log(currentChainID);
-    await deposit("UNI", 25, "", false);
+    await deposit("WBTC", 5, "", false);
 }
 
 // main();

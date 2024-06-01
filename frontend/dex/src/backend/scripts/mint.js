@@ -56,7 +56,7 @@ async function mint(desChainId, amountOut, signerFromFE, isCalledFromFE) {
 
 async function main() {
     const chainIdDestination = 421614;
-    await mint(43113, "2", "", false);
+    await mint(80002, "2", "", false);
 }
 
 //main();

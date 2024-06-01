@@ -178,7 +178,13 @@
       {
         "indexed": true,
         "internalType": "address",
-        "name": "user",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "indexed": true,
+        "internalType": "address",
+        "name": "to",
         "type": "address"
       },
       {
@@ -188,7 +194,7 @@
         "type": "address"
       },
       {
-        "indexed": true,
+        "indexed": false,
         "internalType": "uint256",
         "name": "amount",
         "type": "uint256"
@@ -590,7 +596,12 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "_receiver",
+        "name": "_from",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_to",
         "type": "address"
       },
       {

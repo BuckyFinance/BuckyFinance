@@ -7,26 +7,29 @@ const {
     getProvider,
 } = require("./helper")
 
-async function getFeePay(walletAddress) {
+async function getCurrentLTV(walletAddress) {
     const avalancheFujiChainId = 43113;
     const provider = getProvider(avalancheFujiChainId);
+    // console.log(provider)
 
     const mainRouterAddress = NetworkInfomation[avalancheFujiChainId].MAIN_ROUTER_ADDRESS;
     const mainRouterContract = new Contract(mainRouterAddress, MainRouterABI, provider);
 
-    const feePay = await mainRouterContract.getFeePay(walletAddress);
-    const feePayFormat = ethers.utils.formatUnits(feePay, "ether");
-    console.log(`Fee pay of Address ${walletAddress}: ${feePayFormat}`);
-    return feePayFormat;
+    const currentLTV = await mainRouterContract.calculateLTV(walletAddress);
+
+    const currentLTVFormat = ethers.utils.formatUnits(currentLTV, "ether");
+    console.log(`Current LTV of Address ${walletAddress}: ${currentLTVFormat}`);
+    return currentLTVFormat;
 }
 
 async function main() {
-    const walletAddress = "0x7aF234d569aB6360693806D7e7f439Ec2114F93c";
-    getFeePay(walletAddress);
+    const walletAddress = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
+    const currentLTV = await getCurrentLTV(walletAddress);
+    console.log(currentLTV);
 }
 
-main();
+// main();
 
 module.exports = {
-    getFeePay,
+    getCurrentLTV,
 }
