@@ -76,13 +76,14 @@ async function main() {
     // switchCurrentChainId(11155111);
     // const currentChainID = getCurrentChainId();
     const walletAddress = "0xB1A296a720D9AAF5c5e9F805d8095e6d94882eE1";
-    const depositedAmountOnchain = await getDepositedAmount(11155111, "UNI", walletAddress);
-    const depositedValueOnchain = await getDepositedValue(11155111, "UNI", walletAddress);
-    const totalDepositedValueOnChain = await getTotalDepositedValueOnChain(11155111, walletAddress);
+    const desChainId = 11155111;
+    const depositedAmountOnchain = await getDepositedAmount(desChainId, "WBTC", walletAddress);
+    const depositedValueOnchain = await getDepositedValue(desChainId, "WBTC", walletAddress);
+    const totalDepositedValueOnChain = await getTotalDepositedValueOnChain(desChainId, walletAddress);
     const totalDepositedValueOverallChain = await getTotalDepositedValueOverallChain(walletAddress);
 }
 
-// main();
+main();
 
 module.exports = {
     getDepositedAmount,

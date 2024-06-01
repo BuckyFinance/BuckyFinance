@@ -58,6 +58,11 @@
   },
   {
     "inputs": [],
+    "name": "HealthFactorNotLowEnoughToBeLiquidated",
+    "type": "error"
+  },
+  {
+    "inputs": [],
     "name": "HealthFactorTooLow",
     "type": "error"
   },
@@ -839,6 +844,35 @@
       }
     ],
     "stateMutability": "pure",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint256",
+        "name": "_amount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint64",
+        "name": "_destinationChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      }
+    ],
+    "name": "convertUSDIntoToken",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
     "type": "function"
   },
   {
@@ -1700,6 +1734,49 @@
     "inputs": [
       {
         "internalType": "uint64",
+        "name": "_sourceChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "address",
+        "name": "_liquidatedUser",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
+        "name": "_token",
+        "type": "address"
+      },
+      {
+        "internalType": "uint64",
+        "name": "_destinationChainSelector",
+        "type": "uint64"
+      },
+      {
+        "internalType": "address",
+        "name": "_receiver",
+        "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_amountToCover",
+        "type": "uint256"
+      },
+      {
+        "internalType": "address",
+        "name": "_sender",
+        "type": "address"
+      }
+    ],
+    "name": "liquidate",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "uint64",
         "name": "_destinationChainSelector",
         "type": "uint64"
       },
@@ -1898,6 +1975,32 @@
       }
     ],
     "name": "setCCIPGasLimit",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "bytes32",
+        "name": "_donId",
+        "type": "bytes32"
+      }
+    ],
+    "name": "setDonId",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "_functionsRouter",
+        "type": "address"
+      }
+    ],
+    "name": "setFunctionsRouter",
     "outputs": [],
     "stateMutability": "nonpayable",
     "type": "function"

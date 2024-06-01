@@ -1,5 +1,5 @@
 const { ethers } = require("ethers")
-//require("dotenv").config();
+require("dotenv").config();
 
 const SEPOLIA_RPC_URL = process.env.REACT_APP_SEPOLIA_RPC_URL;
 const ARBITRUM_RPC_URL = process.env.REACT_APP_ARBITRUM_RPC_URL;
