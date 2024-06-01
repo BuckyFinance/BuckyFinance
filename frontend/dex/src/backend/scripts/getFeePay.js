@@ -21,11 +21,11 @@ async function getFeePay(walletAddress) {
 }
 
 async function main() {
-    const walletAddress = "0xB1A296a720D9AAF5c5e9F805d8095e6d94882eE1";
+    const walletAddress = "0x7aF234d569aB6360693806D7e7f439Ec2114F93c";
     getFeePay(walletAddress);
 }
 
-// main();
+main();
 
 module.exports = {
     getFeePay,

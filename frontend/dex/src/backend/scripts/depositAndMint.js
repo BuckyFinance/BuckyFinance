@@ -106,7 +106,7 @@ async function depositAndMint(tokenSymbol, amountToDeposit, desChainId, amountTo
 async function main() {
     // switchCurrentChainId(11155111);
     // // console.log(currentChainID);
-    await depositAndMint("UNI", 100, 80002, 10);
+    await depositAndMint("UNI", 80, 80002, 10);
 }
 
 main();
