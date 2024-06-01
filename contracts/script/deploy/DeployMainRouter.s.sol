@@ -12,6 +12,7 @@ contract DeployMainRouter is Script, Parameters {
     function run() external returns (MainRouter mainRouter) {
         vm.startBroadcast();
         mainRouter = new MainRouter(AVALANCHE_FUJI_CHAIN_SELECTOR, AVALANCHE_FUJI_CCIP_ROUTER, AVALANCHE_FUJI_FUNCTIONS_ROUTER, AVALANCHE_FUJI_DON_ID);
+        mainRouter.setSubscriptionID(FUNCTIONS_SUBSCRIPTION_ID);
         
         TokenConfig tokenConfig = new TokenConfig();
 

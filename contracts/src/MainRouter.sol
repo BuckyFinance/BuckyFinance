@@ -28,6 +28,7 @@ contract MainRouter is CCIPBase, FunctionsBase {
     error TokenAlreadyAllowed(uint64 _chainSelector, address _token);
     error ExceedsMaxLTV();
     error NotAllowed();
+    error HealthFactorNotLowEnoughToBeLiquidated();
 
     event Deposit(address indexed user, uint64 indexed chainSelector, address indexed token, uint256 amount);
     event Redeem(address indexed user, uint64 indexed chainSelector, address indexed token, uint256 amount);
@@ -39,7 +40,8 @@ contract MainRouter is CCIPBase, FunctionsBase {
         DEPOSIT,
         BURN,
         DEPOSIT_MINT,
-        BURN_MINT
+        BURN_MINT,
+        LIQUIDATE
     }
 
     enum TransactionSend {
@@ -184,19 +186,7 @@ contract MainRouter is CCIPBase, FunctionsBase {
             revert AmountHasToBeGreaterThanZero();
         }
         feePay[msg.sender] += msg.value;
-        deposited[msg.sender][_destinationChainSelector][_token] -= _amount;
-
-        if (!checkHealthFactor(msg.sender)){
-            revert HealthFactorTooLow();
-        }
-
-        if (chainSelector == _destinationChainSelector) {
-            IDepositor(_receiver).redeem(msg.sender, _token, _amount);
-            return;
-        }
-
-        bytes memory _data = abi.encode(TransactionSend.REDEEM, abi.encode(msg.sender, _token, _amount));
-        _ccipSend(msg.sender, _destinationChainSelector, _receiver, TransactionSend.REDEEM, _token, _amount, _data);
+        _redeem(_destinationChainSelector, _receiver, _token, _amount, msg.sender, msg.sender);
     }
 
     function mint(
@@ -207,26 +197,6 @@ contract MainRouter is CCIPBase, FunctionsBase {
     {
         feePay[msg.sender] += msg.value;
         _mint(_destinationChainSelector, _receiver, msg.sender, _amount);
-    }
-
-    function _mint(uint64 _destinationChainSelector, address _receiver, address _sender, uint256 _amount) internal {
-        if (_amount == 0){
-            revert AmountHasToBeGreaterThanZero();
-        }
-        minted[_sender][_destinationChainSelector] += _amount;
-
-        if (!checkExceedMaxLTV(_sender)){
-            revert ExceedsMaxLTV();
-        }
-
-        if (chainSelector == _destinationChainSelector) {
-            IMinter(_receiver).mint(_sender, _amount);
-            return;
-        }
-
-        bytes memory _data = abi.encode(TransactionSend.MINT, abi.encode(_sender, _amount));
-        _ccipSend(_sender, _destinationChainSelector, _receiver, TransactionSend.MINT, address(0), _amount, _data);
-
     }
 
     function depositAndMint(
@@ -261,9 +231,94 @@ contract MainRouter is CCIPBase, FunctionsBase {
         _burn(_burner, _sourceChainSelector, _amount);
     }
 
+    function liquidate(
+        uint64 _sourceChainSelector,
+        address _liquidatedUser,
+        address _token, 
+        uint64 _destinationChainSelector, 
+        address _receiver, 
+        uint256 _amountToCover,
+        address _sender
+    )   external onlyAvalancheMinter(msg.sender)
+    {   
+        _liquidate(_sourceChainSelector, _liquidatedUser, _token, _destinationChainSelector, _receiver, _amountToCover, _sender);
+    }
+
+    function _liquidate(
+        uint64 _sourceChainSelector,
+        address _liquidatedUser,
+        address _token, 
+        uint64 _destinationChainSelector, 
+        address _receiver, 
+        uint256 _amountToCover,
+        address _sender
+    )   internal
+    {   
+        uint256 userHealthFactor = getUserHealthFactor(_liquidatedUser);
+        if (userHealthFactor > MIN_HEALTH_FACTOR){
+            revert HealthFactorNotLowEnoughToBeLiquidated();
+        }
+        _burn(_liquidatedUser, _sourceChainSelector, _amountToCover);
+        uint256 _usdToRedeem = _amountToCover + _amountToCover * LIQUIDATION_PENALTY / LIQUIDATION_PRECISION;
+        uint256 _amount = min(deposited[_liquidatedUser][_destinationChainSelector][_token], convertUSDIntoToken(_usdToRedeem, _destinationChainSelector, _token));
+        _redeem(_destinationChainSelector, _receiver, _token, _amount, _liquidatedUser, _sender);
+    }
+
+    function min(uint256 a, uint256 b) internal pure returns (uint256) {
+        return a <= b ? a : b;
+    }
+
     function _deposit(address _depositor, uint64 _sourceChainSelector, address _token, uint256 _amount) internal {
         deposited[_depositor][_sourceChainSelector][_token] += _amount;
         emit Deposit(_depositor, _sourceChainSelector, _token, _amount);
+    }
+
+    function _redeem(
+        uint64  _destinationChainSelector, 
+        address _receiver, 
+        address _token, 
+        uint256 _amount,
+        address _from,
+        address _to
+    )   internal {
+        if (_amount == 0){
+            revert AmountHasToBeGreaterThanZero();
+        }
+
+        deposited[_from][_destinationChainSelector][_token] -= _amount;
+
+        if (!checkHealthFactor(_from)){
+            revert HealthFactorTooLow();
+        }
+
+        if (chainSelector == _destinationChainSelector) {
+            IDepositor(_receiver).redeem(_from, _to, _token, _amount);
+            return;
+        }
+
+        bytes memory _data = abi.encode(TransactionSend.REDEEM, abi.encode(_from, _to, _token, _amount));
+        _ccipSend(_to, _destinationChainSelector, _receiver, TransactionSend.REDEEM, _token, _amount, _data);
+        
+    }
+
+    function _mint(uint64 _destinationChainSelector, address _receiver, address _sender, uint256 _amount) internal {
+        if (_amount == 0){
+            revert AmountHasToBeGreaterThanZero();
+        }
+        minted[_sender][_destinationChainSelector] += _amount;
+
+        if (!checkExceedMaxLTV(_sender)){
+            revert ExceedsMaxLTV();
+        }
+
+        if (chainSelector == _destinationChainSelector) {
+            IMinter(_receiver).mint(_sender, _amount);
+            return;
+        }
+
+        bytes memory _data = abi.encode(TransactionSend.MINT, abi.encode(_sender, _amount));
+        _ccipSend(_sender, _destinationChainSelector, _receiver, TransactionSend.MINT, address(0), _amount, _data);
+
     }
 
     function _burn(address _burner, uint64 _sourceChainSelector, uint256 _amount) internal {
@@ -517,11 +572,22 @@ contract MainRouter is CCIPBase, FunctionsBase {
         return feePay[_user];
     }
 
+    function convertUSDIntoToken(uint256 _amount, uint64 _destinationChainSelector, address _token) public view returns (uint256){
+        uint256 _price = getTokenPrice(_token);
+        /// 1000 * 1e18 usd
+        // 3000 * 1e8
+        /// 1/3 * 1e10
+        // 0.3 * 1e10
+        return (_amount * PRECISION) / (_price * FEED_PRECISION) / 10**(18 - tokenDecimals[_destinationChainSelector][_token]);
+    }
+
     function getTokenPrice(address _token) public view returns (uint256){
         AggregatorV3Interface _priceFeed = AggregatorV3Interface(priceFeeds[uint64(allowedChains.at(0))][_token]);
         (, int256 _price, , , ) = _priceFeed.staleCheckLatestRoundData();
         return uint256(_price);
     }
+
+    
 
     function getAvalancheDepositor() public view returns (address) {
         return avalancheDepositor;
@@ -573,6 +639,8 @@ contract MainRouter is CCIPBase, FunctionsBase {
             revert NotEnoughFeePay(feePay[_sender], _fees);
         }
 
+        feePay[_sender] -= _fees;
+
         _messageId = _router.ccipSend{value: _fees}(_destinationChainSelector, _message);
 
         if (_transactionType == TransactionSend.REDEEM) {
@@ -606,6 +674,9 @@ contract MainRouter is CCIPBase, FunctionsBase {
             (address _burner, uint256 _amount, uint64 _destinationChainSelector, address _receiver) = abi.decode(_data, (address, uint256, uint64, address));
             _burn(_burner, _sourceChainSelector, _amount);
             _mint(_destinationChainSelector, _receiver, _burner, _amount);
+        } else if (_transactionType == TransactionReceive.LIQUIDATE) {
+            (address _liquidatedUser, address _token, uint64 _destinationChainSelector, address _receiver, uint256 _amountToCover, address _sender) = abi.decode(_data, (address, address, uint64, address, uint256, address));
+            _liquidate(_sourceChainSelector, _liquidatedUser, _token, _destinationChainSelector, _receiver, _amountToCover, _sender);
         }
     }
     

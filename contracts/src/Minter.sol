@@ -24,7 +24,8 @@ contract Minter is CCIPBase {
         DEPOSIT,
         BURN,
         DEPOSIT_MINT,
-        BURN_MINT
+        BURN_MINT,
+        LIQUIDATE
     }
 
     enum TransactionSend {
@@ -75,6 +76,10 @@ contract Minter is CCIPBase {
         ccipBurnGasLimit = _newGasLimit;
     }
 
+    function setCCIPBurnAndMintGasLimit(uint256 _newGasLimit) external onlyOwner {
+        ccipBurnAndMintGasLimit = _newGasLimit;
+    }
+
     function withdrawFeePay(uint256 _amount) external {
         require(_amount <= feePay[msg.sender], "Not enough fee pay");
         feePay[msg.sender] -= _amount;
@@ -113,6 +118,34 @@ contract Minter is CCIPBase {
 
     function mint(address _receiver, uint256 _amount) external onlyMainRouter(msg.sender) {
         _mint(_receiver, _amount);
+    }
+
+    function liquidate(
+        address _liquidatedUser, 
+        address _token, 
+        uint64 _destinationChainSelector, 
+        address _receiver, 
+        uint256 _amountToCover,
+        uint256 _gasLimit
+    )   external payable {
+        feePay[msg.sender] += msg.value;
+        IERC20(address(dsc)).safeTransferFrom(msg.sender, address(this), _amountToCover);
+        dsc.burn(_amountToCover);
+
+        if (chainSelector == mainRouterChainSelector) {
+            IMainRouter(mainRouter).liquidate(chainSelector, _liquidatedUser, _token, _destinationChainSelector, _receiver, _amountToCover, msg.sender);
+            return;
+        }
+
+        bytes memory _data = abi.encode(TransactionReceive.LIQUIDATE, abi.encode(
+            _liquidatedUser, 
+            _token, 
+            _destinationChainSelector, 
+            _receiver,  
+            _amountToCover,
+            msg.sender
+        ));
+        _ccipSend(msg.sender, _amountToCover, _data, _gasLimit);
     }
 
     function _mint(address _receiver, uint256 _amount) internal {

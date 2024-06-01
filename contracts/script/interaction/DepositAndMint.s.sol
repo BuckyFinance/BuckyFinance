@@ -14,7 +14,7 @@ contract DepositAndMint is Script {
 
         vm.startBroadcast();
         ERC20Mock(_token).approve(address(chain.depositor), _amount);
-        Depositor(payable(chain.depositor)).depositAndMint{value: _amountEther}(_token, _amount, _destinationChainSelector, _receiver, _amountToMint);
+        Depositor(payable(chain.depositor)).depositAndMint{value: _amountEther, gas: 5000000}(_token, _amount, _destinationChainSelector, _receiver, _amountToMint);
         vm.stopBroadcast();
     }
 }
