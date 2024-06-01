@@ -8,6 +8,7 @@ const {
     switchCurrentChainId,
 } = require("./helper");
 const { getTokenPrice } = require("../scripts/getTokenPrice");
+const { getCurrentLTV } = require('./getCurrentLTV');
 
 async function getDepositAndMintFee(depositorContract, tokenAddress, amountToDepositInWei, CHAIN_SELECTOR, receiverAddress, amountToMintInWei) {
     const depositFee = await depositorContract.getDepositAndMintFee(
@@ -22,12 +23,20 @@ async function getDepositAndMintFee(depositorContract, tokenAddress, amountToDep
     return depositFee;
 }
 
-async function checkCanDepositAndMint(tokenSymbol, amountToDeposit, amountToMint) {
+async function getLTV(walletAddress) {
+    const currentLTV = await getCurrentLTV(walletAddress);
+    console.log(`Current LTV: ${currentLTV}`);
+    return currentLTV;
+}
+
+async function checkCanDepositAndMint(tokenSymbol, amountToDeposit, amountToMint, currentAddress) {
     const tokenPrice = await getTokenPrice(tokenSymbol);
     const depositValue = tokenPrice * amountToDeposit;
-    const canBeMinted = depositValue * 0.65;
+    const ltv = await getLTV(currentAddress);
+    const canBeMinted = depositValue * ltv / 100;
     // console.log(canBeMinted)
     // console.log(amountToMint)
+    console.log(canBeMinted)
     if (canBeMinted >= amountToMint) {
         return true;
     }
@@ -35,13 +44,14 @@ async function checkCanDepositAndMint(tokenSymbol, amountToDeposit, amountToMint
 
 }
 
-async function getMaxCanBeMinted(tokenSymbol, amountToDeposit, amountToMint) {
-    if(amountToDeposit != amountToDeposit)
+async function getMaxCanBeMinted(tokenSymbol, amountToDeposit, amountToMint, walletAddress) {
+    if (amountToDeposit != amountToDeposit)
         return 0;
 
     const tokenPrice = await getTokenPrice(tokenSymbol);
     const depositValue = tokenPrice * amountToDeposit;
-    const canBeMinted = depositValue * 0.65;
+    const ltv = await getLTV(walletAddress);
+    const canBeMinted = depositValue * ltv / 100;
     return canBeMinted;
 
 }
@@ -66,6 +76,7 @@ async function depositAndMint(tokenSymbol, amountToDeposit, desChainId, amountTo
         currentChainID = getCurrentChainId();
         wallet = getWallet(currentChainID);
     }
+    const walletAddress = await wallet.getAddress();
 
     const DEPOSITOR_ADDRESS = NetworkInfomation[currentChainID].DEPOSITOR_ADDRESS;
     const depositorContract = new Contract(DEPOSITOR_ADDRESS, DepositorABI, wallet);
@@ -87,7 +98,7 @@ async function depositAndMint(tokenSymbol, amountToDeposit, desChainId, amountTo
     const gasLimit = ethers.utils.hexlify(1000000);
     await approveToken(wallet, currentChainID, tokenInfo, amountToDeposit);
 
-    const canDepositAndMint = await checkCanDepositAndMint(tokenSymbol, amountToDeposit, amountToMint);
+    const canDepositAndMint = await checkCanDepositAndMint(tokenSymbol, amountToDeposit, amountToMint, walletAddress);
     if (canDepositAndMint == false) {
         console.log(`Can't deposit and mint`);
         return null;
@@ -121,7 +132,7 @@ async function main() {
     await depositAndMint("UNI", 80, 80002, 10);
 }
 
-//main();
+main();
 
 module.exports = {
     depositAndMint,
