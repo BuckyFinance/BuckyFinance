@@ -161,8 +161,8 @@ header {
   min-width: 50px;
   height: 30px;
   background-color: #3a4157;
-  top: 36px;
-  right: 20px;
+  top: 20px;
+  right: 5px;
   border-radius: 100px;
   display: flex;
   justify-content: flex-start;
@@ -248,8 +248,8 @@ header {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  padding-left: 3em;
-padding-right: 3em;
+  padding-left: 1.5em;
+padding-right: 1.5em;
 }
 
 .ant-modal{
@@ -596,3 +596,63 @@ padding-right: 3em;
 	color: white !important;
 	fill: white !important;
 }
+
+.value-input-5 {
+    background-color: #1f2639 !important;
+    color: white !important;
+    border-width: 0px !important;
+    flex: 0 1;
+    width: 70%;
+    border-radius: 4px !important;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    height: 60px !important;
+    font-size: 40px;
+    height: 100%;
+    font-weight: bold;
+    margin: 0;
+    font-family: "Kanit";
+  }
+
+.value-input-6 {
+    background-color: #1f2639 !important;
+    color: white !important;
+    border-width: 0px !important;
+    flex: 0 1;
+    width: 73%;
+    border-radius: 4px !important;
+    padding-left: 8px;
+    padding-right: 8px;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    height: 60px !important;
+    font-size: 40px;
+    height: 100%;
+    font-weight: bold;
+    margin: 0;
+    font-family: "Kanit";
+  }
+
+  .borrowBox {
+	width: 800px;
+	background-color: #0E111B;
+	border: 2px solid #21273a;
+	min-height: 300px;
+	border-radius: 15px;
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: flex-start;
+	padding-left: 30px;
+	padding-right: 30px;
+  }
+  
+  
+  .subBorrowBoxHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	width: 98%;
+  }

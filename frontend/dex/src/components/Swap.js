@@ -7,9 +7,11 @@ import {
 	SettingOutlined,
 	PlusOutlined,
 	CaretDownOutlined,
-	ArrowRightOutlined
+	ArrowRightOutlined,
+	LoadingOutlined	
 } from "@ant-design/icons"
 import { Row, Col, Flex, Space, Dropdown } from 'antd';
+import { Spin } from 'antd';
 
 import chainList from "../tokenList.json"
 import "./Swap.css"
@@ -17,6 +19,8 @@ import { textAlign } from '@mui/system';
 import { useSwitchChain } from 'wagmi'
 import { Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import { useTx } from '../hooks/useWriteTx';
+import { useBalance } from '../hooks/useMinted';
 
 const tokenList = [];
 
@@ -31,12 +35,14 @@ function Swap(props) {
     const [fromChain, setFromChain] = useState(0);
 	const [toChain, setToChain] = useState(1);
 	const [swapAmount, setSwapAmount] = useState(null);
-	
+	const [messageApi, contextHolder] = message.useMessage();
 
 	const [modalOpen, setModalOpen] = useState(false);
 
 	const {account} = props;
 	const {chains, switchChain} = useSwitchChain();
+	const {isError, isPending , isSuccess,isLoading, status, txHash, confirmationState, setConfirmationState, setTxHash, executeTx} = useTx('swap', chainList[fromChain].chainID, 'DSC', swapAmount, account.address);
+	const {balance} = useBalance(chainList[fromChain].chainID, 'DSC', account.address);	
 
 	function handleSlippageChange(e){
 		setSlippage(e.target.value);
@@ -165,39 +171,62 @@ function Swap(props) {
 		</>
 	);
 
+	const dalUSD = {
+		"ticker": "DSC",
+		"img": "https://cryptologos.cc/logos/versions/dogecoin-doge-logo-alternative.svg?v=032",
+		"name": "Duc Anh Le USD",
+		"address": "0xDFf5Ba9FCff83cE455e45De7572B6259b0E7D7dE",
+		"decimals": 6
+	};
+
+	useEffect(() => {
+		if(confirmationState == 'rejected'){
+			messageApi.destroy();
+			messageApi.open({
+				type: 'error',
+				content: 'Transaction Rejected!',
+				duration: 1.5,
+			});
+			setConfirmationState('none');
+		}else if(confirmationState == 'confirmed'){
+			setConfirmationState('none');
+		}
+	}, [confirmationState]);
+
+	useEffect(() => {
+		if(txHash && isPending){
+			messageApi.destroy();
+			messageApi.open({
+				type: 'loading',
+				content: 'Transaction is Pending...',
+				duration: 0,
+			});
+		}else if(isSuccess){
+			messageApi.destroy();
+			messageApi.open({
+				type: 'success',
+				content: 'Transaction Successful!',
+				duration: 1.5,
+			});
+			setTxHash(null);
+			setSwapAmount(NaN);
+		}else if(status == "error"){
+			messageApi.destroy();
+			messageApi.open({
+				type: 'error',
+				content: 'Transaction Failed!',
+				duration: 1.5,
+			});
+			setTxHash(null);
+		}
+	}, [isPending,  isLoading]);
+
   	return (
 		<>
-		<Modal
-			open={modalOpen}
-			footer={null}
-			onCancel={() => setModalOpen(false)}
-			title="Swap confirmation"
-		>
-			<div className='modalContent'>
-				<div className='rowRowRowRow' style={{gap: '10px', fontSize: 'x-large', fontWeight: 'bold', justifyContent: 'space-between', flexDirection: 'column'}}>
-					<div style={{display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: '10px'}}>
-						<img src={chainList[fromChain].img} alt="assetOneLogo" className='assetLogo' style={{height: '36px'}}></img>
-						{chainList[fromChain].chainName}
-					</div>
-					<div  style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: '10px'}}>
-						<img src={chainList[toChain].img} alt="assetOneLogo" className='assetLogo' style={{height: '36px'}}></img>
-						{chainList[toChain].chainName}
-					</div>
-				</div>
-
-				{account.chainId == chainList[fromChain].chainID &&
-					<ColorButton variant="contained" className='depositButton' style={{width: '8em', marginTop: '12px'}}>swap</ColorButton>
-				}
-
-				{account.chainId != chainList[fromChain].chainID &&
-					<ColorButton variant="contained" onClick={() => switchChain({ chainId: chainList[fromChain].chainID })} className='depositButton' style={{ marginTop: '12px'}}>Switch to {chainList[fromChain].chainName}</ColorButton>
-				}
-			</div>
-		</Modal>
-
+		{contextHolder}
 		<div className='tradeBox'>
 			<div className='tradeBoxHeader'>
-				<h4>Swap</h4>
+				<h2>Swap</h2>
 			</div>
 			<div className='row'>
 				<div className='selector'>
@@ -237,10 +266,31 @@ function Swap(props) {
 					<div style={{textAlign: 'left', color: 'gray', fontWeight: 'bold',marginBottom: '4px', marginTop: '8px'}}>
 						Amount
 					</div>
-					<input onChange={(e) => changeSwapAmount(e)} value={swapAmount} type='number' onKeyDown={(e) => FilterInput(e)} onPaste={(e) => handlePaste(e)}  className='value-input-4'></input>
+					<div className='inputs'>
+						<input onChange={(e) => changeSwapAmount(e)} value={swapAmount}  placeholder='0.0' type='number' onKeyDown={(e) => FilterInput(e)} onPaste={(e) => handlePaste(e)} style={{paddingRight: 100}} className='value-input-6'></input>
+						<div className='assetOne' style={{fontSize: 14, fontWeight: 600}}>
+							<img src={dalUSD.img} alt="assetOneLogo" className='assetLogo' style={{height: 24}}></img>
+							{dalUSD.ticker}
+						</div>
+					</div>
 				</div>
-			<div style={{marginTop: '16px'}} className='swapButton' disabled={!swapAmount} onClick={() => setModalOpen(true)}>Swap</div>
-		</div>
+
+				<div style={{color: 'gray', marginTop: 10, width: '100%'}}>
+					Max: {balance.toFixed(2)} • <span style={{color: '#5981F3'}} onClick={() => setSwapAmount(balance)}> USE MAX</span>
+				</div>
+
+				{(chainList[fromChain].chainID != account.chainId) &&
+                    <div style={{marginTop: '16px'}} className='swapButton' onClick={() => switchChain({chainId: chainList[fromChain].chainID})}>Switch to {chainList[fromChain].chainName}</div>
+                }
+
+                {(confirmationState != 'confirming' && chainList[fromChain].chainID == account.chainId) &&
+                    <div style={{marginTop: '16px'}} className='swapButton' disabled={balance < swapAmount || !swapAmount || swapAmount == 0} onClick={() => executeTx()}>Swap</div>
+                }
+
+                {(confirmationState == 'confirming' && chainList[fromChain].chainID == account.chainId) &&
+                    <div style={{marginTop: '16px'}} className='swapButton' disabled={true} ><Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} /></div>
+                }	
+			</div>
 		</>
   )
 }

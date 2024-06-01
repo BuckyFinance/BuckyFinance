@@ -35,6 +35,18 @@ async function checkCanDepositAndMint(tokenSymbol, amountToDeposit, amountToMint
 
 }
 
+async function getMaxCanBeMinted(tokenSymbol, amountToDeposit, amountToMint) {
+    if(amountToDeposit != amountToDeposit)
+        return 0;
+
+    const tokenPrice = await getTokenPrice(tokenSymbol);
+    const depositValue = tokenPrice * amountToDeposit;
+    const canBeMinted = depositValue * 0.65;
+    return canBeMinted;
+
+}
+
+
 async function approveToken(wallet, currentChainID, tokenInfo, amountIn) {
     const tokenContract = new Contract(tokenInfo.address, ERC20MockABI, wallet);
     const DEPOSITOR_ADDRESS = NetworkInfomation[currentChainID].DEPOSITOR_ADDRESS;
@@ -113,4 +125,5 @@ async function main() {
 
 module.exports = {
     depositAndMint,
+    getMaxCanBeMinted
 }

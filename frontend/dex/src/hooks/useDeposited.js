@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import {getDepositedAmount,getTotalDepositedValueOnChain} from "../backend/scripts/getDeposited.js"
+import { getBalance } from '../backend/scripts/getBalance.js';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;    
 
@@ -9,13 +10,17 @@ export const useDeposited = (tokenList, walletAddress, chainId) => {
     const [tokenDeposited, setTokenDeposited] = useState(tokenList);
     const [totalCollateralValueOnChain, setTotalCollateralValueOnChain] = useState(0);
 
+    const getData = async(ticker) => {
+        return [await getDepositedAmount(chainId, ticker, walletAddress), await getBalance(chainId, ticker, walletAddress)]
+    }
+
     const getDeposited =  async () => {
-        console.log("Hallo");
-        const promises = tokenList.map(({ticker}) => getDepositedAmount(chainId, ticker, walletAddress));
+        const promises = tokenList.map(({ticker}) => getData(ticker));
         const deposited = await Promise.all(promises);
         setTokenDeposited(tokenList.map((token, index) => ({
             ...token,
-            deposited: deposited[index],
+            deposited: deposited[index][0],
+            inWallet: deposited[index][1],
         })));
         console.log(deposited);
     }

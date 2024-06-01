@@ -150,8 +150,6 @@ function QuickBorrow(props) {
 		}
 	}, [isPending,  isLoading]);
 
-    console.log(chainList);
-
     const depositChainDropdown = chainList.map((chain, index) => (
         {
             key: index.toString(),
@@ -222,7 +220,7 @@ function QuickBorrow(props) {
                         <div className='subBorrowBoxHeader'>
                             <div style={{fontSize:'x-large', fontWeight: 600}}>Deposit</div>
                             <Dropdown menu={{items: depositChainDropdown,}}>
-								<div className='dropdown' >
+								<div className='dropdown' style={{fontSize: 20}}>
 										<img src={depositChain.img} alt="assetOneLogo" className='assetLogo'></img>
 										{depositChain.chainName}
 										<CaretDownOutlined></CaretDownOutlined>
@@ -247,7 +245,7 @@ function QuickBorrow(props) {
                         <div className='subBorrowBoxHeader'>
                             <div style={{fontSize:'x-large', fontWeight: 600}}>Borrow</div>
                             <Dropdown menu={{items: borrowChainDropdown,}}>
-								<div className='dropdown' >
+								<div className='dropdown' style={{fontSize: 20}}>
 										<img src={borrowChain.img} alt="assetOneLogo" className='assetLogo'></img>
 										{borrowChain.chainName}
 										<CaretDownOutlined></CaretDownOutlined>

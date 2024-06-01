@@ -101,7 +101,7 @@ async function main() {
     await burnAndMint(9, 84532, "", false);
 }
 
-main();
+///main();
 
 module.exports = {
     burnAndMint,
