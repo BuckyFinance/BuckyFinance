@@ -38,7 +38,7 @@ export const useMinted = (walletAddress, chainId) => {
 }
 
 export const useBalance = (chainId, tokenSymbol, walletAddress) => {
-    const [balance, setBalance] = useState(0);
+    const [balance, setBalance] = useState(NaN);
     
     const _getBalance = async () => {
         const response = await getBalance(chainId, tokenSymbol, walletAddress);
@@ -57,5 +57,5 @@ export const useBalance = (chainId, tokenSymbol, walletAddress) => {
         return () => clearInterval(intervalId);
     }, [chainId, walletAddress, tokenSymbol]);
 
-    return {balance};
+    return {balance, setBalance};
 }

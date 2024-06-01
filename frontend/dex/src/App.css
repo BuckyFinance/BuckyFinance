@@ -656,3 +656,42 @@ padding-right: 1.5em;
 	align-items: center;
 	width: 98%;
   }
+
+  .ant-message-notice-content{
+	background-color: #3b4874 !important;
+	color: white;
+	font-weight: bold;
+  }
+
+
+
+  .swapButton2 {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #243056; 
+	height: 45px;
+	font-size: 20px;
+	border-radius: 12px;
+	color: #5981F3;
+	font-weight: bold;
+	transition: 0.3s;
+	width: 100%;
+  }
+  
+  .swapButton2[disabled] {
+	background-color: #243056;
+	opacity: 0.4;
+	color: #5982f39b;
+  }
+  
+  .swapButton2[disabled]:hover {
+	cursor: not-allowed;
+	background-color: #243056;
+  }
+  
+  .swapButton2:hover {
+	cursor: pointer;
+	background-color: #3b4874
+  }
+  

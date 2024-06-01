@@ -22,6 +22,7 @@ import { Spin } from 'antd';
 import { useBalance } from '../hooks/useMinted.js';
 import { depositAndMint, getMaxCanBeMinted } from '../backend/scripts/depositAndMint.js';
 import "../App.css";
+import LoadingAnimation from '../loading.js';
 
 const tokenList = [];
 
@@ -43,7 +44,7 @@ function QuickBorrow(props) {
         // },
     const [depositToken, setDepositToken] = useState(tokenList[0]);
     const [maxCanBeMinted, setMaxCanBeMinted] = useState(0);
-    const {balance} = useBalance(depositChain.chainID, depositToken.ticker, account.address);
+    const {balance, setBalance} = useBalance(depositChain.chainID, depositToken.ticker, account.address);
 
 
 
@@ -186,7 +187,7 @@ function QuickBorrow(props) {
         {
             key: index.toString(),
             label: (
-                <div className='dropdownChoice' onClick={() => setDepositToken(token)}>
+                <div className='dropdownChoice' onClick={() => {setBalance(NaN); setDepositToken(token)}}>
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '40px'}}>
                         <img src={token.img} alt="assetOneLogo" className='assetLogo' />
                     </div>
@@ -238,7 +239,7 @@ function QuickBorrow(props) {
                             </Dropdown>
 						</div>
                         <div style={{color: 'gray', marginTop: 10}}>
-                            Max: {balance.toFixed(2)} • <span style={{color: '#5981F3'}} onClick={() => setDepositAmount(balance)}> USE MAX</span>
+                            Max: {balance == balance && balance.toFixed(2)} {balance != balance && <LoadingAnimation/>}• <span style={{color: '#5981F3'}} onClick={() => setDepositAmount(balance)}> USE MAX</span>
                         </div>
                     </div>
                     <div className='subBorrowBox' style={{marginLeft: 16}}>

@@ -6,7 +6,17 @@ import Tokens from "./components/Tokens"
 import {Routes, Route} from 'react-router-dom'
 import {useConnect, useAccount} from "wagmi"
 import { ConnectButton } from '@rainbow-me/rainbowkit';
-
+import {
+	ArrowDownOutLined,
+	DownOutlined,
+	SmileOutlined,
+	SettingOutlined,
+	PlusOutlined,
+	CaretDownOutlined,
+	CloseCircleFilled,
+	ConsoleSqlOutlined,
+	DisconnectOutlined
+} from "@ant-design/icons"
 // import {MetaMaskConnector} from "wagmi/connectors/metaMask"
 // import '@rainbow-me/rainbowkit/styles.css';
 
@@ -75,14 +85,30 @@ function App(props) {
 			<div className="App" >
 				<Header connectButton={<ConnectButton />} />
 				<div className="mainWindow">
+					{account.isConnected && 
 					<Routes>
 						<Route path='/' element={<Dashboard account={account} config={config} />}></Route>
 						<Route path='/swap' element={<Swap  account={account} />}></Route>
 						<Route path='/borrow' element={<QuickBorrow  account={account} />}></Route>
 					</Routes>
+					}
+
+					{!account.isConnected &&
+						<>
+						<div className='box' style={{width: '50%', height: '60vh', display: 'flex', flexDirection: 'column', 'alignItems': 'center', justifyContent: 'center'}}>
+							<div style={{fontSize: '3em'}}>
+								Please connect your wallet!
+							</div>
+							<div style={{fontSize: '5em'}}>
+							<DisconnectOutlined /></div>
+		
+						</div>
+						</>
+					}
+
 				</div>
 			</div>
-			</ThemeProvider>
+		</ThemeProvider>
 	);
 }
 

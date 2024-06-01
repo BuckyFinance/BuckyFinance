@@ -65,7 +65,7 @@ async function main() {
     await burn(desChainId, "4", "", false);
 }
 
-main();
+//main();
 
 module.exports = {
     burn,

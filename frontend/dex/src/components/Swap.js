@@ -21,6 +21,7 @@ import { Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { useTx } from '../hooks/useWriteTx';
 import { useBalance } from '../hooks/useMinted';
+import LoadingAnimation from '../loading';
 
 const tokenList = [];
 
@@ -41,8 +42,8 @@ function Swap(props) {
 
 	const {account} = props;
 	const {chains, switchChain} = useSwitchChain();
-	const {isError, isPending , isSuccess,isLoading, status, txHash, confirmationState, setConfirmationState, setTxHash, executeTx} = useTx('swap', chainList[fromChain].chainID, 'DSC', swapAmount, account.address);
-	const {balance} = useBalance(chainList[fromChain].chainID, 'DSC', account.address);	
+	const {isError, isPending , isSuccess,isLoading, status, txHash, confirmationState, setConfirmationState, setTxHash, executeTx} = useTx('swap', chainList[toChain].chainID, 'DSC', swapAmount, account.address);
+	const {balance, setBalance} = useBalance(chainList[fromChain].chainID, 'DSC', account.address);	
 
 	function handleSlippageChange(e){
 		setSlippage(e.target.value);
@@ -75,6 +76,7 @@ function Swap(props) {
 		}else{
 			setFromChain(index);
 		}
+		setBalance(NaN);
 	}
 
 	function changeToChain(index){
@@ -276,7 +278,7 @@ function Swap(props) {
 				</div>
 
 				<div style={{color: 'gray', marginTop: 10, width: '100%'}}>
-					Max: {balance.toFixed(2)} • <span style={{color: '#5981F3'}} onClick={() => setSwapAmount(balance)}> USE MAX</span>
+					Max: {balance==balance && balance.toFixed(2)} {balance != balance && <LoadingAnimation/>}• <span style={{color: '#5981F3'}} onClick={() => setSwapAmount(balance)}> USE MAX</span>
 				</div>
 
 				{(chainList[fromChain].chainID != account.chainId) &&

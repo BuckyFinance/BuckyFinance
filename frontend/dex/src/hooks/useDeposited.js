@@ -4,11 +4,11 @@ import {getDepositedAmount,getTotalDepositedValueOnChain} from "../backend/scrip
 import { getBalance } from '../backend/scripts/getBalance.js';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;    
+const FETCH_INTERVAL = process.env.REACT_APP_FETCH_INTERVAL
 
-console.log(API_BASE_URL);
 export const useDeposited = (tokenList, walletAddress, chainId) => {
     const [tokenDeposited, setTokenDeposited] = useState(tokenList);
-    const [totalCollateralValueOnChain, setTotalCollateralValueOnChain] = useState(0);
+    const [totalCollateralValueOnChain, setTotalCollateralValueOnChain] = useState(NaN);
 
     const getData = async(ticker) => {
         return [await getDepositedAmount(chainId, ticker, walletAddress), await getBalance(chainId, ticker, walletAddress)]
@@ -30,10 +30,19 @@ export const useDeposited = (tokenList, walletAddress, chainId) => {
         setTotalCollateralValueOnChain(parseFloat(response));
     }
 
+
     useEffect(() => {
-        getDeposited();
-        getTotalCollateralValue();
+        const fetchData = () => {
+            getDeposited();
+            getTotalCollateralValue();
+        }
+
+        fetchData();
+
+        const intervalId = setInterval(fetchData, FETCH_INTERVAL); 
+        
+        return () => clearInterval(intervalId);
     }, [chainId, walletAddress]);
 
-    return { tokenDeposited, totalCollateralValueOnChain};
+    return { tokenDeposited, totalCollateralValueOnChain, setTokenDeposited, setTotalCollateralValueOnChain };
 }

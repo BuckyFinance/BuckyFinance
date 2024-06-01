@@ -31,7 +31,7 @@ async function main() {
     await requestCreditScore("", false);
 }
 
-main();
+//main();
 
 module.exports = {
     requestCreditScore,
