@@ -59,7 +59,7 @@ async function main() {
     await mint(43113, "2", "", false);
 }
 
-main();
+//main();
 
 module.exports = {
     mint,

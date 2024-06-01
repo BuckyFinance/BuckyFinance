@@ -16,6 +16,9 @@ function Header(props) {
 				<Link to="/swap" className='link'>
 					<div className='headerItem'>Swap</div>
 				</Link>
+				<Link to="/borrow" className='link'>
+					<div className='headerItem'>Quick Borrow</div>
+				</Link>
 			</div>
 			<div className='rightH'>
 				{connectButton}

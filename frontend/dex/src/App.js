@@ -31,6 +31,7 @@ import { ConnectButton } from '@rainbow-me/rainbowkit';
 // import "../styles/global.css"
 
 import { ThemeProvider, createTheme } from "@mui/material/styles";
+import QuickBorrow from "./components/QuickBorrow";
 
 const theme = createTheme({
 	components: {
@@ -77,6 +78,7 @@ function App(props) {
 					<Routes>
 						<Route path='/' element={<Dashboard account={account} config={config} />}></Route>
 						<Route path='/swap' element={<Swap  account={account} />}></Route>
+						<Route path='/borrow' element={<QuickBorrow  account={account} />}></Route>
 					</Routes>
 				</div>
 			</div>

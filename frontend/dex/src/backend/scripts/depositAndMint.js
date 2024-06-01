@@ -109,7 +109,7 @@ async function main() {
     await depositAndMint("UNI", 100, 80002, 10);
 }
 
-main();
+//main();
 
 module.exports = {
     depositAndMint,
