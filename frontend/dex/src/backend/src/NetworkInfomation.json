@@ -191,7 +191,7 @@
             "DSC": {
                 "name": "DSC",
                 "decimals": 18,
-                "address": "0x15c51Cdd0b53789711C43a2d6C624dB20D52086E"
+                "address": "0x68b0e129B68148A3E3033a8a442b3Bb3FEcD0675"
             }
         }
     },
@@ -240,7 +240,7 @@
             "DSC": {
                 "name": "DCS",
                 "decimals": 18,
-                "address": "0x9306Da79208982a13C8a73736071FE62fC1A310e"
+                "address": "0x15c51Cdd0b53789711C43a2d6C624dB20D52086E"
             }
         }
     },
