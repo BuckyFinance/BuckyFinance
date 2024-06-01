@@ -28,7 +28,8 @@ import { styled } from '@mui/material/styles';
 import { Gauge, gaugeClasses } from '@mui/x-charts/Gauge';
 import { TextField } from '@mui/material';
 import { useSwitchChain } from 'wagmi'
-
+import { LoadingOutlined } from '@ant-design/icons';
+import { Spin } from 'antd';
 import { useDeposited } from '../hooks/useDeposited';
 import { useMinted } from '../hooks/useMinted';
 import { useTotalCollateralValue, useTotalMintedValue } from '../hooks/useOverall';
@@ -37,23 +38,22 @@ import {mint} from "../backend/scripts/mint.js"
 import {deposit} from "../backend/scripts/deposit.js"
 import {useTx} from "../hooks/useWriteTx.js"
 
-const SplitScreen = (props) => {
+
+const Dashboard = (props) => {
 	const DEPOSIT_STATE = 1;
 	const WITHDRAW_STATE = 2;
 	const NO_STATE = 0;
 	const MINT_STATE = 1
 	const BURN_STATE = 2
 	const {account, config} = props;
-	console.log(chainList);
-	const e = {
-		
-		"ticker": "USDC",
-		"img": "https://cdn.moralis.io/eth/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
-		"name": "USD Coin",
-		"address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+
+	const dalUSD = {
+		"ticker": "DSC",
+		"img": "https://cryptologos.cc/logos/versions/dogecoin-doge-logo-alternative.svg?v=032",
+		"name": "Duc Anh Le USD",
+		"address": "0xDFf5Ba9FCff83cE455e45De7572B6259b0E7D7dE",
 		"decimals": 6
-	
-	}
+	};
 
 	const [tokenList, setTokenList] = useState(chainList[0].tokens);
 	const [healthFactor, setHealthFactor] = useState(0);
@@ -64,15 +64,15 @@ const SplitScreen = (props) => {
 	
 	const [buttonStates, setButtonStates] =  useState(
 		tokenList.map(() => NO_STATE)
-		);
+	);
 	const [mintState, setMintState] = useState(NO_STATE);
 	const [modalOpen, setModalOpen] = useState(false);
 	const [modalTitle, setModalTitle] = useState('Title');
 	const [modalAction, setModalAction] = useState('Hallo');
-	const [modalToken, setModalToken] = useState(e);
+	const [modalToken, setModalToken] = useState(dalUSD);
 	const [modalTargetChain, setModalTargetChain] = useState(0);
 	const [mintAmount, setMintAmount] = useState(null);
-	const [modalAmount, setModalAmount] = useState();
+	const [modalAmount, setModalAmount] = useState(null);
 	const [burnAmount, setBurnAmount] = useState(null);
 	const [tokenDepositAmounts, setTokenDepositAmounts] =  useState(
 		tokenList.map(() => null)
@@ -91,7 +91,7 @@ const SplitScreen = (props) => {
 		}
 	});
 	
-	const {tokenDeposited, totalCollateralValueOnChain} = useDeposited(tokenList, account.address,chainList[currentCollateralChain].chainID );
+	const {tokenDeposited, totalCollateralValueOnChain, setTokenDeposited, setTotalCollateralValueOnChain} = useDeposited(tokenList, account.address,chainList[currentCollateralChain].chainID );
 	const [currentMintChain, setCurrentMintChain] = useState(() => {
 		var index = 0;
 		for(const chain of chainList){
@@ -101,13 +101,15 @@ const SplitScreen = (props) => {
 			index += 1;
 		}
 	});
-	const {tokenMinted} = useMinted( account.address, chainList[currentMintChain].chainID);
+	const {tokenMinted, canMint} = useMinted( account.address, chainList[currentMintChain].chainID);
 	const [currentModalChain, setCurrentModalChain] = useState(0);
 	const {totalCollateralValue} = useTotalCollateralValue(account.address);
 	const {totalMintedValue} = useTotalMintedValue(account.address);
 	
-	const {isError, isPending , isLoading, status, txHash, executeTx} = useTx(modalAction, chainList[currentModalChain].chainID, modalToken.ticker, modalAmount, account.address);
+	const {isError, isPending , isSuccess,isLoading, status, txHash, confirmationState, setConfirmationState, setTxHash, executeTx} = useTx(modalAction, chainList[currentModalChain].chainID, modalToken.ticker, modalAmount, account.address);
 		
+	const [modalMaxAmount, setModalMaxAmount] = useState(0);
+
 	const chainDropdown = chainList.map((chain, index) => (
 	{
 		key: index.toString(),
@@ -150,7 +152,13 @@ const SplitScreen = (props) => {
 		setTokenList(chainList[currentCollateralChain].tokens);
 		setTokenDepositAmounts(tokenList.map(() => null));
 		setButtonStates(tokenList.map(() => NO_STATE));
-		// console.log(tokenList);
+		const updated = tokenDeposited.map(token => ({
+			...token,
+			deposited: null,
+			inWallet: null
+		}));
+		setTokenDeposited(updated);
+		setTotalCollateralValueOnChain(0);
 	}
 
 	const ColorButton = styled(Button)(({ theme }) => ({
@@ -175,13 +183,7 @@ const SplitScreen = (props) => {
 		);
 	};
 		
-	const dalUSD = {
-		"ticker": "dalUSD",
-		"img": "https://cdn.moralis.io/eth/0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48.png",
-		"name": "Duc Anh Le USD",
-		"address": "0xDFf5Ba9FCff83cE455e45De7572B6259b0E7D7dE",
-		"decimals": 6
-	};
+	
 
 
 	const handleMintButton = (newState) =>{
@@ -189,20 +191,32 @@ const SplitScreen = (props) => {
 		setMintState(newState);
 	};
 
-	const openModal = (title, action, chain, targetChain, token, amount) => {
+	const openModal =  (title, action, chain, targetChain, token) => {
+		setModalAmount(null);
 		setModalTitle(title);
 		setModalAction(action);
 		setCurrentModalChain(chain);
 		setModalTargetChain(targetChain);
 		setModalToken(token);
-		setModalAmount(amount);
+		fetchMaxModalAmount(action, token);
 		setModalOpen(true);
+		const t = document.getElementsByClassName('value-input-5')[0];
+		if(t){
+			t.value = null;
+		}
 	};
+
+
 
 	
 
 	function changeMintAmount(e){
 		setMintAmount(e.target.value);
+	}
+
+
+	function changeModalAmount(e){
+		setModalAmount(e.target.value);
 	}
 
 	function changeDepositAmount(e, i){
@@ -236,333 +250,358 @@ const SplitScreen = (props) => {
 		}
 	};
 
-	async function getSigner() {
-		const provider = new ethers.providers.Web3Provider(window.ethereum, "any");
-		const signer =  provider.getSigner();
-		const res = await provider.send("eth_requestAccounts", []);
-		const address = await signer.getAddress();
-		return signer;
+	function _executeTx(){
+		executeTx();
 	}
 
-	if(account.isConnected)
-		return (
-			<>
-				{contextHolder}
-				<Modal
-					open={modalOpen}
-					footer={null}
-					onCancel={() => setModalOpen(false)}
-					title={modalTitle}
-				>
-					<div className='modalContent'>
-						{/* <div>
-							You are about to {modalAction}
-						</div> */}
-						<div className='rowRowRowRow'>
-							{/* <div style={{fontSize: 'xx-large'}}>
-								{modalAction}: 
-							</div> */}
-							<div  style={{fontSize: '4em', marginRight: '.3em', fontFamily: 'Kanit'}}>
-								{modalAmount}
-							</div>
-							<div className='tokenChoice'>
-								<img src={modalToken.img} alt={modalToken.ticker} className='tokenLogo'></img>
-								<div className='tokenChoiceNames'>
-									<div className='tokenName'>{modalToken.name}</div>
-									<div className='tokenTicker'>{modalToken.ticker}</div>
-								</div>
-							</div>
-						</div>
-						<div style={{color: 'gray'}}>
-							Fee: 1.23 ETH
-						</div>
-						{account.chainId == chainList[modalTargetChain].chainID &&
+	const tokenIndex = {
+		"WBTC": 0,
+		"WETH": 1,
+		"LINK": 2,
+		"AVAX": 3,
+		"UNI": 4,
+		"USDC": 5,
+		"USDT": 6,
+	}
 
-							<ColorButton variant="contained" className='depositButton' style={{width: '8em', marginTop: '12px'}} onClick={() => executeTx()}>{modalAction}</ColorButton>
-						}
+	async function fetchMaxModalAmount(action, token){
+		if(action == 'borrow'){
+			setModalMaxAmount(canMint);
+		}else if(action == 'repay'){
+			setModalMaxAmount(tokenMinted);
+		}else if(action == 'deposit'){
+			setModalMaxAmount(parseFloat(tokenDeposited[tokenIndex[token.ticker]].inWallet));
+		}else if(action == 'withdraw'){
+			setModalMaxAmount(parseFloat(tokenDeposited[tokenIndex[token.ticker]].deposited));
+		}
+	}
 
-						{account.chainId != chainList[modalTargetChain].chainID &&
-							<ColorButton variant="contained" onClick={() => switchChain({ chainId: chainList[modalTargetChain].chainID })} className='depositButton' style={{ marginTop: '12px'}}>Switch to {chainList[modalTargetChain].chainName}</ColorButton>
-						}
+
+	useEffect(() => {
+		if(confirmationState == 'rejected'){
+			messageApi.destroy();
+			messageApi.open({
+				type: 'error',
+				content: 'Transaction Rejected!',
+				duration: 1.5,
+			});
+			setConfirmationState('none');
+		}else if(confirmationState == 'confirmed'){
+			setModalOpen(false);
+			setConfirmationState('none');
+		}
+	}, [confirmationState]);
+
+	useEffect(() => {
+		if(txHash && isPending){
+			messageApi.destroy();
+			messageApi.open({
+				type: 'loading',
+				content: 'Transaction is Pending...',
+				duration: 0,
+			});
+		}else if(isSuccess){
+			messageApi.destroy();
+			messageApi.open({
+				type: 'success',
+				content: 'Transaction Successful!',
+				duration: 1.5,
+			});
+			setTxHash(null);
+		}else if(status == "error"){
+			messageApi.destroy();
+			messageApi.open({
+				type: 'error',
+				content: 'Transaction Failed!',
+				duration: 1.5,
+			});
+			setTxHash(null);
+		}
+	}, [isPending,  isLoading]);
+
+	// useEffect(() => {
+	// 	messageApi.destroy();
+	// 	if(isSuccess){
+	// 		messageApi.open({
+	// 			type: 'success',
+	// 			content: 'Transaction Successful!',
+	// 			duration: 1.5,
+	// 		})
+	// 	}
+	// }, [isSuccess]);
+
+	return (
+		<>
+			{contextHolder}
+			<Modal
+				open={modalOpen}
+				footer={null}
+				onCancel={() => setModalOpen(false)}
+				title={modalTitle}
+				width={400}
+			>
+				<div className='modalContent'>
+					<div className='rowRowRowRow' style={{fontSize: 20, gap: 5, fontWeight: 'bold'}}>
+						<img src={chainList[currentModalChain].img} alt="assetOneLogo" className='assetLogo' style={{height: 28}}></img>
+						{chainList[currentModalChain].chainName}
 					</div>
-				</Modal>
-				<Flex>
-					<div className='container' id='style-1'>
-						<div class='box'>
+					{/* <div>
+						You are about to {modalAction}
+					</div> */}
+					<div className='selector'>
+						<div style={{textAlign: 'left', color: 'gray', fontWeight: 'bold',marginBottom: '4px', marginTop: '8px'}}>
+							Amount 
+						</div>
+						<div className='inputs'>
+							<input value={modalAmount} placeholder='0.0' onChange={(e) => changeModalAmount(e)}type='number' onKeyDown={(e) => FilterInput(e)} onPaste={(e) => handlePaste(e)} style={{paddingRight: 100}} className='value-input-5'></input>
+							<div className='assetOne' style={{fontSize: 14, fontWeight: 600}}>
+								<img src={modalToken.img} alt="assetOneLogo" className='assetLogo' style={{height: 24}}></img>
+								{modalToken.ticker}
+							</div>
+						</div>
+					</div>
+					
+					<div style={{color: 'gray', marginTop: 10}}>
+						Max: {modalMaxAmount.toFixed(2)} • <span style={{color: '#5981F3'}} onClick={() => setModalAmount(modalMaxAmount)}> USE MAX</span>
+					</div>
+					{(confirmationState != 'confirming' && account.chainId == chainList[modalTargetChain].chainID) &&
+
+						<ColorButton disabled={modalAmount == 0 || !modalAmount || modalAmount > modalMaxAmount} variant="contained" className='depositButton' style={{width: '8em', marginTop: '12px'}} onClick={() => _executeTx()}>{modalAction}</ColorButton>
+					}
+
+					{(confirmationState == 'confirming' && account.chainId == chainList[modalTargetChain].chainID) &&
+
+						<ColorButton disabled variant="contained" className='depositButton' style={{width: '8em', marginTop: '12px'}} ><Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} /></ColorButton>
+					}
+
+
+					{account.chainId != chainList[modalTargetChain].chainID &&
+						<ColorButton variant="contained" onClick={() => switchChain({ chainId: chainList[modalTargetChain].chainID })} className='depositButton' style={{ marginTop: '12px'}}>Switch to {chainList[modalTargetChain].chainName}</ColorButton>
+					}
+				</div>
+			</Modal>
+			<Flex>
+				<div className='container' id='style-1'>
+					<div class='box'>
+						<div className='containerHeader'>
+							<div>
+								Collateral 
+							</div>
+							<Dropdown menu={{items: chainDropdown,}}>
+								<div className='dropdown' >
+										<img src={chainList[currentCollateralChain].img} alt="assetOneLogo" className='assetLogo'></img>
+										{chainList[currentCollateralChain].chainName}
+										<CaretDownOutlined></CaretDownOutlined>
+								</div>
+							</Dropdown>
+						</div>
+						<TableContainer component={Paper} style={{background: '#0E111B'}} className='assetTable'>
+							<Table  aria-label="simple table" stickyHeader  >
+								<TableHead>
+									<TableRow>
+										<TableCell style={{fontSize: 16, color: 'white', fontWeight: 'bold', background: '#0E111B'}}>Asset</TableCell>
+										<TableCell style={{fontSize: 16, color: 'white', fontWeight: 'bold', background: '#0E111B'}} align="right">Deposited</TableCell>
+										<TableCell style={{fontSize: 16, color: 'white', fontWeight: 'bold', background: '#0E111B'}} align="right">In wallet</TableCell>
+										<TableCell style={{fontSize: 16, color: 'white', fontWeight: 'bold', background: '#0E111B'}} align="right">
+											<div>
+												Total Collateral
+												<div style={{fontFamily: 'Kanit'}}>
+												{totalCollateralValueOnChain.toFixed(2)}$
+												</div>
+											</div>
+										</TableCell>
+									</TableRow>
+								</TableHead>
+								<TableBody style={{overflowY: 'scroll',height: '100%'}}>
+
+									{tokenDeposited?.map((e,i) => {
+										return(
+											<TableRow>
+												<TableCell component="th" scope="row" style={{color: 'white', fontWeight: 'bold'}} >
+													<div className='tokenChoice'>
+												<img src={e.img} alt={e.ticker} className='tokenLogo'></img>
+														<div className='tokenChoiceNames'>
+															<div className='tokenName'>{e.name}</div>
+															<div className='tokenTicker'>{e.ticker}</div>
+														</div>
+													</div>
+												</TableCell>
+												<TableCell style={{fontFamily: 'Kanit', color: 'white', fontWeight: 'bold', fontSize: 24}} align="right">
+													{e.deposited}
+													{!e.deposited && <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
+												</TableCell>
+												<TableCell style={{fontFamily: 'Kanit', color: 'white', fontWeight: 'bold', fontSize: 24}} align="right">
+													{e.inWallet}
+													{!e.inWallet && <Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} />}
+												</TableCell>
+												<TableCell style={{color: 'white', fontWeight: 'bold'}} align="right">
+													<div>
+														<ColorButton variant="contained" className='depositButton' style={{width: '8em'}} onClick={() => openModal("Deposit", "deposit", currentCollateralChain, currentCollateralChain, e)} disabled={tokenDeposited[i].inWallet == 0 || !tokenDeposited[i].inWallet}>Deposit</ColorButton>
+														<ColorButton variant="contained" disabled={e.deposited == 0 || !e.deposited} style={{marginLeft: '.5em', width: '8em'}} onClick={() => openModal("Withdraw", "withdraw", currentCollateralChain, 2, e)} disable={tokenDeposited[i].deposited == 0}>
+															Withdraw
+														</ColorButton>
+													</div>
+												</TableCell>
+											</TableRow>
+										)
+									})};
+								</TableBody>
+							</Table>
+						</TableContainer>
+					</div>
+				</div>
+				<div className='container'>
+					<div className='rowContainer'>
+						<div class='box2' style={{marginBottom: '1em', marginRight: '1em'}}>
 							<div className='containerHeader'>
 								<div>
-									Collateral {status}
+									Borrow
 								</div>
-								<Dropdown menu={{items: chainDropdown,}}>
+								<Dropdown menu={{items: chainMintDropdown,}}>
 									<div className='dropdown' >
-											<img src={chainList[currentCollateralChain].img} alt="assetOneLogo" className='assetLogo'></img>
-											{chainList[currentCollateralChain].chainName}
+											<img src={chainList[currentMintChain].img} alt="assetOneLogo" className='assetLogo'></img>
+											{chainList[currentMintChain].chainName}
 											<CaretDownOutlined></CaretDownOutlined>
 									</div>
 								</Dropdown>
 							</div>
-							<TableContainer component={Paper} style={{background: '#0E111B'}} className='assetTable'>
-								<Table  aria-label="simple table" stickyHeader  >
-									<TableHead>
-										<TableRow>
-											<TableCell style={{color: 'white', fontWeight: 'bold', background: '#0E111B'}}>Asset</TableCell>
-											<TableCell style={{color: 'white', fontWeight: 'bold', background: '#0E111B'}} align="right">Deposited</TableCell>
-											<TableCell style={{color: 'white', fontWeight: 'bold', background: '#0E111B'}} align="right">In wallet</TableCell>
-											<TableCell style={{color: 'white', fontWeight: 'bold', background: '#0E111B'}} align="right">
-												<div>
-													Total Collateral
-													<div style={{fontFamily: 'Kanit'}}>
-													{totalCollateralValueOnChain.toFixed(2)}$
-													</div>
-												</div>
-											</TableCell>
-										</TableRow>
-									</TableHead>
-									<TableBody style={{overflowY: 'scroll',height: '100%'}}>
-
-										{tokenDeposited?.map((e,i) => {
-											return(
-												<TableRow>
-													<TableCell component="th" scope="row" style={{color: 'white', fontWeight: 'bold'}} >
-														<div className='tokenChoice'>
-													<img src={e.img} alt={e.ticker} className='tokenLogo'></img>
-															<div className='tokenChoiceNames'>
-																<div className='tokenName'>{e.name}</div>
-																<div className='tokenTicker'>{e.ticker}</div>
-															</div>
-														</div>
-													</TableCell>
-													<TableCell style={{fontFamily: 'Kanit', color: 'white', fontWeight: 'bold'}} align="right"> {e.deposited} </TableCell>
-													<TableCell style={{fontFamily: 'Kanit', color: 'white', fontWeight: 'bold'}} align="right">{(Math.random() * 100000).toFixed(5)} </TableCell>
-													<TableCell style={{color: 'white', fontWeight: 'bold'}} align="right">
-														{buttonStates[i] == NO_STATE && 
-															<div>
-																<ColorButton variant="contained" className='depositButton' style={{width: '8em'}} onClick={() => handleButtonClick(i, DEPOSIT_STATE)}>Deposit</ColorButton>
-																<ColorButton variant="contained" disabled={e.deposited == 0 || !e.deposited} style={{marginLeft: '.5em', width: '8em'}} onClick={() => handleButtonClick(i, WITHDRAW_STATE)}>
-																	Withdraw
-																</ColorButton>
-															</div>
-														}
-
-														{buttonStates[i] == DEPOSIT_STATE && 
-															<div>
-																<CloseCircleFilled  onClick={() => handleButtonClick(i, NO_STATE)} className='aButton'/>
-																<input className='value-input' type="number" onKeyDown={(e) => FilterInput(e)} onPaste={(e) => handlePaste(e)}  placeholder='0' value={tokenDepositAmounts[i]} onChange={(e) => changeDepositAmount(e, i)}></input>
-
-																<ColorButton variant="contained" style={{marginLeft: '.5em', width: '8em'}} onClick={() => openModal("Depositing confirmation", "deposit", currentCollateralChain, currentCollateralChain, e, tokenDepositAmounts[i])} disabled={!tokenDepositAmounts[i] || tokenDepositAmounts[i] == 0}> 
-																	Deposit
-																</ColorButton>
-															</div>
-														}
-
-														{buttonStates[i] == WITHDRAW_STATE && 
-															<div>
-																<CloseCircleFilled  onClick={() => handleButtonClick(i, NO_STATE)} className='aButton'/>
-																<input className='value-input' type="number" onKeyDown={(e) => FilterInput(e)} onPaste={(e) => handlePaste(e)}  placeholder='0' value={tokenDepositAmounts[i]} onChange={(e) => changeDepositAmount(e, i)}></input>
-
-																<ColorButton variant="contained" style={{marginLeft: '.5em', width: '8em'}} onClick={() => openModal("Withdrawal confirmation", "withdraw", currentCollateralChain, 2, e, tokenDepositAmounts[i])} disabled={!tokenDepositAmounts[i] || tokenDepositAmounts[i] == 0}>
-																	Withdraw
-																</ColorButton>
-															</div>
-														}
-													</TableCell>
-												</TableRow>
-											)
-										})};
-									</TableBody>
-								</Table>
-							</TableContainer>
-						</div>
-					</div>
-					<div className='container'>
-						<div className='rowContainer'>
-							<div class='box2' style={{marginBottom: '1em', marginRight: '1em'}}>
-								<div className='containerHeader'>
-									<div>
-										Mint
-									</div>
-									<Dropdown menu={{items: chainMintDropdown,}}>
-										<div className='dropdown' >
-												<img src={chainList[currentMintChain].img} alt="assetOneLogo" className='assetLogo'></img>
-												{chainList[currentMintChain].chainName}
-												<CaretDownOutlined></CaretDownOutlined>
-										</div>
-									</Dropdown>
-								</div>
-								<div className='subBoxContainer'>
-									<div className='subBoxLeft'>
-										<div style={{textAlign: 'center', fontWeight:'bold'}}>
-											{mintState == NO_STATE &&
-												<div>
-													Total minted on {chainList[currentMintChain].chainName}
-												</div>
-											}
-
-											{mintState == MINT_STATE &&
-												<div>
-													Mint on {chainList[currentMintChain].chainName}
-												</div>
-											}
-
-											{mintState == BURN_STATE &&
-												<div>
-													Burn on {chainList[currentMintChain].chainName}
-												</div>
-											}
-										</div>
-										{(mintState == NO_STATE) &&
-											<div style={{fontSize: '64px', fontFamily: "Kanit"}}>
-												{tokenMinted.toFixed(2)}
+							<div className='subBoxContainer'>
+								<div className='subBoxLeft'>
+									<div style={{textAlign: 'center', fontWeight:'bold'}}>
+										{mintState == NO_STATE &&
+											<div style={{fontSize: 20}}>
+												Total borrowed DSC on {chainList[currentMintChain].chainName}
 											</div>
 										}
 
-										{(mintState == BURN_STATE || mintState == MINT_STATE) &&
-											<input className='value-input-2' placeholder='0' type='number' value={mintAmount} onKeyDown={(e) => FilterInput(e)} onPaste={(e) => handlePaste(e)} onChange={changeMintAmount}></input>
-											
+									</div>
+									{(mintState == NO_STATE) &&
+										<div style={{fontSize: '64px', fontFamily: "Kanit", gap: 8}} className='rowRowRowRow'>
+											{tokenMinted.toFixed(2)}
+											<div style={{display: 'flex', flexDirection: 'column'}}>
+												<img src={dalUSD.img} alt="assetOneLogo" className='assetLogo' style={{height: 44}}></img>
+											</div>
+										</div>
+									}
+
+									{(mintState == BURN_STATE || mintState == MINT_STATE) &&
+										<input className='value-input-2' placeholder='0' type='number' value={mintAmount} onKeyDown={(e) => FilterInput(e)} onPaste={(e) => handlePaste(e)} onChange={changeMintAmount}></input>
+										
+									}
+						
+									<div className='rowRow'>
+											<>
+												<ColorButton  variant="contained"  style={{width: '30%', margin: '.5em', marginTop: '1em'}} onClick={() => openModal("Borrow", "borrow", currentMintChain, 2, dalUSD)}>Borrow</ColorButton>
+												<ColorButton  variant="contained"  style={{width: '30%', margin: '.5em', marginTop: '1em'}} onClick={() => openModal("Repay", "repay", currentMintChain, currentMintChain, dalUSD, mintAmount)}>Repay</ColorButton>
+											</>
+										
+
+									</div>
+								</div>
+
+								{/* <div className='subBoxRight'>
+									<div className='inputs' style={{padding: '1em'}}>
+										<Input placeholder="0"></Input>
+									</div>
+									<div style={{display: 'flex', flexDirection: 'row', width: '100%', justifyItems: 'center', alignItems: 'center', alignContent: 'center'}}>
+										<ColorButton variant="contained" className='depositButton' style={{width: '30%', margin: '.3em'}}>Mint</ColorButton>
+										<ColorButton variant="contained" className='depositButton' style={{width: '30%', margin: '.3em'}}>Burn</ColorButton>
+									</div>
+								</div> */}
+							</div>
+						</div>
+
+						<div class='box2' style={{marginBottom: '1em'}}>
+							<div className='containerHeader'>
+								<div>
+									Credit Score: Medium
+								</div>
+							</div>
+							
+							<div className='boxBox'>
+								<div style={{height:'100%', width: `90%`}} >
+									<Gauge
+										cornerRadius="50%"
+										className='boxBoxBox'
+										value={creditScore}
+										startAngle={-110}
+										endAngle={110}
+										valueMin={300}
+										valueMax={1000}
+										labelTextColor='white'
+										sx={{
+											[`& .${gaugeClasses.valueText}`]: {
+												fontSize: 40,
+												transform: 'translate(0px, 0px)',
+												fontFamily: 'Kanit'
+											},
+											[`& .${gaugeClasses.valueArc}`]: {
+												fill: '#5981F3',
+											},
+											[`& .${gaugeClasses.referenceArc}`]: {
+												fill: '#243056'
+											},
+										}}
+										text={
+											({ value, valueMax }) => `${value} / ${valueMax}`
 										}
-										<div>
-											dalUSD
-										</div>
-										<div className='rowRow'>
-											{mintState == NO_STATE &&
-												<>
-													<ColorButton  variant="contained"  style={{width: '30%', margin: '.5em', marginTop: '1em'}} onClick={() => handleMintButton(MINT_STATE)}>Mint</ColorButton>
-													<ColorButton  variant="contained"  style={{width: '30%', margin: '.5em', marginTop: '1em'}} onClick={() => handleMintButton(BURN_STATE)}>Burn</ColorButton>
-												</>
-											}
-
-											{mintState == MINT_STATE &&
-												<>
-													<ColorButton  variant="contained"  style={{width: '30%', margin: '.5em', marginTop: '1em'}} onClick={() => openModal("Minting confirmation", "mint", currentMintChain, 2, dalUSD, mintAmount)} disabled={!mintAmount || mintAmount == 0}>Mint</ColorButton>
-													<ColorButton  variant="contained"  style={{width: '30%', margin: '.5em', marginTop: '1em'}} onClick={() => handleMintButton(NO_STATE)}>Cancel</ColorButton>
-												</>
-											}
-
-											{mintState == BURN_STATE &&
-												<>
-													<ColorButton  variant="contained"  style={{width: '30%', margin: '.5em', marginTop: '1em'}} onClick={() => handleMintButton(NO_STATE)} >cancel</ColorButton>
-													<ColorButton  variant="contained"  style={{width: '30%', margin: '.5em', marginTop: '1em'}} onClick={() => openModal("Burning confirmation", "burn", currentMintChain, 2, dalUSD, mintAmount)} disabled={!mintAmount || mintAmount == 0}>Burn</ColorButton>
-												</>
-											}
-
-										</div>
-									</div>
-
-									{/* <div className='subBoxRight'>
-										<div className='inputs' style={{padding: '1em'}}>
-											<Input placeholder="0"></Input>
-										</div>
-										<div style={{display: 'flex', flexDirection: 'row', width: '100%', justifyItems: 'center', alignItems: 'center', alignContent: 'center'}}>
-											<ColorButton variant="contained" className='depositButton' style={{width: '30%', margin: '.3em'}}>Mint</ColorButton>
-											<ColorButton variant="contained" className='depositButton' style={{width: '30%', margin: '.3em'}}>Burn</ColorButton>
-										</div>
-									</div> */}
-								</div>
-							</div>
-
-							<div class='box2' style={{marginBottom: '1em'}}>
-								<div className='containerHeader'>
-									<div>
-										Credit Score: Medium
-									</div>
-								</div>
-								
-								<div className='boxBox'>
-									<div style={{height:'100%', width: `90%`}} >
-										<Gauge
-											cornerRadius="50%"
-											className='boxBoxBox'
-											value={creditScore}
-											startAngle={-110}
-											endAngle={110}
-											valueMin={300}
-											valueMax={1000}
-											labelTextColor='white'
-											sx={{
-												[`& .${gaugeClasses.valueText}`]: {
-													fontSize: 40,
-													transform: 'translate(0px, 0px)',
-													fontFamily: 'Kanit'
-												},
-												[`& .${gaugeClasses.valueArc}`]: {
-													fill: '#5981F3',
-												},
-												[`& .${gaugeClasses.referenceArc}`]: {
-													fill: '#243056'
-												},
-											}}
-											text={
-												({ value, valueMax }) => `${value} / ${valueMax}`
-											}
-										/>
-									</div>
+									/>
 								</div>
 							</div>
 						</div>
+					</div>
 
-						<div class='box2' style={{marginTop: '1em'}}>
-							{/* <div className='containerHeader'>
-									<div>
-										Status
+					<div class='box2' style={{marginTop: '1em'}}>
+						{/* <div className='containerHeader'>
+								<div>
+									Status
+								</div>
+						</div> */}
+
+						<div className='subBoxContainer'>
+							<div className='subBox'>
+								<div className='dataBoxContainer'>
+									<div className='dataBoxHeader'>
+										Health Factor 
 									</div>
-							</div> */}
-
-							<div className='subBoxContainer'>
-								<div className='subBox'>
-									<div className='dataBoxContainer'>
-										<div className='dataBoxHeader'>
-											Health Factor 
-										</div>
-										<div className='dataNumber'>
-											{(totalCollateralValue / totalMintedValue).toFixed(2)}
-										</div>
+									<div className='dataNumber'>
+										{(totalCollateralValue * 0.8 / totalMintedValue).toFixed(2)}
 									</div>
 								</div>
-								<div className='subBox2'>
-									<div className='dataBoxContainer'>
-										<div className='dataNumber'>
-											=
-										</div>
+							</div>
+							<div className='subBox2'>
+								<div className='dataBoxContainer'>
+									<div className='dataNumber' style={{fontSize: 80}}>
+										=
 									</div>
 								</div>
-								<div className='subBox'>
-									<div className='dataBoxContainer' style={{borderBottom: '3px solid white'}}>
-										<div className='dataBoxHeader'>
-											Total Collateral
-										</div>
-										<div className='dataNumber'>
-											{totalCollateralValue.toFixed(2)}$
-										</div>
+							</div>
+							<div className='subBox'>
+								<div className='dataBoxContainer' style={{borderBottom: '3px solid white'}}>
+									<div className='dataBoxHeader'>
+										Total Collateral
 									</div>
-									<div className='dataBoxContainer'>
-										<div className='dataBoxHeader'>
-											Total Minted
-										</div>
-										<div className='dataNumber'>
-											{totalMintedValue.toFixed(2)}$
-										</div>
+									<div className='dataNumber'>
+										{totalCollateralValue.toFixed(2)}$ ⨯ 80%
+									</div>
+								</div>
+								<div className='dataBoxContainer'>
+									<div className='dataBoxHeader'>
+										Total Borrowed
+									</div>
+									<div className='dataNumber'>
+										{totalMintedValue.toFixed(2)}$
 									</div>
 								</div>
 							</div>
 						</div>
 					</div>
-				</Flex>
-			</>
-		);
-		
-		else return(
-			<>
-				<div className='box' style={{width: '50%', height: '60vh', display: 'flex', flexDirection: 'column', 'alignItems': 'center', justifyContent: 'center'}}>
-					<div style={{fontSize: '3em'}}>
-						Please connect your wallet!
-					</div>
-					<div style={{fontSize: '5em'}}>
-					<DisconnectOutlined /></div>
-
 				</div>
-			</>
-		)
+			</Flex>
+		</>
+	);
+		
 };
 	
-export default SplitScreen;
+export default Dashboard;
 // export default Swap
