@@ -73,7 +73,7 @@ When have enough resources, we hope to:
 - Testnet Deployment: Deploy the protocol on testnets to conduct rigorous testing and identify potential issues.
 
 - Security Audits: Perform comprehensive security audits to ensure the robustness and safety of the protocol.
-###Mainnet Launch
+### Mainnet Launch
 - Token Integration: Enable support for ETH, USDT, USDC, and WBTC as collateral.
 
 - Partnerships: Establish partnerships with other DeFi projects and exchanges to enhance liquidity and adoption.
