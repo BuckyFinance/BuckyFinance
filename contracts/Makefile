@@ -12,10 +12,10 @@ deploy_main_router:
 
 # Target for Avalanche Fuji
 deploy_depositor:
-	@forge script script/deploy/DeployDeposit.s.sol:DeployDeposit --rpc-url $(RPC_URL) --account $(ACCOUNT) --sender $(OWNER_ADDRESS) --broadcast
+	@forge script script/deploy/DeployDeposit.s.sol:DeployDeposit --rpc-url $(RPC_URL) --account $(ACCOUNT) --sender $(OWNER_ADDRESS) --broadcast --skip-simulation --gas-limit 10000000
 
 deploy_minter:
-	@forge script script/deploy/DeployMinter.s.sol:DeployMinter --rpc-url $(RPC_URL) --account $(ACCOUNT) --sender $(OWNER_ADDRESS) --broadcast
+	@forge script script/deploy/DeployMinter.s.sol:DeployMinter --rpc-url $(RPC_URL) --account $(ACCOUNT) --sender $(OWNER_ADDRESS) --broadcast --skip-simulation --gas-limit 5000000
 
 mint_token:	
 	@forge script script/interaction/MintToken.s.sol:MintToken --sig "mintToken(address)" $(USER) --rpc-url $(RPC_URL) --account $(ACCOUNT) --sender $(OWNER_ADDRESS) --broadcast
