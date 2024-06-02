@@ -50,6 +50,8 @@ const Dashboard = (props) => {
 	const BURN_STATE = 2
 	const {account, config} = props;
 
+
+
 	const dalUSD = {
 		"ticker": "DSC",
 		"img": "https://cryptologos.cc/logos/versions/dogecoin-doge-logo-alternative.svg?v=032",
@@ -91,6 +93,7 @@ const Dashboard = (props) => {
 			}
 			index += 1;
 		}
+		return 0;
 	});
 
 	const {creditScore, creditStatus, setCreditStatus, calculateCredit} = useCredit(account.address);
@@ -104,6 +107,7 @@ const Dashboard = (props) => {
 			}
 			index += 1;
 		}
+		return 0;
 	});
 	const {tokenMinted, canMint} = useMinted( account.address, chainList[currentMintChain].chainID);
 	const [currentModalChain, setCurrentModalChain] = useState(0);
