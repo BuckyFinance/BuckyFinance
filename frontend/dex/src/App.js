@@ -83,7 +83,7 @@ function App(props) {
 	return (
 		<ThemeProvider theme={theme}>
 			<div className="App" >
-				<Header connectButton={<ConnectButton />} />
+				<Header connectButton={<ConnectButton />} account={account} />
 				<div className="mainWindow">
 					{account.isConnected && 
 					<Routes>

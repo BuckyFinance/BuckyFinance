@@ -21,7 +21,7 @@ async function requestCreditScore(signerFromFE, isCalledFromFE) {
     const mainRouterAddress = NetworkInfomation[avalancheFujiChainId].MAIN_ROUTER_ADDRESS;
     const mainRouterContract = new Contract(mainRouterAddress, MainRouterABI, wallet);
     // const vitalikAddress = "0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045";
-    // const args = [vitalikAddress];
+    const args = [walletAddress];
     const tx = await mainRouterContract.sendRequestToCalculateActivityCredit(walletAddress, args);
     await tx.wait();
     console.log(`Request credit scrore with tx hash: ${tx.hash}`);

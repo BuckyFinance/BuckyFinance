@@ -40,14 +40,15 @@ export const useMinted = (walletAddress, chainId) => {
 export const useBalance = (chainId, tokenSymbol, walletAddress) => {
     const [balance, setBalance] = useState(NaN);
     
-    const _getBalance = async () => {
-        const response = await getBalance(chainId, tokenSymbol, walletAddress);
-        setBalance(parseFloat(response));
+    const _getBalance = async (_chainId, _tokenSymbol) => {
+        const response = await getBalance(_chainId, _tokenSymbol, walletAddress);
+        if(_chainId == chainId && _tokenSymbol == tokenSymbol)
+            setBalance(parseFloat(response));
     }
 
     useEffect(() => {
         const fetchData = () => {
-            _getBalance();
+            _getBalance(chainId, tokenSymbol);
         }
 
         fetchData();

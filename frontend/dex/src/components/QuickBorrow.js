@@ -76,11 +76,15 @@ function QuickBorrow(props) {
 	};
 
     async function _setMaxCanBeMinted(){
-        setMaxCanBeMinted(await getMaxCanBeMinted(depositToken.ticker, depositAmount ));
+		setMaxCanBeMinted(await getMaxCanBeMinted(depositToken.ticker, depositAmount, 0, account.address));
     }
 
     useEffect(() => {
         _setMaxCanBeMinted();
+
+		const intervalId = setInterval(_setMaxCanBeMinted, 500); 
+
+		return () => clearInterval(intervalId);
     }, [depositToken, depositAmount]);
 
 
@@ -155,7 +159,7 @@ function QuickBorrow(props) {
         {
             key: index.toString(),
             label: (
-                <div className='dropdownChoice' onClick={() => setDepositChain(chain)}>
+                <div className='dropdownChoice' onClick={() => {setBalance(NaN);setDepositChain(chain)}}>
                     <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', width: '40px'}}>
                         <img src={chainList[index].img} alt="assetOneLogo" className='assetLogo' />
                     </div>

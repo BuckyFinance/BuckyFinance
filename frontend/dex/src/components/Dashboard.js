@@ -40,6 +40,7 @@ import {deposit} from "../backend/scripts/deposit.js"
 import {useTx} from "../hooks/useWriteTx.js"
 import LoadingAnimation from "../loading.js"
 import { useCredit } from '../hooks/useCredit.js';
+import { calc } from 'antd/es/theme/internal.js';
 
 const Dashboard = (props) => {
 	const DEPOSIT_STATE = 1;
@@ -109,6 +110,7 @@ const Dashboard = (props) => {
 	const {totalCollateralValue} = useTotalCollateralValue(account.address);
 	const {totalMintedValue} = useTotalMintedValue(account.address);
 	
+	
 	const {isError, isPending , isSuccess,isLoading, status, txHash, confirmationState, setConfirmationState, setTxHash, executeTx} = useTx(modalAction, chainList[currentModalChain].chainID, modalToken.ticker, modalAmount, account.address);
 		
 	const [modalMaxAmount, setModalMaxAmount] = useState(0);
@@ -128,6 +130,8 @@ const Dashboard = (props) => {
 		),
 	}
 	));
+
+	const [stat, setStat] = useState('Health Factor');
 
 	const chainMintDropdown = chainList.map((chain, index) => (
 		{
@@ -151,15 +155,15 @@ const Dashboard = (props) => {
 		
 	function changeCollateralChain(id){
 		// console.log(id);
-		setCurrentCollateralChain(id);
-		setTokenList(chainList[currentCollateralChain].tokens);
-		setTokenDepositAmounts(tokenList.map(() => null));
-		setButtonStates(tokenList.map(() => NO_STATE));
 		const updated = tokenDeposited.map(token => ({
 			...token,
 			deposited: null,
 			inWallet: null
 		}));
+		setCurrentCollateralChain(id);
+		setTokenList(chainList[currentCollateralChain].tokens);
+		setTokenDepositAmounts(tokenList.map(() => null));
+		setButtonStates(tokenList.map(() => NO_STATE));
 		setTokenDeposited(updated);
 		setTotalCollateralValueOnChain(NaN);
 	}
@@ -279,6 +283,13 @@ const Dashboard = (props) => {
 		}
 	}
 
+	function toggleWidths() {
+		var boxes = document.querySelectorAll('.subBox');
+		boxes.forEach(function(box) {
+			box.classList.toggle('expanded');
+		});
+	}
+
 	useEffect(() => {
 		if(creditStatus == 'calculating'){
 			messageApi.destroy();
@@ -361,6 +372,8 @@ const Dashboard = (props) => {
 			return value < 300 ? 'Not available' : `${value} / ${valueMax}`;
 		  };
 
+
+
 	return (
 		<>
 			{contextHolder}
@@ -400,17 +413,17 @@ const Dashboard = (props) => {
 
 					{(confirmationState != 'confirming' && account.chainId == chainList[modalTargetChain].chainID) &&
 
-						<div className="swapButton2" disabled={modalAmount == 0 || !modalAmount || modalAmount > modalMaxAmount} variant="contained"  style={{width: '8em', marginTop: '12px'}} onClick={() => _executeTx()}>{modalAction}</div>
+						<div className="swapButton2" disabled={modalAmount == 0 || !modalAmount || modalAmount > modalMaxAmount} variant="contained"  style={{width: '8em', marginTop: '10px'}} onClick={() => _executeTx()}>{modalAction}</div>
 					}
 
 					{(confirmationState == 'confirming' && account.chainId == chainList[modalTargetChain].chainID) &&
 
-						<div className="swapButton2" disabled variant="contained"  style={{width: '8em', marginTop: '12px'}} ><Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} /></div>
+						<div className="swapButton2" disabled variant="contained"  style={{width: '8em', marginTop: '10px'}} ><Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} /></div>
 					}
 
 
 					{account.chainId != chainList[modalTargetChain].chainID &&
-						<div className="swapButton2" variant="contained" onClick={() => switchChain({ chainId: chainList[modalTargetChain].chainID })} style={{ marginTop: '12px'}}>Switch to {chainList[modalTargetChain].chainName}</div>
+						<div className="swapButton2" variant="contained" onClick={() => switchChain({ chainId: chainList[modalTargetChain].chainID })} style={{ marginTop: '10px'}}>Switch to {chainList[modalTargetChain].chainName}</div>
 					}
 				</div>
 			</Modal>
@@ -559,7 +572,13 @@ const Dashboard = (props) => {
 									<div>
 									Credit Score 
 									</div>
-									<div className='dropdown' style={{paddingLeft: 6, paddingBottom: 1}} onClick={() => calculateCredit()}>
+									<div className='dropdown' style={{paddingLeft: 6, paddingBottom: 1}} onClick={() => {
+										if(account.chainId != 43113){
+											switchChain({chainId: 43113});
+										}else
+										calculateCredit();
+									}
+									}>
 										<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Circle-icons-calculator.svg/512px-Circle-icons-calculator.svg.png" height={24}></img>
 										Calculate
 									</div>
@@ -609,12 +628,40 @@ const Dashboard = (props) => {
 						<div className='subBoxContainer'>
 							<div className='subBox'>
 								<div className='dataBoxContainer'>
+									{stat == "Health Factor" &&
 									<div className='dataBoxHeader'>
 										Health Factor 
-									</div>
+									</div>	
+									}
+									{stat != "Health Factor" &&
+									<div className='dataBoxHeader' style={{color: '#404040'}} onClick={() => {toggleWidths();setStat("Health Factor")}}>
+										Health Factor 
+									</div>	
+									}	
+									
+									{stat == "Health Factor" &&
 									<div className='dataNumber'>
 										{(totalCollateralValue * 0.8 / totalMintedValue).toFixed(2)}
 									</div>
+									}
+
+									{stat != "Health Factor" &&
+									<div className='dataNumber'>
+										{(totalMintedValue / totalCollateralValue).toFixed(2)}
+									</div>
+									}
+{/* 
+									{stat == "LTV" &&
+									<div className='dataBoxHeader'>
+										Loan-to-value
+									</div>
+									}
+
+									{stat != "LTV" &&
+									<div className='dataBoxHeader' style={{color: '#404040'}} onClick={() => {toggleWidths();setStat('LTV')}}>
+										Loan-to-value
+									</div>
+									} */}
 								</div>
 							</div>
 							<div className='subBox2'>
@@ -624,6 +671,7 @@ const Dashboard = (props) => {
 									</div>
 								</div>
 							</div>
+							{stat == "Health Factor" &&
 							<div className='subBox'>
 								<div className='dataBoxContainer' style={{borderBottom: '3px solid white'}}>
 									<div className='dataBoxHeader'>
@@ -642,6 +690,28 @@ const Dashboard = (props) => {
 									</div>
 								</div>
 							</div>
+							}
+
+							{stat == "LTV" &&
+							<div className='subBox'>
+								<div className='dataBoxContainer' style={{borderBottom: '3px solid white'}}>
+									<div className='dataBoxHeader'>
+										Total Borrowed
+									</div>
+									<div className='dataNumber'>
+										{totalMintedValue.toFixed(2)}$
+									</div>
+								</div>
+								<div className='dataBoxContainer'>
+									<div className='dataBoxHeader'>
+										Total Collateral
+									</div>
+									<div className='dataNumber'>
+										{totalCollateralValue.toFixed(2)}$
+									</div>
+								</div>
+							</div>
+							}
 						</div>
 					</div>
 				</div>

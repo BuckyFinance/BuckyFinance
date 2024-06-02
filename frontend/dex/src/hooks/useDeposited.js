@@ -10,33 +10,35 @@ export const useDeposited = (tokenList, walletAddress, chainId) => {
     const [tokenDeposited, setTokenDeposited] = useState(tokenList);
     const [totalCollateralValueOnChain, setTotalCollateralValueOnChain] = useState(NaN);
 
-    const getData = async(ticker) => {
+    const getData = async(ticker, chainId) => {
         return [await getDepositedAmount(chainId, ticker, walletAddress), await getBalance(chainId, ticker, walletAddress)]
     }
 
-    const getDeposited =  async () => {
-        const promises = tokenList.map(({ticker}) => getData(ticker));
+    const getDeposited =  async (_chainId) => {
+        const promises = tokenList.map(({ticker}) => getData(ticker, _chainId));
         const deposited = await Promise.all(promises);
+
+        if(chainId == _chainId)
         setTokenDeposited(tokenList.map((token, index) => ({
             ...token,
             deposited: deposited[index][0],
             inWallet: deposited[index][1],
         })));
-        console.log(deposited);
     }
 
-    const getTotalCollateralValue = async() => {
-        const response = await getTotalDepositedValueOnChain(chainId, walletAddress);
+    const getTotalCollateralValue = async(_chainId) => {
+        console.log(_chainId);
+        const response = await getTotalDepositedValueOnChain(_chainId, walletAddress);
+        if(_chainId == chainId)
         setTotalCollateralValueOnChain(parseFloat(response));
     }
 
+    const fetchData = () => {
+        getDeposited(chainId);
+        getTotalCollateralValue(chainId);
+    }
 
     useEffect(() => {
-        const fetchData = () => {
-            getDeposited();
-            getTotalCollateralValue();
-        }
-
         fetchData();
 
         const intervalId = setInterval(fetchData, FETCH_INTERVAL); 

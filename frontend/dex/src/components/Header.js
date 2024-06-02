@@ -1,15 +1,26 @@
-import React from 'react'
-import Logo from "../moralis-logo.svg";
+import React, { useState } from 'react'
+import Logo from "../bucket.png";
 import Eth from "../eth.svg"
 import {Link} from 'react-router-dom'
+import { getCurrentLTV } from '../backend/scripts/getCurrentLTV';
  
 function Header(props) {
-	const {connectButton} = props;
+	const {connectButton, account} = props;
+	const [maxLTV, setMaxLTV] = useState(0);
+
+	async function getLTV(){
+		if(account.isConnected)
+			setMaxLTV(await getCurrentLTV(account.address));
+	}
+
+	getLTV();
+
+	
 
     return (
       	<header>
 			<div className='leftH'>
-				<img src={Logo} className='logo' alt='logo'></img>
+				<img src={Logo} className='logo'></img>
 				<Link to="/" className='link'>
 					<div className='headerItem'>Dashboard</div>
 				</Link>
@@ -21,6 +32,9 @@ function Header(props) {
 				</Link>
 			</div>
 			<div className='rightH'>
+				<div className='maxLTV'>
+					<div style={{height: 24}}>Max LTV {maxLTV}%</div>
+				</div>
 				{connectButton}
 				
 			</div>

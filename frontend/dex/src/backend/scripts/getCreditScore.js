@@ -38,7 +38,7 @@ async function getTotalCreditScore(walletAddress) {
     const protocolCredit = await getUserProtocolCredit(walletAddress);
     const totalCredit = activityCredit + protocolCredit;
     console.log(`Total credit score: ${totalCredit}`)
-    return Math.max(300, totalCredit);
+    return  totalCredit;
 }
 
 async function main() {
