@@ -11,13 +11,13 @@ contract MintToken is Script {
         TokenConfig.Token memory token = tokenConfig.run();
 
         vm.startBroadcast();
-        ERC20Mock(token.wbtc.token).mint(_user, 10 ether);
+        ERC20Mock(token.wbtc.token).mint(_user, 5 ether);
         ERC20Mock(token.weth.token).mint(_user, 20 ether);
         ERC20Mock(token.avax.token).mint(_user, 1000 ether);
         ERC20Mock(token.link.token).mint(_user, 1000 ether);
         ERC20Mock(token.uni.token).mint(_user, 1000 ether);
-        ERC20Mock(token.usdt.token).mint(_user, 1e6 ether);
-        ERC20Mock(token.usdc.token).mint(_user, 1e6 ether);
+        ERC20Mock(token.usdt.token).mint(_user, 1e6 * 1e6);
+        ERC20Mock(token.usdc.token).mint(_user, 1e6 * 1e6);
         vm.stopBroadcast();
     }
 }

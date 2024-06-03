@@ -49,9 +49,13 @@ $$ \text{Health Factor} = \frac{\text{Total Deposited Collateral on All Chains} 
 - If users want to swap `DSC` tokens from chain `A` to chain `B`, they can do so in one transaction by using the `burnAndMint` function on chain `A`'s `Minter` contract. The `Minter` will burn `DSC` on chain `A`, then send a CCIP message to the `Main Router`. The `Main Router` will then send a CCIP message to the `Minter` contract on chain `B` to mint `DSC` tokens for the user.
 
 ## Credit System
-We leverage `Chainlink Functions` to call our `Credit API` in a decentralized manner. The `API` aggregates a user's activity information in the DeFi ecosystem and returns the user's `credit`.
+We leverage Chainlink Functions to call our Credit API in a decentralized manner. The API aggregates a user's activity information in the DeFi ecosystem and returns the user's credit score, which is evaluated using AI based on the following criteria:
 
-
+- The user's total wallet balance.
+- The number of transactions made.
+- The volume of on-chain transactions participated in.
+- The amount borrowed from major lending protocols such as Aave, Compound, Spark, etc. If their collaterals have been liquidated, their credit score will decrease.
+- Their involvement in staking, governance voting, and other community activities, reflecting the user's engagement and commitment to the ecosystem.
 
 # Go-to-Market Strategies
 BuckyFinance's initial support will focus on commonly used tokens such as ETH, USDT, USDC, and WBTC for collaterals. This strategy aims to build trust and demonstrate the efficacy of the protocol by starting with well-known and widely accepted tokens.
@@ -63,16 +67,19 @@ When have enough resources, we hope to:
 - Integrate more EVM and non-EVM chains.
 
 # Detailed Implementation Plan
+
 ### Initial Development Phase
 - Protocol Design: Establish the foundational architecture, integrating Chainlink technologies.
 
 - Smart Contracts: Develop and deploy smart contracts for handling deposits, borrowing, and collateral management.
 
 - Credit Score Algorithm: Design and implement the AI-based credit scoring system.
+
 ### Testing and Security
 - Testnet Deployment: Deploy the protocol on testnets to conduct rigorous testing and identify potential issues.
 
 - Security Audits: Perform comprehensive security audits to ensure the robustness and safety of the protocol.
+
 ### Mainnet Launch
 - Token Integration: Enable support for ETH, USDT, USDC, and WBTC as collateral.
 
