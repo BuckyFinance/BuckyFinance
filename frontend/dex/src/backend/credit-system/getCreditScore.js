@@ -1,5 +1,5 @@
 const axios = require('axios')
-require("dotenv").config()
+//require("dotenv").config()
 
 const accessToken = process.env.REACT_APP_CRED_API_TOKEN
 const accountAddressExample = '0xB1A296a720D9AAF5c5e9F805d8095e6d94882eE1'

@@ -46,7 +46,7 @@ async function burn(desChainId, amountToBurn, signerFromFE, isCalledFromFE) {
     const tokenInfo = NetworkInfomation[desChainId]["TOKEN"]["DSC"];
     await approveToken(wallet, tokenInfo, amountToBurn, desChainId);
 
-    const gasLimit = ethers.utils.hexlify(1000000);
+    const gasLimit = ethers.utils.hexlify(1500000);
     const amountToBurnInWei = ethers.utils.parseUnits(amountToBurn, 18);
     const value = await getBurnFeeOnChain(minterContract, amountToBurnInWei);
     // const value = ethers.utils.parseEther("0.02");
@@ -61,11 +61,11 @@ async function burn(desChainId, amountToBurn, signerFromFE, isCalledFromFE) {
 }
 
 async function main() {
-    const desChainId = 80002;
-    await burn(desChainId, "1", "", false);
+    const desChainId = 43113;
+    await burn(desChainId, "4", "", false);
 }
 
-// main();
+//main();
 
 module.exports = {
     burn,

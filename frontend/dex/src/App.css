@@ -12,8 +12,7 @@ header {
 }
 
 .logo{
-  width: 40px;
-  height: 40px;
+  height: 60px;
   padding-right: 20px;
 }
 
@@ -300,7 +299,7 @@ padding-right: 1.5em;
 .tokenTicker {
   margin-left: 10px;
   font-size: 13px;
-  font-weight: 500;
+  font-weight: 700;
   color: #51596f;
 }
 .ant-menu-item-active {
@@ -460,6 +459,18 @@ padding-right: 1.5em;
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+	transition: max-width 1s; 
+	max-width: 1;
+}
+.subBox2{
+	display: flex;
+	width: 15%;
+	transition: max-width 1s; 
+	max-width: 1;
+}
+
+.expanded{
+	max-width: 500px;
 }
 
 .boxBoxBox{
@@ -477,10 +488,6 @@ padding-right: 1.5em;
 	align-items: center;
 }
 
-.subBox2{
-	display: flex;
-	width: 20%;
-}
 
 .dataBoxContainer{
 	flex: 1;
@@ -656,3 +663,60 @@ padding-right: 1.5em;
 	align-items: center;
 	width: 98%;
   }
+
+  .ant-message-notice-content{
+	background-color: #3b4874 !important;
+	color: white;
+	font-weight: bold;
+  }
+
+
+
+  .swapButton2 {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background-color: #243056; 
+	height: 45px;
+	font-size: 20px;
+	border-radius: 12px;
+	color: #5981F3;
+	font-weight: bold;
+	transition: 0.3s;
+	width: 100%;
+  }
+  
+  .swapButton2[disabled] {
+	background-color: #243056;
+	opacity: 0.4;
+	color: #5982f39b;
+  }
+  
+  .swapButton2[disabled]:hover {
+	cursor: not-allowed;
+	background-color: #243056;
+  }
+  
+  .swapButton2:hover {
+	cursor: pointer;
+	background-color: #3b4874
+  }
+  
+
+
+.maxLTV{
+	background-color: #1A1B1F;
+	/* background-color: red; */
+	border-radius: 12px;
+	font-family: SFRounded, ui-rounded, "SF Pro Rounded", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+	font-size: 16;
+	font-weight: 700;
+	padding-block-end: 8px;
+	padding-block-start: 8px;
+	padding-bottom: 8px;
+	padding-inline-end: 10px;
+	padding-inline-start: 10px;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 8px;
+}

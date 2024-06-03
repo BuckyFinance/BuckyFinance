@@ -27,13 +27,13 @@ export const useTx = (action, chainId, tokenSymbol, amount, walletAddress, amoun
         console.log("Call", action, chainId, tokenSymbol, amount, walletAddress, amount2);
         setConfirmationState('confirming');
         try{
-            if(action == 'borrow'){
+            if(action == 'Borrow'){
                 setTxHash(await mint(chainId, amount, signer, true));
-            }else if(action == 'deposit'){
+            }else if(action == 'Deposit'){
                 setTxHash(await deposit(tokenSymbol, amount, signer, true));
-            }else if(action == 'repay'){
+            }else if(action == 'Repay'){
                 setTxHash(await burn(chainId, amount, signer, true));
-            }else if(action == 'withdraw'){
+            }else if(action == 'Withdraw'){
                 setTxHash(await redeem(chainId, tokenSymbol, amount, signer, true));
             }else if(action == 'swap'){
                 setTxHash(await burnAndMint(amount, chainId, signer, true))

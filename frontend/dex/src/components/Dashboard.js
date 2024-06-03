@@ -9,6 +9,7 @@ import {
 	CaretDownOutlined,
 	CloseCircleFilled,
 	ConsoleSqlOutlined,
+	CalculatorOutlined,
 	DisconnectOutlined
 } from "@ant-design/icons"
 import { Row, Col, Flex, Space, Dropdown } from 'antd';
@@ -37,7 +38,9 @@ import {ethers} from 'ethers';
 import {mint} from "../backend/scripts/mint.js"
 import {deposit} from "../backend/scripts/deposit.js"
 import {useTx} from "../hooks/useWriteTx.js"
-
+import LoadingAnimation from "../loading.js"
+import { useCredit } from '../hooks/useCredit.js';
+import { calc } from 'antd/es/theme/internal.js';
 
 const Dashboard = (props) => {
 	const DEPOSIT_STATE = 1;
@@ -46,6 +49,8 @@ const Dashboard = (props) => {
 	const MINT_STATE = 1
 	const BURN_STATE = 2
 	const {account, config} = props;
+
+
 
 	const dalUSD = {
 		"ticker": "DSC",
@@ -60,7 +65,6 @@ const Dashboard = (props) => {
 	const [totalCollateral, setTotalCollateral] = useState(Math.random() * 1000000);
 	const [totalMinted, setTotalMinted] = useState(Math.random() * 100000);
 	const [chainSpecificMinted, setChainSpecificMinted] = useState(Math.random() * 100000);
-	const [creditScore, setCreditScore] = useState(686);
 	
 	const [buttonStates, setButtonStates] =  useState(
 		tokenList.map(() => NO_STATE)
@@ -89,7 +93,10 @@ const Dashboard = (props) => {
 			}
 			index += 1;
 		}
+		return 0;
 	});
+
+	const {creditScore, creditStatus, setCreditStatus, calculateCredit} = useCredit(account.address);
 	
 	const {tokenDeposited, totalCollateralValueOnChain, setTokenDeposited, setTotalCollateralValueOnChain} = useDeposited(tokenList, account.address,chainList[currentCollateralChain].chainID );
 	const [currentMintChain, setCurrentMintChain] = useState(() => {
@@ -100,11 +107,13 @@ const Dashboard = (props) => {
 			}
 			index += 1;
 		}
+		return 0;
 	});
 	const {tokenMinted, canMint} = useMinted( account.address, chainList[currentMintChain].chainID);
 	const [currentModalChain, setCurrentModalChain] = useState(0);
 	const {totalCollateralValue} = useTotalCollateralValue(account.address);
 	const {totalMintedValue} = useTotalMintedValue(account.address);
+	
 	
 	const {isError, isPending , isSuccess,isLoading, status, txHash, confirmationState, setConfirmationState, setTxHash, executeTx} = useTx(modalAction, chainList[currentModalChain].chainID, modalToken.ticker, modalAmount, account.address);
 		
@@ -125,6 +134,8 @@ const Dashboard = (props) => {
 		),
 	}
 	));
+
+	const [stat, setStat] = useState('Health Factor');
 
 	const chainMintDropdown = chainList.map((chain, index) => (
 		{
@@ -148,17 +159,17 @@ const Dashboard = (props) => {
 		
 	function changeCollateralChain(id){
 		// console.log(id);
-		setCurrentCollateralChain(id);
-		setTokenList(chainList[currentCollateralChain].tokens);
-		setTokenDepositAmounts(tokenList.map(() => null));
-		setButtonStates(tokenList.map(() => NO_STATE));
 		const updated = tokenDeposited.map(token => ({
 			...token,
 			deposited: null,
 			inWallet: null
 		}));
+		setCurrentCollateralChain(id);
+		setTokenList(chainList[currentCollateralChain].tokens);
+		setTokenDepositAmounts(tokenList.map(() => null));
+		setButtonStates(tokenList.map(() => NO_STATE));
 		setTokenDeposited(updated);
-		setTotalCollateralValueOnChain(0);
+		setTotalCollateralValueOnChain(NaN);
 	}
 
 	const ColorButton = styled(Button)(({ theme }) => ({
@@ -265,17 +276,41 @@ const Dashboard = (props) => {
 	}
 
 	async function fetchMaxModalAmount(action, token){
-		if(action == 'borrow'){
+		if(action == 'Borrow'){
 			setModalMaxAmount(canMint);
-		}else if(action == 'repay'){
+		}else if(action == 'Repay'){
 			setModalMaxAmount(tokenMinted);
-		}else if(action == 'deposit'){
+		}else if(action == 'Deposit'){
 			setModalMaxAmount(parseFloat(tokenDeposited[tokenIndex[token.ticker]].inWallet));
-		}else if(action == 'withdraw'){
+		}else if(action == 'Withdraw'){
 			setModalMaxAmount(parseFloat(tokenDeposited[tokenIndex[token.ticker]].deposited));
 		}
 	}
 
+	function toggleWidths() {
+		var boxes = document.querySelectorAll('.subBox');
+		boxes.forEach(function(box) {
+			box.classList.toggle('expanded');
+		});
+	}
+
+	useEffect(() => {
+		if(creditStatus == 'calculating'){
+			messageApi.destroy();
+			messageApi.open({
+				type: 'loading',
+				content: 'Calculating...',
+				duration: 0,
+			});
+		}else if(creditStatus == 'calculated'){
+			messageApi.destroy();
+			messageApi.open({
+				type: 'success',
+				content: 'Calculated successfully!',
+				duration: 1.5,
+			});
+		}
+	}, [creditStatus]);
 
 	useEffect(() => {
 		if(confirmationState == 'rejected'){
@@ -329,6 +364,19 @@ const Dashboard = (props) => {
 	// 		})
 	// 	}
 	// }, [isSuccess]);
+	// messageApi.open({
+	// 			type: 'success',
+	// 			content: 'Transaction Successful!',
+	// 			duration: 0,
+	// 		});
+
+        // Function to modify the dy attributes of the tspan elements
+      
+		const getConditionalText = ({ value, valueMax }) => {
+			return value < 300 ? 'Not available' : `${value} / ${valueMax}`;
+		  };
+
+
 
 	return (
 		<>
@@ -364,19 +412,22 @@ const Dashboard = (props) => {
 					<div style={{color: 'gray', marginTop: 10}}>
 						Max: {modalMaxAmount.toFixed(2)} • <span style={{color: '#5981F3'}} onClick={() => setModalAmount(modalMaxAmount)}> USE MAX</span>
 					</div>
+
+					{/* <div style={{marginTop: '16px'}} className='swapButton' onClick={() => switchChain({chainId: depositChain.chainID})}>Switch to {depositChain.chainName}</div> */}
+
 					{(confirmationState != 'confirming' && account.chainId == chainList[modalTargetChain].chainID) &&
 
-						<ColorButton disabled={modalAmount == 0 || !modalAmount || modalAmount > modalMaxAmount} variant="contained" className='depositButton' style={{width: '8em', marginTop: '12px'}} onClick={() => _executeTx()}>{modalAction}</ColorButton>
+						<div className="swapButton2" disabled={modalAmount == 0 || !modalAmount || modalAmount > modalMaxAmount} variant="contained"  style={{width: '8em', marginTop: '10px'}} onClick={() => _executeTx()}>{modalAction}</div>
 					}
 
 					{(confirmationState == 'confirming' && account.chainId == chainList[modalTargetChain].chainID) &&
 
-						<ColorButton disabled variant="contained" className='depositButton' style={{width: '8em', marginTop: '12px'}} ><Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} /></ColorButton>
+						<div className="swapButton2" disabled variant="contained"  style={{width: '8em', marginTop: '10px'}} ><Spin indicator={<LoadingOutlined style={{ fontSize: 24 }} spin />} /></div>
 					}
 
 
 					{account.chainId != chainList[modalTargetChain].chainID &&
-						<ColorButton variant="contained" onClick={() => switchChain({ chainId: chainList[modalTargetChain].chainID })} className='depositButton' style={{ marginTop: '12px'}}>Switch to {chainList[modalTargetChain].chainName}</ColorButton>
+						<div className="swapButton2" variant="contained" onClick={() => switchChain({ chainId: chainList[modalTargetChain].chainID })} style={{ marginTop: '10px'}}>Switch to {chainList[modalTargetChain].chainName}</div>
 					}
 				</div>
 			</Modal>
@@ -385,7 +436,7 @@ const Dashboard = (props) => {
 					<div class='box'>
 						<div className='containerHeader'>
 							<div>
-								Collateral 
+								Collateral
 							</div>
 							<Dropdown menu={{items: chainDropdown,}}>
 								<div className='dropdown' >
@@ -406,7 +457,16 @@ const Dashboard = (props) => {
 											<div>
 												Total Collateral
 												<div style={{fontFamily: 'Kanit'}}>
-												{totalCollateralValueOnChain.toFixed(2)}$
+												{totalCollateralValueOnChain != totalCollateralValueOnChain &&
+													<LoadingAnimation style={{fontSize: 12}}/>
+													
+												}
+
+												{totalCollateralValueOnChain == totalCollateralValueOnChain &&
+													<>
+													{totalCollateralValueOnChain.toFixed(2)}$
+													</>
+												}	
 												</div>
 											</div>
 										</TableCell>
@@ -436,8 +496,8 @@ const Dashboard = (props) => {
 												</TableCell>
 												<TableCell style={{color: 'white', fontWeight: 'bold'}} align="right">
 													<div>
-														<ColorButton variant="contained" className='depositButton' style={{width: '8em'}} onClick={() => openModal("Deposit", "deposit", currentCollateralChain, currentCollateralChain, e)} disabled={tokenDeposited[i].inWallet == 0 || !tokenDeposited[i].inWallet}>Deposit</ColorButton>
-														<ColorButton variant="contained" disabled={e.deposited == 0 || !e.deposited} style={{marginLeft: '.5em', width: '8em'}} onClick={() => openModal("Withdraw", "withdraw", currentCollateralChain, 2, e)} disable={tokenDeposited[i].deposited == 0}>
+														<ColorButton variant="contained" className='depositButton' style={{width: '8em'}} onClick={() => openModal("Deposit", "Deposit", currentCollateralChain, currentCollateralChain, e)} disabled={tokenDeposited[i].inWallet == 0 || !tokenDeposited[i].inWallet}>Deposit</ColorButton>
+														<ColorButton variant="contained" disabled={e.deposited == 0 || !e.deposited} style={{marginLeft: '.5em', width: '8em'}} onClick={() => openModal("Withdraw", "Withdraw", currentCollateralChain, 2, e)} disable={tokenDeposited[i].deposited == 0}>
 															Withdraw
 														</ColorButton>
 													</div>
@@ -491,8 +551,8 @@ const Dashboard = (props) => {
 						
 									<div className='rowRow'>
 											<>
-												<ColorButton  variant="contained"  style={{width: '30%', margin: '.5em', marginTop: '1em'}} onClick={() => openModal("Borrow", "borrow", currentMintChain, 2, dalUSD)}>Borrow</ColorButton>
-												<ColorButton  variant="contained"  style={{width: '30%', margin: '.5em', marginTop: '1em'}} onClick={() => openModal("Repay", "repay", currentMintChain, currentMintChain, dalUSD, mintAmount)}>Repay</ColorButton>
+												<ColorButton  variant="contained"  style={{width: '30%', margin: '.5em', marginTop: '1em'}} onClick={() => openModal("Borrow", "Borrow", currentMintChain, 2, dalUSD)}>Borrow</ColorButton>
+												<ColorButton  variant="contained"  style={{width: '30%', margin: '.5em', marginTop: '1em'}} onClick={() => openModal("Repay", "Repay", currentMintChain, currentMintChain, dalUSD, mintAmount)}>Repay</ColorButton>
 											</>
 										
 
@@ -513,13 +573,24 @@ const Dashboard = (props) => {
 
 						<div class='box2' style={{marginBottom: '1em'}}>
 							<div className='containerHeader'>
-								<div>
-									Credit Score: Medium
-								</div>
+									<div>
+									Credit Score 
+									</div>
+									<div className='dropdown' style={{paddingLeft: 6, paddingBottom: 1}} onClick={() => {
+										if(account.chainId != 43113){
+											switchChain({chainId: 43113});
+										}else
+										calculateCredit();
+									}
+									}>
+										<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Circle-icons-calculator.svg/512px-Circle-icons-calculator.svg.png" height={24}></img>
+										Calculate
+									</div>
 							</div>
 							
-							<div className='boxBox'>
+							<div className='boxBox' style={{position: 'relative'}}>
 								<div style={{height:'100%', width: `90%`}} >
+								{/* <span style={{position: 'absolute', top: '100px', left: '180px'}}>100%</span> */}
 									<Gauge
 										cornerRadius="50%"
 										className='boxBoxBox'
@@ -543,7 +614,7 @@ const Dashboard = (props) => {
 											},
 										}}
 										text={
-											({ value, valueMax }) => `${value} / ${valueMax}`
+											({ value, valueMax }) => getConditionalText({ value, valueMax })
 										}
 									/>
 								</div>
@@ -561,12 +632,40 @@ const Dashboard = (props) => {
 						<div className='subBoxContainer'>
 							<div className='subBox'>
 								<div className='dataBoxContainer'>
+									{stat == "Health Factor" &&
 									<div className='dataBoxHeader'>
 										Health Factor 
-									</div>
+									</div>	
+									}
+									{stat != "Health Factor" &&
+									<div className='dataBoxHeader' style={{color: '#404040'}} onClick={() => {toggleWidths();setStat("Health Factor")}}>
+										Health Factor 
+									</div>	
+									}	
+									
+									{stat == "Health Factor" &&
 									<div className='dataNumber'>
 										{(totalCollateralValue * 0.8 / totalMintedValue).toFixed(2)}
 									</div>
+									}
+
+									{stat != "Health Factor" &&
+									<div className='dataNumber'>
+										{(totalMintedValue / totalCollateralValue).toFixed(2)}
+									</div>
+									}
+{/* 
+									{stat == "LTV" &&
+									<div className='dataBoxHeader'>
+										Loan-to-value
+									</div>
+									}
+
+									{stat != "LTV" &&
+									<div className='dataBoxHeader' style={{color: '#404040'}} onClick={() => {toggleWidths();setStat('LTV')}}>
+										Loan-to-value
+									</div>
+									} */}
 								</div>
 							</div>
 							<div className='subBox2'>
@@ -576,6 +675,7 @@ const Dashboard = (props) => {
 									</div>
 								</div>
 							</div>
+							{stat == "Health Factor" &&
 							<div className='subBox'>
 								<div className='dataBoxContainer' style={{borderBottom: '3px solid white'}}>
 									<div className='dataBoxHeader'>
@@ -594,10 +694,33 @@ const Dashboard = (props) => {
 									</div>
 								</div>
 							</div>
+							}
+
+							{stat == "LTV" &&
+							<div className='subBox'>
+								<div className='dataBoxContainer' style={{borderBottom: '3px solid white'}}>
+									<div className='dataBoxHeader'>
+										Total Borrowed
+									</div>
+									<div className='dataNumber'>
+										{totalMintedValue.toFixed(2)}$
+									</div>
+								</div>
+								<div className='dataBoxContainer'>
+									<div className='dataBoxHeader'>
+										Total Collateral
+									</div>
+									<div className='dataNumber'>
+										{totalCollateralValue.toFixed(2)}$
+									</div>
+								</div>
+							</div>
+							}
 						</div>
 					</div>
 				</div>
 			</Flex>
+			
 		</>
 	);
 		

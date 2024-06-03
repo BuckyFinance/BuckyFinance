@@ -38,7 +38,7 @@ async function getTotalCreditScore(walletAddress) {
     const protocolCredit = await getUserProtocolCredit(walletAddress);
     const totalCredit = activityCredit + protocolCredit;
     console.log(`Total credit score: ${totalCredit}`)
-    return totalCredit;
+    return  totalCredit;
 }
 
 async function main() {
@@ -47,9 +47,10 @@ async function main() {
     await getTotalCreditScore(vitalikAddress);
 }
 
-main();
+//main();
 
 module.exports = {
     getUserActivityCredit,
     getUserProtocolCredit,
+    getTotalCreditScore
 }

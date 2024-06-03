@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import {getTotalMintedValueOverallChain} from "../backend/scripts/getMinted.js"
 import {getTotalDepositedValueOverallChain} from "../backend/scripts/getDeposited.js"
   
+const FETCH_INTERVAL = process.env.REACT_APP_FETCH_INTERVAL;
+
 export const useTotalCollateralValue = (walletAddress) => {
     const [totalCollateralValue, setTotalCollateralValue] = useState(0);
     const getTotalCollateralValue =  async () => {
@@ -9,9 +11,20 @@ export const useTotalCollateralValue = (walletAddress) => {
         setTotalCollateralValue(parseFloat(response));
 
     }
+
     useEffect(() => {
-        getTotalCollateralValue()
+        const fetchData = () => {
+            getTotalCollateralValue()
+        }
+
+        fetchData();
+
+        const intervalId = setInterval(fetchData, FETCH_INTERVAL); 
+        
+        return () => clearInterval(intervalId);
     }, [walletAddress]);
+
+
 
     return { totalCollateralValue };
 }
@@ -24,8 +37,17 @@ export const useTotalMintedValue = (walletAddress) => {
         setTotalMintedValue(parseFloat(response));
 
     }
+
     useEffect(() => {
-        getTotalMintedValue()
+        const fetchData = () => {
+            getTotalMintedValue()
+        }
+
+        fetchData();
+
+        const intervalId = setInterval(fetchData, FETCH_INTERVAL); 
+        
+        return () => clearInterval(intervalId);
     }, [walletAddress]);
 
     return { totalMintedValue };
