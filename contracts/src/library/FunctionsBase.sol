@@ -26,17 +26,7 @@ abstract contract FunctionsBase is FunctionsClient, Ownable {
 
     mapping (bytes32 => address) internal requestIdToUser;
 
-    string source = 
-        "const user = args[0];"
-        "const apiResponse = await Functions.makeHttpRequest({"
-        "url: `https://beta.credprotocol.com/api/score/address/${user}/`,"
-        "headers: {'Authorization': `Token 373540836d1296f8c4f792eade78ddd89ab13d20`},"
-        "});"
-        "if (apiResponse.error) {"
-        "throw Error('Request failed');"
-        "}"
-        "const { data } = apiResponse;"
-        "return Functions.encodeUint256(data.value);";
+    string source;
 
     constructor(address _functionRouter, bytes32 _donId) FunctionsClient(_functionRouter) {
         functionsRouter = _functionRouter;
