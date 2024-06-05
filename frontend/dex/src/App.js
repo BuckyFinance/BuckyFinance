@@ -17,6 +17,8 @@ import {
 	ConsoleSqlOutlined,
 	DisconnectOutlined
 } from "@ant-design/icons"
+import { useCredit } from './hooks/useCredit.js';
+
 // import {MetaMaskConnector} from "wagmi/connectors/metaMask"
 // import '@rainbow-me/rainbowkit/styles.css';
 
@@ -80,6 +82,8 @@ function App(props) {
 	const {config} = props;
 	const account = useAccount();
 
+	const {creditScore, creditStatus, setCreditStatus, calculateCredit} = useCredit(account.address);
+
 	return (
 		<ThemeProvider theme={theme}>
 			<div className="App" >
@@ -87,7 +91,7 @@ function App(props) {
 				<div className="mainWindow">
 					{account.isConnected && 
 					<Routes>
-						<Route path='/' element={<Dashboard account={account} config={config} />}></Route>
+						<Route path='/' element={<Dashboard account={account} config={config} creditScore={creditScore} creditStatus={creditStatus} setCreditStatus={setCreditStatus} calculateCredit={calculateCredit}/>}></Route>
 						<Route path='/swap' element={<Swap  account={account} />}></Route>
 						<Route path='/borrow' element={<QuickBorrow  account={account} />}></Route>
 					</Routes>

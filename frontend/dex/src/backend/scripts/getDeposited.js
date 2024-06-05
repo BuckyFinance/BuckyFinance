@@ -22,7 +22,7 @@ async function getDepositedAmount(desChainId, tokenSymbol, walletAddress) {
 
     const nameOfDecimals = getNameOfDecimals(tokenInfo.decimals);
     const depositedValueFormat = ethers.utils.formatUnits(deposited, nameOfDecimals);
-    console.log(`Deposited in ${desChainId} with ${tokenSymbol} Amount: ${depositedValueFormat.toString()}`);
+    //console.log(`Deposited in ${desChainId} with ${tokenSymbol} Amount: ${depositedValueFormat.toString()}`);
     return depositedValueFormat;
 }
 
@@ -39,7 +39,7 @@ async function getDepositedValue(desChainId, tokenSymbol, walletAddress) {
     const depositedValue = await mainRouterContract.getUserCollateralValue(walletAddress, CHAIN_SELECTOR, tokenInfo.address);
     const nameOfDecimals = getNameOfDecimals(tokenInfo.decimals);
     const depositedValueFormat = ethers.utils.formatUnits(depositedValue, nameOfDecimals);
-    console.log(`Deposited in ${desChainId} with ${tokenSymbol} Value: ${depositedValueFormat.toString()}`);
+    //console.log(`Deposited in ${desChainId} with ${tokenSymbol} Value: ${depositedValueFormat.toString()}`);
 
     return depositedValueFormat;
 }
@@ -54,7 +54,7 @@ async function getTotalDepositedValueOnChain(desChainId, walletAddress) {
 
     const { totalCollateral, totalMinted } = await mainRouterContract.getUserOnChainInformation(walletAddress, CHAIN_SELECTOR);
     const totalCollateralFormat = ethers.utils.formatUnits(totalCollateral, "ether");
-    console.log(`Total Collateral in chain ${desChainId}: ${totalCollateralFormat.toString()}`);
+    //console.log(`Total Collateral in chain ${desChainId}: ${totalCollateralFormat.toString()}`);
     return totalCollateralFormat.toString();
 }
 
@@ -68,7 +68,7 @@ async function getTotalDepositedValueOverallChain(walletAddress) {
     const { totalCollateral, totalMinted } = await mainRouterContract.getUserOverallInformation(walletAddress);
 
     const totalCollateralFormat = ethers.utils.formatUnits(totalCollateral, "ether");
-    console.log(`Total Collateral overall chain: ${totalCollateralFormat.toString()}`);
+    //console.log(`Total Collateral overall chain: ${totalCollateralFormat.toString()}`);
     return totalCollateralFormat.toString();
 }
 

@@ -15,7 +15,7 @@ async function getBalance(chainId, tokenSymbol, walletAddress) {
     const tokenContract = new Contract(tokenAddress, ERC20MockABI, provider);
     const balance = await tokenContract.balanceOf(walletAddress);
     const balanceFormat = ethers.utils.formatUnits(balance, tokenDecimals);
-    console.log(`Balance of Token ${tokenSymbol} with Address ${walletAddress}: ${balanceFormat}`);
+    //console.log(`Balance of Token ${tokenSymbol} with Address ${walletAddress}: ${balanceFormat}`);
     return balanceFormat;
 }
 

@@ -18,7 +18,7 @@ async function getCurrentLTV(walletAddress) {
     const currentLTV = await mainRouterContract.calculateLTV(walletAddress);
 
     const currentLTVFormat = ethers.utils.formatUnits(currentLTV, "ether");
-    console.log(`Current LTV of Address ${walletAddress}: ${currentLTVFormat}`);
+    //console.log(`Current LTV of Address ${walletAddress}: ${currentLTVFormat}`);
     return currentLTVFormat;
 }
 

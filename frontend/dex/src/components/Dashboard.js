@@ -39,16 +39,14 @@ import {mint} from "../backend/scripts/mint.js"
 import {deposit} from "../backend/scripts/deposit.js"
 import {useTx} from "../hooks/useWriteTx.js"
 import LoadingAnimation from "../loading.js"
-import { useCredit } from '../hooks/useCredit.js';
 import { calc } from 'antd/es/theme/internal.js';
 
-const Dashboard = (props) => {
+const Dashboard = ({account, config, creditScore, creditStatus, setCreditStatus, calculateCredit}) => {
 	const DEPOSIT_STATE = 1;
 	const WITHDRAW_STATE = 2;
 	const NO_STATE = 0;
 	const MINT_STATE = 1
 	const BURN_STATE = 2
-	const {account, config} = props;
 
 
 
@@ -95,8 +93,6 @@ const Dashboard = (props) => {
 		}
 		return 0;
 	});
-
-	const {creditScore, creditStatus, setCreditStatus, calculateCredit} = useCredit(account.address);
 	
 	const {tokenDeposited, totalCollateralValueOnChain, setTokenDeposited, setTotalCollateralValueOnChain} = useDeposited(tokenList, account.address,chainList[currentCollateralChain].chainID );
 	const [currentMintChain, setCurrentMintChain] = useState(() => {
@@ -164,6 +160,7 @@ const Dashboard = (props) => {
 			deposited: null,
 			inWallet: null
 		}));
+		console.log("Set ", id);
 		setCurrentCollateralChain(id);
 		setTokenList(chainList[currentCollateralChain].tokens);
 		setTokenDepositAmounts(tokenList.map(() => null));
@@ -309,6 +306,7 @@ const Dashboard = (props) => {
 				content: 'Calculated successfully!',
 				duration: 1.5,
 			});
+			setCreditStatus('none');
 		}
 	}, [creditStatus]);
 

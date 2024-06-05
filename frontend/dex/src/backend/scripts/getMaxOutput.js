@@ -19,7 +19,7 @@ async function getMaxOutputCanBeMintedOnChain(walletAddress) {
 
     const canBeMinted = await mainRouterContract.getMaximumAllowedMinting(walletAddress);
     const canBeMintedFormat = ethers.utils.formatUnits(canBeMinted, "ether");
-    console.log(`Max Output can be minted: ${canBeMintedFormat}`);
+    //console.log(`Max Output can be minted: ${canBeMintedFormat}`);
     return canBeMintedFormat;
 }
 
@@ -29,7 +29,7 @@ async function getMaxOutputCanBeMinted(walletAddress) {
     const maxOutput = totalDeposited * LTV;
     const totalMinted = await getTotalMintedValueOverallChain(walletAddress);
     const canBeMinted = maxOutput - totalMinted;
-    console.log(`Max Output can be minted: ${canBeMinted}`);
+    //console.log(`Max Output can be minted: ${canBeMinted}`);
     return canBeMinted;
 }
 

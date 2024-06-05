@@ -37,8 +37,8 @@ async function burn(desChainId, amountToBurn, signerFromFE, isCalledFromFE) {
     const walletAddress = await wallet.getAddress();
     const totalMintedOnchain = parseFloat(await getTotalMintedValueOnChain(desChainId, walletAddress));
 
-    // console.log(totalMintedOnchain);
-    // console.log(amountToBurn);
+    console.log(totalMintedOnchain);
+    console.log(amountToBurn);
     if (totalMintedOnchain < amountToBurn) {
         return null;
     }

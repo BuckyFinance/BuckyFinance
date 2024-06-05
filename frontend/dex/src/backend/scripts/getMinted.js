@@ -20,7 +20,7 @@ async function getTotalMintedValueOnChain(desChainId, walletAddress) {
 
     const { totalCollateral, totalMinted } = await mainRouterContract.getUserOnChainInformation(walletAddress, CHAIN_SELECTOR);
     const totalMintedFormat = ethers.utils.formatUnits(totalMinted, "ether");
-    console.log(`Total minted in chain ${desChainId}: ${totalMintedFormat}`);
+    //console.log(`Total minted in chain ${desChainId}: ${totalMintedFormat}`);
     return totalMintedFormat;
 }
 
@@ -33,7 +33,7 @@ async function getTotalMintedValueOverallChain(walletAddress) {
 
     const { totalCollateral, totalMinted } = await mainRouterContract.getUserOverallInformation(walletAddress);
     const totalMintedFormat = ethers.utils.formatUnits(totalMinted);
-    console.log(`Total minted overall chain: ${totalMintedFormat}`);
+    //console.log(`Total minted overall chain: ${totalMintedFormat}`);
     return totalMintedFormat;
 }
 
